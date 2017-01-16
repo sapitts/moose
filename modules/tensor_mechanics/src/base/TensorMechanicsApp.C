@@ -92,6 +92,9 @@
 #include "PowerLawCreepStressUpdate.h"
 #include "HyperbolicViscoplasticityStressUpdate.h"
 #include "TemperatureDependentHardeningStressUpdate.h"
+#include "ComputeCrystalPlasticityStress.h"
+#include "CrystalPlasticityUpdate.h"
+#include "CrystalPlasticityCDDUpdate.h"
 #include "StressBasedChemicalPotential.h"
 #include "FluxBasedStrainIncrement.h"
 #include "GBRelaxationStrainIncrement.h"
@@ -285,6 +288,9 @@ TensorMechanicsApp::registerObjects(Factory & factory)
   registerMaterial(PowerLawCreepStressUpdate);
   registerMaterial(HyperbolicViscoplasticityStressUpdate);
   registerMaterial(TemperatureDependentHardeningStressUpdate);
+  registerMaterial(ComputeCrystalPlasticityStress);
+  registerMaterial(CrystalPlasticityUpdate);
+  registerMaterial(CrystalPlasticityCDDUpdate);
   registerMaterial(StressBasedChemicalPotential);
   registerMaterial(FluxBasedStrainIncrement);
   registerMaterial(GBRelaxationStrainIncrement);
