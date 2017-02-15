@@ -32,6 +32,9 @@ CrystalPlasticityStateVarRateComponentGSS::calcStateVariableEvolutionRateCompone
 {
   val.assign(_variable_size, 0.0);
 
+    if (qp == 0)
+      std::cout << "Inside the state variable evolution rate user object " << std::endl;
+
   Real r = _hprops[0];
   Real h0 = _hprops[1];
   Real tau_sat = _hprops[2];
@@ -41,9 +44,14 @@ CrystalPlasticityStateVarRateComponentGSS::calcStateVariableEvolutionRateCompone
   Real a = _hprops[3]; // Kalidindi
 
   for (unsigned int i = 0; i < _variable_size; ++i)
+  {
     hb(i) = h0 * std::pow(std::abs(1.0 - _mat_prop_state_var[qp][i] / tau_sat), a) * copysign(1.0,1.0 - _mat_prop_state_var[qp][i] / tau_sat);
+    if (qp == 0)
+      std::cout << "  and inside the loop to sum the latent hardening, on slip system " << i << " the used resistance is " << _mat_prop_state_var[qp][i] << std::endl;
+  }
 
   for (unsigned int i = 0; i < _variable_size; ++i)
+  {
     for (unsigned int j = 0; j < _variable_size; ++j)
     {
       unsigned int iplane, jplane;
@@ -55,8 +63,15 @@ CrystalPlasticityStateVarRateComponentGSS::calcStateVariableEvolutionRateCompone
       else
         qab = r;
 
+      // if (qp == 0)
+      //   std::cout << "  and on slip system " << i <<" the used slip increment is " << _mat_prop_slip_rate[qp][j] << std::endl;
+
+
       val[i] += std::abs(_mat_prop_slip_rate[qp][j]) * qab * hb(j);
     }
+    // if (qp == 0)
+    //   std::cout << "The calculated value of the slip resistance on slip system " << i << " is " << val[i] << std::endl;
+  }
 
   return true;
 }

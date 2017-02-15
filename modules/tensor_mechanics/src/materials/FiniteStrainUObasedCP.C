@@ -373,6 +373,33 @@ FiniteStrainUObasedCP::solveStress()
   {
     // Calculate stress increment
     dpk2 = - _jac.invSymm() * _resid;
+    if (_qp == 0)
+    {
+      std::cout << "Alright pk2, what are you here in the residual while loop of calculate residual? " << std::endl;
+      std::cout << "  pk2(0,0) " << _pk2[_qp](0,0) << std::endl;
+      std::cout << "  pk2(0,1) " << _pk2[_qp](0,1) << std::endl;
+      std::cout << "  pk2(0,2) " << _pk2[_qp](0,2) << std::endl;
+      std::cout << "  pk2(1,0) " << _pk2[_qp](1,0) << std::endl;
+      std::cout << "  pk2(1,1) " << _pk2[_qp](1,1) << std::endl;
+      std::cout << "  pk2(1,2) " << _pk2[_qp](1,2) << std::endl;
+      std::cout << "  pk2(2,0) " << _pk2[_qp](2,0) << std::endl;
+      std::cout << "  pk2(2,1) " << _pk2[_qp](2,1) << std::endl;
+      std::cout << "  pk2(2,2) " << _pk2[_qp](2,2) << std::endl;
+      std::cout << std::endl;
+
+      std::cout << "And the increment of stress is: " << std::endl;
+      std::cout << "  dpk2(0,0) " << dpk2(0,0) << std::endl;
+      std::cout << "  dpk2(0,1) " << dpk2(0,1) << std::endl;
+      std::cout << "  dpk2(0,2) " << dpk2(0,2) << std::endl;
+      std::cout << "  dpk2(1,0) " << dpk2(1,0) << std::endl;
+      std::cout << "  dpk2(1,1) " << dpk2(1,1) << std::endl;
+      std::cout << "  dpk2(1,2) " << dpk2(1,2) << std::endl;
+      std::cout << "  dpk2(2,0) " << dpk2(2,0) << std::endl;
+      std::cout << "  dpk2(2,1) " << dpk2(2,1) << std::endl;
+      std::cout << "  dpk2(2,2) " << dpk2(2,2) << std::endl;
+      std::cout << std::endl;
+    }
+
     _pk2[_qp] = _pk2[_qp] + dpk2;
     calcResidJacob();
 
@@ -386,6 +413,11 @@ FiniteStrainUObasedCP::solveStress()
 
     rnorm_prev = rnorm;
     rnorm = _resid.L2norm();
+    if (_qp == 0)
+    {
+      std::cout << "Finally, the calculated residual error is " << rnorm << std::endl;
+      std::cout << "-----------------------------" << std::endl;
+    }
 
     if (_use_line_search && rnorm > rnorm_prev && !lineSearchUpdate(rnorm_prev, dpk2))
     {
@@ -476,19 +508,115 @@ FiniteStrainUObasedCP::calcResidual()
 
   for (unsigned int i = 0; i < _num_uo_slip_rates; ++i)
     for (unsigned int j = 0; j < _uo_slip_rates[i]->variableSize(); ++j)
+    {
+      if(_qp == 0)
+      {
+        std::cout << "The slip increment (rate * time ) on slip system " << j << " is " << (*_mat_prop_slip_rates[i])[_qp][j] * _dt << std::endl;
+      }
+
       eqv_slip_incr += (*_flow_direction[i])[_qp][j] * (*_mat_prop_slip_rates[i])[_qp][j] * _dt;
+    }
+
+  // if (_qp == 0)
+  // {
+  //   std::cout << "Inside of the calculate Residual method at qp " << _qp << std::endl;
+  //   std::cout << "  equivalent_slip_increment (0,0) " <<  eqv_slip_incr(0,0) << std::endl;
+  //   std::cout << "  equivalent_slip_increment (0,1) " <<  eqv_slip_incr(0,1) << std::endl;
+  //   std::cout << "  equivalent_slip_increment (0,2) " <<  eqv_slip_incr(0,2) << std::endl;
+  //   std::cout << "  equivalent_slip_increment (1,0) " <<  eqv_slip_incr(1,0) << std::endl;
+  //   std::cout << "  equivalent_slip_increment (1,1) " <<  eqv_slip_incr(1,1) << std::endl;
+  //   std::cout << "  equivalent_slip_increment (1,2) " <<  eqv_slip_incr(1,2) << std::endl;
+  //   std::cout << "  equivalent_slip_increment (2,0) " <<  eqv_slip_incr(2,0) << std::endl;
+  //   std::cout << "  equivalent_slip_increment (2,1) " <<  eqv_slip_incr(2,1) << std::endl;
+  //   std::cout << "  equivalent_slip_increment (2,2) " <<  eqv_slip_incr(2,2) << std::endl;
+  // }
 
   eqv_slip_incr = iden - eqv_slip_incr;
+
   _fp_inv = _fp_old_inv * eqv_slip_incr;
+  // if (_qp == 0)
+  // {
+  //   std::cout << "And the value of the current inverse plastic deformation gradient: " << std::endl;
+  //   std::cout << "  inverse plastic deformation gradient (0,0) " << _fp_inv(0,0) << std::endl;
+  //   std::cout << "  inverse plastic deformation gradient (0,1) " << _fp_inv(0,1) << std::endl;
+  //   std::cout << "  inverse plastic deformation gradient (0,2) " << _fp_inv(0,2) << std::endl;
+  //   std::cout << "  inverse plastic deformation gradient (1,0) " << _fp_inv(1,0) << std::endl;
+  //   std::cout << "  inverse plastic deformation gradient (1,1) " << _fp_inv(1,1) << std::endl;
+  //   std::cout << "  inverse plastic deformation gradient (1,2) " << _fp_inv(1,2) << std::endl;
+  //   std::cout << "  inverse plastic deformation gradient (2,0) " << _fp_inv(2,0) << std::endl;
+  //   std::cout << "  inverse plastic deformation gradient (2,1) " << _fp_inv(2,1) << std::endl;
+  //   std::cout << "  inverse plastic deformation gradient (2,2) " << _fp_inv(2,2) << std::endl;
+  //   std::cout << "----------------------------------------------------- " << std::endl;
+  //   std::cout << std::endl;
+  // }
+
   _fe = _dfgrd_tmp * _fp_inv;
+
+  if (_qp == 0)
+  {
+    std::cout << "And the value of the temporary deformation gradient: " << std::endl;
+    std::cout << "  temporary deformation gradient (0,0) " << _dfgrd_tmp(0,0) << std::endl;
+    std::cout << "  temporary deformation gradient (0,1) " << _dfgrd_tmp(0,1) << std::endl;
+    std::cout << "  temporary deformation gradient (0,2) " << _dfgrd_tmp(0,2) << std::endl;
+    std::cout << "  temporary deformation gradient (1,0) " << _dfgrd_tmp(1,0) << std::endl;
+    std::cout << "  temporary deformation gradient (1,1) " << _dfgrd_tmp(1,1) << std::endl;
+    std::cout << "  temporary deformation gradient (1,2) " << _dfgrd_tmp(1,2) << std::endl;
+    std::cout << "  temporary deformation gradient (2,0) " << _dfgrd_tmp(2,0) << std::endl;
+    std::cout << "  temporary deformation gradient (2,1) " << _dfgrd_tmp(2,1) << std::endl;
+    std::cout << "  temporary deformation gradient (2,2) " << _dfgrd_tmp(2,2) << std::endl;
+    std::cout << std::endl;
+  }
 
   ce = _fe.transpose() * _fe;
   ee = ce - iden;
   ee *= 0.5;
 
+  if (_qp == 0)
+  {
+    std::cout << "And the value of the green elastic deformation gradient: " << std::endl;
+    std::cout << "  elastic gradient (0,0) " << ee(0,0) << std::endl;
+    std::cout << "  elastic gradient (0,1) " << ee(0,1) << std::endl;
+    std::cout << "  elastic gradient (0,2) " << ee(0,2) << std::endl;
+    std::cout << "  elastic gradient (1,0) " << ee(1,0) << std::endl;
+    std::cout << "  elastic gradient (1,1) " << ee(1,1) << std::endl;
+    std::cout << "  elastic gradient (1,2) " << ee(1,2) << std::endl;
+    std::cout << "  elastic gradient (2,0) " << ee(2,0) << std::endl;
+    std::cout << "  elastic gradient (2,1) " << ee(2,1) << std::endl;
+    std::cout << "  elastic gradient (2,2) " << ee(2,2) << std::endl;
+    std::cout << "----------------------------------------------------- " << std::endl;
+    std::cout << std::endl;
+  }
+
   pk2_new = _elasticity_tensor[_qp] * ee;
 
   _resid = _pk2[_qp] - pk2_new;
+
+  if (_qp == 0)
+  {
+    std::cout << "PK2 new from the elastic strain: " << std::endl;
+    std::cout << "  pk2_new(0,0) " << pk2_new(0,0) << std::endl;
+    std::cout << "  pk2_new(0,1) " << pk2_new(0,1) << std::endl;
+    std::cout << "  pk2_new(0,2) " << pk2_new(0,2) << std::endl;
+    std::cout << "  pk2_new(1,0) " << pk2_new(1,0) << std::endl;
+    std::cout << "  pk2_new(1,1) " << pk2_new(1,1) << std::endl;
+    std::cout << "  pk2_new(1,2) " << pk2_new(1,2) << std::endl;
+    std::cout << "  pk2_new(2,0) " << pk2_new(2,0) << std::endl;
+    std::cout << "  pk2_new(2,1) " << pk2_new(2,1) << std::endl;
+    std::cout << "  pk2_new(2,2) " << pk2_new(2,2) << std::endl;
+    std::cout << std::endl;
+
+    std::cout << "so that the residual tensor calculated is:" << std::endl;
+    std::cout << "  residual(0,0) " << _resid(0,0) << std::endl;
+    std::cout << "  residual(0,1) " << _resid(0,1) << std::endl;
+    std::cout << "  residual(0,2) " << _resid(0,2) << std::endl;
+    std::cout << "  residual(1,0) " << _resid(1,0) << std::endl;
+    std::cout << "  residual(1,1) " << _resid(1,1) << std::endl;
+    std::cout << "  residual(1,2) " << _resid(1,2) << std::endl;
+    std::cout << "  residual(2,0) " << _resid(2,0) << std::endl;
+    std::cout << "  residual(2,1) " << _resid(2,1) << std::endl;
+    std::cout << "  residual(2,2) " << _resid(2,2) << std::endl;
+    std::cout << "-----------------------------------------" << std::endl;
+  }
 }
 
 void
@@ -522,8 +650,17 @@ FiniteStrainUObasedCP::calcJacobian()
       dfpinvdslip[j] = - _fp_old_inv * (*_flow_direction[i])[_qp][j];
     }
 
+    if (_qp == 0)
+        std::cout << "In the calculate Jacobian bit " << std::endl;
+
     for (unsigned int j = 0; j < nss; j++)
+    {
       dfpinvdpk2 += (dfpinvdslip[j] * dslipdtau[j] * _dt).outerProduct(dtaudpk2[j]);
+      if (_qp == 0)
+      {
+        std::cout << "  the value of the slip derivative wrt to tau is " << dslipdtau[j] << std::endl;
+      }
+    }
   }
   _jac = RankFourTensor::IdentityFour() - (_elasticity_tensor[_qp] * deedfe * dfedfpinv * dfpinvdpk2);
 }

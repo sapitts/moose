@@ -24,8 +24,14 @@ CrystalPlasticitySlipResistanceGSS::CrystalPlasticitySlipResistanceGSS(const Inp
 bool
 CrystalPlasticitySlipResistanceGSS::calcSlipResistance(unsigned int qp, std::vector<Real> & val) const
 {
+  if (qp == 0)
+    std::cout << "Inside the slip resistance user object " << std::endl;
   for (unsigned int i = 0; i < _variable_size; ++i)
+  {
     val[i] = _mat_prop_state_var[qp][i];
+    if (qp == 0)
+      std::cout << "  on slip system " << i << " the slip resistance is " << val[i] << std::endl;
+  }
 
   return true;
 }

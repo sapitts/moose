@@ -23,6 +23,10 @@
     family = MONOMIAL
     block = 0
   [../]
+  [./pk2]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
   [./fp_zz]
     order = CONSTANT
     family = MONOMIAL
@@ -64,6 +68,15 @@
     type = RankTwoAux
     variable = stress_zz
     rank_two_tensor = stress
+    index_j = 2
+    index_i = 2
+    execute_on = timestep_end
+    block = 0
+  [../]
+  [./pk2]
+    type = RankTwoAux
+    variable = pk2
+    rank_two_tensor = pk2
     index_j = 2
     index_i = 2
     execute_on = timestep_end
@@ -191,6 +204,10 @@
     variable = stress_zz
     block = 'ANY_BLOCK_ID 0'
   [../]
+  [./pk2]
+    type = ElementAverageValue
+    variable = pk2
+  [../]
   [./fp_zz]
     type = ElementAverageValue
     variable = fp_zz
@@ -200,6 +217,10 @@
     type = ElementAverageValue
     variable = e_zz
     block = 'ANY_BLOCK_ID 0'
+  [../]
+  [./rotout]
+    type = ElementAverageValue
+    variable = rotout
   [../]
   [./gss]
     type = ElementAverageValue

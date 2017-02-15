@@ -4,18 +4,18 @@
 /*          All contents are licensed under LGPL V2.1           */
 /*             See LICENSE for full restrictions                */
 /****************************************************************/
-#ifndef CRYSTALPLASTICITYCDDUPDATE_H
-#define CRYSTALPLASTICITYCDDUPDATE_H
+#ifndef CRYSTALPLASTICITYKHALINDIUPDATE_H
+#define CRYSTALPLASTICITYKHALINDIUPDATE_H
 
 #include "CrystalPlasticityUpdate.h"
 
-class CrystalPlasticityCDDUpdate;
+class CrystalPlasticityKhalindiUpdate;
 
 template<>
-InputParameters validParams<CrystalPlasticityCDDUpdate>();
+InputParameters validParams<CrystalPlasticityKhalindiUpdate>();
 
 /**
- * CrystalPlasticityCDDUpdate uses the multiplicative decomposition of deformation gradient
+ * CrystalPlasticityKhalindiUpdate uses the multiplicative decomposition of deformation gradient
  * and solves the PK2 stress residual equation at the intermediate configuration to evolve the material state.
  * The internal variables are updated using an interative predictor-corrector algorithm.
  * Backward Euler integration rule is used for the rate equations.
@@ -24,11 +24,11 @@ InputParameters validParams<CrystalPlasticityCDDUpdate>();
  * from this class must be called by a separate material, such as ComputeCrystalPlasticityStress.
  */
 
-class CrystalPlasticityCDDUpdate : public CrystalPlasticityUpdate
+class CrystalPlasticityKhalindiUpdate : public CrystalPlasticityUpdate
 
 {
 public:
-  CrystalPlasticityCDDUpdate(const InputParameters & parameters);
+  CrystalPlasticityKhalindiUpdate(const InputParameters & parameters);
 
 protected:
   /**
@@ -75,45 +75,23 @@ protected:
 
   void calculateSlipSystemResistance(bool & error_tolerance);
 
-  void calculateDislocationDensities(bool & error_tolerance);
-
-  MaterialProperty<std::vector<Real> > & _mobile_dislocations;
-  MaterialProperty<std::vector<Real> > & _mobile_dislocations_old;
-  MaterialProperty<std::vector<Real> > & _immobile_dislocations;
-  MaterialProperty<std::vector<Real> > & _immobile_dislocations_old;
   MaterialProperty<std::vector<Real> > & _slip_system_resistance;
   MaterialProperty<std::vector<Real> > & _slip_system_resistance_old;
-
   MaterialProperty<std::vector<Real> > & _slip_increment;
 //  MaterialProperty<std::vector<Real> > & _slip_increment_old;
 
-  MaterialProperty<std::vector<Real> > & _previous_it_mobile;
-  MaterialProperty<std::vector<Real> > & _previous_it_immobile;
-//  MaterialProperty<std::vector<Real> > & _previous_it_slip_increment;
+  MaterialProperty<std::vector<Real> > & _previous_it_slip_increment;
   MaterialProperty<std::vector<Real> > & _previous_it_resistance;
 
-
   MaterialProperty<std::vector<Real> > & _tau;
-  MaterialProperty<std::vector<Real> > & _glide_velocity;
 
-  const Real _burgers_vector;
-  const Real _initial_mobile_dislocation_density;
-  const Real _initial_immobile_dislocation_density;
-  const Real _gamma_reference;
-  const Real _m_exp;
-
-  const Real _peierls_strength;
-  const Real _baily_hirsch_alpha;
-
-  const Real _alpha_1;
-  const Real _alpha_2;
-  const Real _alpha_3;
-  const Real _alpha_4;
-  const Real _alpha_5;
-  const Real _alpha_6;
-  const Real _radius_capture;
-
-  const Real _inital_glide_velocity;
+  const Real _r;
+  const Real _h;
+  const Real _tau_sat;
+  const Real _gss_a;
+  const Real _ao;
+  const Real _xm;
+  const Real _gss_initial;
 };
 
-#endif //CRYSTALPLASTICITYCDDUPDATE_H
+#endif //CRYSTALPLASTICITYKHALINDIUPDATE_H

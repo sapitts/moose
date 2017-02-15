@@ -111,13 +111,26 @@ CrystalPlasticityStateVariable::updateStateVariable(unsigned int qp, Real dt, st
       val[i] += (*_mat_prop_state_var_evol_rate_comps[j])[qp][i] * dt * _scale_factor[j];
   }
 
+  std::cout << "Now evaluating the update-ability of the resistance" << std::endl;
+
   for (unsigned int i = 0; i < _variable_size; ++i)
   {
     if (_mat_prop_state_var_old[qp][i] < _zero && val[i] < 0.0)
+    {
       val[i] = _mat_prop_state_var_old[qp][i];
+      // std::cout << "  in slip system " << i << " and the value of the old value / increment is too small to update" << std::endl;
+    }
     else
+    {
+      if (qp == 0)
+      {
+        std::cout << "  Inside the updateStateVariable method on slip system " << i << " and the resistance value increment is " << val[i] << std::endl;
+        std::cout << "    and the value of the old resistance is " << _mat_prop_state_var_old[qp][i] << std::endl;
+      }
       val[i] = _mat_prop_state_var_old[qp][i] + val[i];
-
+      if (qp == 0)
+        std::cout << "  and the value of the resistance is updated to " << val[i] << std::endl;
+    }
     if (val[i] < 0.0)
       return false;
   }

@@ -15,6 +15,7 @@ InputParameters validParams<CrystalPlasticityUpdate>()
   InputParameters params = validParams<Material>();
   params.addClassDescription("Crystal Plasticity base class: FCC system with power law flow rule implemented");
   params.addParam<std::string>("base_name", "Optional parameter that allows the user to define multiple mechanics material systems on the same block, i.e. for multiple phases");
+
   //The return stress increment classes are intended to be iterative materials, so must set compute = false for all inheriting classes
   params.set<bool>("compute") = false;
   params.suppressParameter<bool>("compute");
@@ -25,6 +26,8 @@ InputParameters validParams<CrystalPlasticityUpdate>()
   params.addParam<Real>("rtol", 1e-6, "Constitutive stress residue relative tolerance");
   params.addParam<Real>("abs_tol", 1e-6, "Constitutive stress residue absolute tolerance");
   params.addParam<Real>("stol", 1e-2, "Constitutive slip system resistance relative residual tolerance");
+  params.addParam<Real>("slip_incr_tol", 2e-2, "Maximum allowable slip in an increment");
+  params.addParam<Real>("resistance_tol",1e2,"Constitutive slip system resistance residual tolerance");
   params.addParam<Real>("zero_tol", 1e-12, "Tolerance for residual check when variable value is zero");
   params.addParam<unsigned int>("maxiter", 100 , "Maximum number of iterations for stress update");
   params.addParam<unsigned int>("maxiter_state_variable", 100 , "Maximum number of iterations for state variable update");
@@ -52,6 +55,8 @@ CrystalPlasticityUpdate::CrystalPlasticityUpdate(const InputParameters & paramet
     _rtol(getParam<Real>("rtol")),
     _abs_tol(getParam<Real>("abs_tol")),
     _rel_state_var_tol(getParam<Real>("stol")),
+    _slip_incr_tol(getParam<Real>("slip_incr_tol")),
+    _resistance_tol(getParam<Real>("resistance_tol")),
     _zero_tol(getParam<Real>("zero_tol")),
     _maxiter(getParam<unsigned int>("maxiter")),
     _maxiterg(getParam<unsigned int>("maxiter_state_variable")),
@@ -69,7 +74,7 @@ CrystalPlasticityUpdate::CrystalPlasticityUpdate(const InputParameters & paramet
     _total_lagrangian_strain(declareProperty<RankTwoTensor>("lage")), // Lagrangian strain
     _update_rotation(declareProperty<RankTwoTensor>("update_rot")), // Rotation tensor considering material rotation and crystal orientation
 //    _update_rotation_old(declarePropertyOld<RankTwoTensor>("update_rot")),
-    _flow_direction(_number_slip_systems),
+    _flow_direction(declareProperty<std::vector<RankTwoTensor>>("flow_direction")),
     _deformation_gradient(getMaterialProperty<RankTwoTensor>("deformation_gradient")),
     _deformation_gradient_old(getMaterialPropertyOld<RankTwoTensor>("deformation_gradient")),
     _slip_direction(_number_slip_systems * LIBMESH_DIM),
@@ -79,9 +84,6 @@ CrystalPlasticityUpdate::CrystalPlasticityUpdate(const InputParameters & paramet
   _error_tolerance = false;
   _substep_dt = 0.0;
   _delta_deformation_gradient.zero();
-
-  for (unsigned int i = 0; i < _number_slip_systems; ++i)
-    (*_flow_direction[i]) = declareProperty<RankTwoTensor>("flow_direction");
 
   getSlipSystems();
 }
@@ -98,6 +100,10 @@ CrystalPlasticityUpdate::initQpStatefulProperties()
 
   _update_rotation[_qp].zero();
   _update_rotation[_qp].addIa(1.0);
+
+  _flow_direction[_qp].resize(_number_slip_systems);
+  for (unsigned int i = 0; i < _number_slip_systems; ++i)
+    _flow_direction[_qp][i].zero();
 }
 
 /**
@@ -136,20 +142,20 @@ CrystalPlasticityUpdate::updateStress(RankTwoTensor & cauchy_stress, RankFourTen
 
     _substep_dt = _dt/num_substep;
 
-    std::cout << "With the starting dt value of " << _dt << " the substep dt is " << _substep_dt << std::endl;
-    std::cout << "  while the time is " << _t << std::endl;
+    // std::cout << "With the starting dt value of " << _dt << " the substep dt is " << _substep_dt << std::endl;
+    // std::cout << "  while the time is " << _t << std::endl;
 
     for (unsigned int istep = 0; istep < num_substep; ++istep)
     {
-      std::cout << "  inside the for loop, and whats the istep value? " << istep << std::endl;
+      // std::cout << "  inside the for loop, and whats the istep value? " << istep << std::endl;
       _temporary_deformation_gradient =  (static_cast<Real>(istep) + 1) / num_substep * _delta_deformation_gradient;
       _temporary_deformation_gradient += _temporary_deformation_gradient_old;
 
-      std::cout<< "what the value of error_tolerance? " << _error_tolerance << std::endl;
+      // std::cout<< "what the value of error_tolerance? " << _error_tolerance << std::endl;
 
       solveQp();
 
-      std::cout<< "what the value of error_tolerance? " << _error_tolerance << std::endl;
+      // std::cout<< "what the value of error_tolerance? " << _error_tolerance << std::endl;
 
       if (_error_tolerance)
       {
@@ -160,9 +166,8 @@ CrystalPlasticityUpdate::updateStress(RankTwoTensor & cauchy_stress, RankFourTen
         std::cout << "what is the number substep value? " << num_substep << std::endl;
         break;
       }
-      std::cout << "do I make it out of here? " << std::endl;
+      // std::cout << "do I make it out of here? " << std::endl;
     }
-//    _error_tolerance = false;  //garbage force to run
 
     if (substep_iter > _max_substep_iter && _error_tolerance)
       mooseError("CrystalPlasticityUpdate: Constitutive failure");
@@ -172,14 +177,22 @@ CrystalPlasticityUpdate::updateStress(RankTwoTensor & cauchy_stress, RankFourTen
   // _dt = dt_original;  <- not sure I need to do this with my own substep dt variable
 
   postSolveQp(cauchy_stress, jacobian_mult);
+
+  if (_qp == 0)
+  {
+    std::cout << "Successfully solved for the new stress value in updateStress! Nice work" << std::endl;
+    std::cout << "------------------------------------------------------------------------------ " << std::endl;
+    std::cout << std::endl;
+  }
 }
 
 void
 CrystalPlasticityUpdate::solveQp()  // <- probably going to have to pass in my local sub_dt variable here
 {
+  setInitialConstitutiveVariableValues();
   _inverse_plastic_deformation_grad = _inverse_plastic_deformation_grad_old;
 
-  solveStatevar();  // <-and sub_dt here too
+  solveStateVariables();
   if (_error_tolerance)
     return;  // pop back up and take a smaller substep
 
@@ -215,7 +228,7 @@ CrystalPlasticityUpdate::postSolveQp(RankTwoTensor & cauchy_stress, RankFourTens
 
 
 void
-CrystalPlasticityUpdate::solveStatevar()
+CrystalPlasticityUpdate::solveStateVariables()
 {
   unsigned int iterg;
   bool iter_flag = true;
@@ -228,15 +241,31 @@ CrystalPlasticityUpdate::solveStatevar()
     if (_error_tolerance)
       return;
 
-    _plastic_deformation_gradient[_qp] = _inverse_plastic_deformation_grad.inverse();
+    _plastic_deformation_gradient[_qp] = _inverse_plastic_deformation_grad.inverse();  // the postSoveStress
+
+    // if (_qp == 3)
+    // {
+    //   std::cout << "----------------------------------------------------- " << std::endl;
+    //   std::cout << "And the value of the current plastic deformation gradient: " << std::endl;
+    //   std::cout << "  plastic deformation gradient (0,0) " << _plastic_deformation_gradient[_qp](0,0) << std::endl;
+    //   std::cout << "  plastic deformation gradient (0,1) " << _plastic_deformation_gradient[_qp](0,1) << std::endl;
+    //   std::cout << "  plastic deformation gradient (0,2) " << _plastic_deformation_gradient[_qp](0,2) << std::endl;
+    //   std::cout << "  plastic deformation gradient (1,0) " << _plastic_deformation_gradient[_qp](1,0) << std::endl;
+    //   std::cout << "  plastic deformation gradient (1,1) " << _plastic_deformation_gradient[_qp](1,1) << std::endl;
+    //   std::cout << "  plastic deformation gradient (1,2) " << _plastic_deformation_gradient[_qp](1,2) << std::endl;
+    //   std::cout << "  plastic deformation gradient (2,0) " << _plastic_deformation_gradient[_qp](2,0) << std::endl;
+    //   std::cout << "  plastic deformation gradient (2,1) " << _plastic_deformation_gradient[_qp](2,1) << std::endl;
+    //   std::cout << "  plastic deformation gradient (2,2) " << _plastic_deformation_gradient[_qp](2,2) << std::endl;
+    //   std::cout << "----------------------------------------------------- " << std::endl;
+    //   std::cout << std::endl;
+    // }
 
     // Update slip system resistance and state variable after the stress has been finalized
-//    updateConstitutiveSlipSystemResistanceAndVariables();  // <- this one goes to the inherited class now, pass in sub_dt, flow direction
-
+    updateConstitutiveSlipSystemResistanceAndVariables(_error_tolerance);
     if (_error_tolerance)
       return;
 
-    iter_flag = areConstitutiveStateVariablesConverged();
+    iter_flag = areConstitutiveStateVariablesConverged();  //returns false if values are converged and good to go
     iterg++;
   }
 
@@ -261,7 +290,7 @@ CrystalPlasticityUpdate::solveStress()
   if (_error_tolerance)
   {
 #ifdef DEBUG
-    mooseWarning("CrystalPlasticityUpdate: Slip increment exceeds tolerance - Element number " << _current_elem->id() << " Gauss point = " << _qp);
+    mooseWarning("CrystalPlasticityUpdate: Slip increment exceeds tolerance - Element number ", _current_elem->id(), " Gauss point = ", _qp);
 #endif
     return;
   }
@@ -269,24 +298,77 @@ CrystalPlasticityUpdate::solveStress()
   rnorm = _residual_tensor.L2norm();
   rnorm0 = rnorm;
 
+  if (_qp == 0)
+    std::cout << "The rnorm0 is " << rnorm0 << std::endl;
+
   // Check for stress residual tolerance
   while (rnorm > _rtol * rnorm0 && rnorm0 > _abs_tol && iter <  _maxiter)
   {
+    // if (_qp == 0)
+    // {
+    //   std::cout << "Alright pk2, what are you here in the residual while loop of calculate residual? " << std::endl;
+    //   std::cout << "  pk2(0,0) " << _pk2[_qp](0,0) << std::endl;
+    //   std::cout << "  pk2(0,1) " << _pk2[_qp](0,1) << std::endl;
+    //   std::cout << "  pk2(0,2) " << _pk2[_qp](0,2) << std::endl;
+    //   std::cout << "  pk2(1,0) " << _pk2[_qp](1,0) << std::endl;
+    //   std::cout << "  pk2(1,1) " << _pk2[_qp](1,1) << std::endl;
+    //   std::cout << "  pk2(1,2) " << _pk2[_qp](1,2) << std::endl;
+    //   std::cout << "  pk2(2,0) " << _pk2[_qp](2,0) << std::endl;
+    //   std::cout << "  pk2(2,1) " << _pk2[_qp](2,1) << std::endl;
+    //   std::cout << "  pk2(2,2) " << _pk2[_qp](2,2) << std::endl;
+    //   std::cout << std::endl;
+    // }
+
     // Calculate stress increment
     dpk2 = - _jacobian.invSymm() * _residual_tensor;
+    // if (_qp == 0)
+    // {
+    //   std::cout << "And the increment of stress is: " << std::endl;
+    //   std::cout << "  dpk2(0,0) " << dpk2(0,0) << std::endl;
+    //   std::cout << "  dpk2(0,1) " << dpk2(0,1) << std::endl;
+    //   std::cout << "  dpk2(0,2) " << dpk2(0,2) << std::endl;
+    //   std::cout << "  dpk2(1,0) " << dpk2(1,0) << std::endl;
+    //   std::cout << "  dpk2(1,1) " << dpk2(1,1) << std::endl;
+    //   std::cout << "  dpk2(1,2) " << dpk2(1,2) << std::endl;
+    //   std::cout << "  dpk2(2,0) " << dpk2(2,0) << std::endl;
+    //   std::cout << "  dpk2(2,1) " << dpk2(2,1) << std::endl;
+    //   std::cout << "  dpk2(2,2) " << dpk2(2,2) << std::endl;
+    //   std::cout << std::endl;
+    // }
+
     _pk2[_qp] = _pk2[_qp] + dpk2;
+
+    // if (_qp == 0)
+    // {
+    //   std::cout << "new pk2, going into the calc residual call " << std::endl;
+    //   std::cout << "  pk2(0,0) " << _pk2[_qp](0,0) << std::endl;
+    //   std::cout << "  pk2(0,1) " << _pk2[_qp](0,1) << std::endl;
+    //   std::cout << "  pk2(0,2) " << _pk2[_qp](0,2) << std::endl;
+    //   std::cout << "  pk2(1,0) " << _pk2[_qp](1,0) << std::endl;
+    //   std::cout << "  pk2(1,1) " << _pk2[_qp](1,1) << std::endl;
+    //   std::cout << "  pk2(1,2) " << _pk2[_qp](1,2) << std::endl;
+    //   std::cout << "  pk2(2,0) " << _pk2[_qp](2,0) << std::endl;
+    //   std::cout << "  pk2(2,1) " << _pk2[_qp](2,1) << std::endl;
+    //   std::cout << "  pk2(2,2) " << _pk2[_qp](2,2) << std::endl;
+    //   std::cout << std::endl;
+    // }
     calcResidJacob();
 
     if (_error_tolerance)
     {
 #ifdef DEBUG
-      mooseWarning("CrystalPlasticityUpdate: Slip increment exceeds tolerance - Element number " << _current_elem->id() << " Gauss point = " << _qp);
+      mooseWarning("CrystalPlasticityUpdate: Slip increment exceeds tolerance - Element number ", _current_elem->id(), " Gauss point = ", _qp);
 #endif
       return;
     }
 
     rnorm_prev = rnorm;
     rnorm = _residual_tensor.L2norm();
+
+    if (_qp == 0)
+    {
+      std::cout << "Finally, the calculated residual error is " << rnorm << std::endl;
+    }
 
     if (_use_line_search && rnorm > rnorm_prev && !lineSearchUpdate(rnorm_prev, dpk2))
     {
@@ -300,13 +382,20 @@ CrystalPlasticityUpdate::solveStress()
     if (_use_line_search)
       rnorm = _residual_tensor.L2norm();
 
+    if (_qp == 0)
+    {
+      std::cout << "Concluding iteration number " << iter << std::endl;
+      std::cout << "-----------------------------" << std::endl;
+      std::cout << std::endl;
+    }
+
     iter++;
   }
 
   if (iter >= _maxiter)
   {
 #ifdef DEBUG
-    mooseWarning("CrystalPlasticityUpdate: Stress Integration error rmax = " << rnorm);
+    mooseWarning("CrystalPlasticityUpdate: Stress Integration error rmax = ", rnorm);
 #endif
     _error_tolerance = true;
   }
@@ -343,37 +432,121 @@ CrystalPlasticityUpdate::calcResidual()
 
   equivalent_slip_increment.zero();
 
-  for (unsigned int i = 0; i < _number_slip_systems; ++i)
-  {
-    std::cout << "  Right before the call to the child class for slip system: " << i << std::endl;
-    std::cout << "    the flow direction (0,0) is " << (*_flow_direction[i])[_qp](0,0) << std::endl;
-    std::cout << "    the flow direction (0,1) is " << (*_flow_direction[i])[_qp](0,1) << std::endl;
-    std::cout << "    the flow direction (0,2) is " << (*_flow_direction[i])[_qp](0,2) << std::endl;
-    std::cout << "    the flow direction (1,0) is " << (*_flow_direction[i])[_qp](1,0) << std::endl;
-    std::cout << "    the flow direction (1,1) is " << (*_flow_direction[i])[_qp](1,1) << std::endl;
-    std::cout << "    the flow direction (1,2) is " << (*_flow_direction[i])[_qp](1,2) << std::endl;
-    std::cout << "    the flow direction (2,0) is " << (*_flow_direction[i])[_qp](2,0) << std::endl;
-    std::cout << "    the flow direction (2,1) is " << (*_flow_direction[i])[_qp](2,1) << std::endl;
-    std::cout << "    the flow direction (2,2) is " << (*_flow_direction[i])[_qp](2,2) << std::endl;
-  }
+  // for (unsigned int i = 0; i < _number_slip_systems; ++i)
+  // {
+  //   std::cout << "  Right before the call to the child class for slip system: " << i << std::endl;
+  //   std::cout << "    the flow direction (0,0) is " << _flow_direction[_qp][i](0,0) << std::endl;
+  //   std::cout << "    the flow direction (0,1) is " << _flow_direction[_qp][i](0,1) << std::endl;
+  //   std::cout << "    the flow direction (0,2) is " << _flow_direction[_qp][i](0,2) << std::endl;
+  //   std::cout << "    the flow direction (1,0) is " << _flow_direction[_qp][i](1,0) << std::endl;
+  //   std::cout << "    the flow direction (1,1) is " << _flow_direction[_qp][i](1,1) << std::endl;
+  //   std::cout << "    the flow direction (1,2) is " << _flow_direction[_qp][i](1,2) << std::endl;
+  //   std::cout << "    the flow direction (2,0) is " << _flow_direction[_qp][i](2,0) << std::endl;
+  //   std::cout << "    the flow direction (2,1) is " << _flow_direction[_qp][i](2,1) << std::endl;
+  //   std::cout << "    the flow direction (2,2) is " << _flow_direction[_qp][i](2,2) << std::endl;
+  // }
 
   // Call the overwritten method in the inheriting class that contains the constitutive model
   calculateConstitutiveEquivalentSlipIncrement(equivalent_slip_increment, _error_tolerance);
 
-  if (_error_tolerance)  //<- to do this check in this manner, will have to pass that boolean back and forth all the time. blah
+  if (_error_tolerance)
     return;
 
   equivalent_slip_increment = identity - equivalent_slip_increment;
+  // if (_qp == 0)
+  // {
+  //   std::cout << "Inside of the calculate Residual method at qp " << _qp << std::endl;
+  //   std::cout << "  equivalent_slip_increment (0,0) " << equivalent_slip_increment(0,0) << std::endl;
+  //   std::cout << "  equivalent_slip_increment (0,1) " <<  equivalent_slip_increment(0,1) << std::endl;
+  //   std::cout << "  equivalent_slip_increment (0,2) " <<  equivalent_slip_increment(0,2) << std::endl;
+  //   std::cout << "  equivalent_slip_increment (1,0) " <<  equivalent_slip_increment(1,0) << std::endl;
+  //   std::cout << "  equivalent_slip_increment (1,1) " <<  equivalent_slip_increment(1,1) << std::endl;
+  //   std::cout << "  equivalent_slip_increment (1,2) " <<  equivalent_slip_increment(1,2) << std::endl;
+  //   std::cout << "  equivalent_slip_increment (2,0) " <<  equivalent_slip_increment(2,0) << std::endl;
+  //   std::cout << "  equivalent_slip_increment (2,1) " <<  equivalent_slip_increment(2,1) << std::endl;
+  //   std::cout << "  equivalent_slip_increment (2,2) " <<  equivalent_slip_increment(2,2) << std::endl;
+  //
+  // }
+
   _inverse_plastic_deformation_grad = _inverse_plastic_deformation_grad_old * equivalent_slip_increment;
+
+  // if (_qp == 0)
+  // {
+    // std::cout << "And the value of the old inverse plastic deformation gradient: " << std::endl;
+    // std::cout << "  inverse plastic deformation gradient (0,0) " << _inverse_plastic_deformation_grad(0,0) << std::endl;
+    // std::cout << "  inverse plastic deformation gradient (0,1) " << _inverse_plastic_deformation_grad(0,1) << std::endl;
+    // std::cout << "  inverse plastic deformation gradient (0,2) " << _inverse_plastic_deformation_grad(0,2) << std::endl;
+    // std::cout << "  inverse plastic deformation gradient (1,0) " << _inverse_plastic_deformation_grad(1,0) << std::endl;
+    // std::cout << "  inverse plastic deformation gradient (1,1) " << _inverse_plastic_deformation_grad(1,1) << std::endl;
+    // std::cout << "  inverse plastic deformation gradient (1,2) " << _inverse_plastic_deformation_grad(1,2) << std::endl;
+    // std::cout << "  inverse plastic deformation gradient (2,0) " << _inverse_plastic_deformation_grad(2,0) << std::endl;
+    // std::cout << "  inverse plastic deformation gradient (2,1) " << _inverse_plastic_deformation_grad(2,1) << std::endl;
+    // std::cout << "  inverse plastic deformation gradient (2,2) " << _inverse_plastic_deformation_grad(2,2) << std::endl;
+    // std::cout << std::endl;
+  //   std::cout << "And the value of the temporary deformation gradient: " << std::endl;
+  //   std::cout << "  temporary deformation gradient (0,0) " << _temporary_deformation_gradient(0,0) << std::endl;
+  //   std::cout << "  temporary deformation gradient (0,1) " << _temporary_deformation_gradient(0,1) << std::endl;
+  //   std::cout << "  temporary deformation gradient (0,2) " << _temporary_deformation_gradient(0,2) << std::endl;
+  //   std::cout << "  temporary deformation gradient (1,0) " << _temporary_deformation_gradient(1,0) << std::endl;
+  //   std::cout << "  temporary deformation gradient (1,1) " << _temporary_deformation_gradient(1,1) << std::endl;
+  //   std::cout << "  temporary deformation gradient (1,2) " << _temporary_deformation_gradient(1,2) << std::endl;
+  //   std::cout << "  temporary deformation gradient (2,0) " << _temporary_deformation_gradient(2,0) << std::endl;
+  //   std::cout << "  temporary deformation gradient (2,1) " << _temporary_deformation_gradient(2,1) << std::endl;
+  //   std::cout << "  temporary deformation gradient (2,2) " << _temporary_deformation_gradient(2,2) << std::endl;
+  //   std::cout << std::endl;
+  // }
+
   _elastic_deformation_gradient = _temporary_deformation_gradient * _inverse_plastic_deformation_grad;
 
   ce = _elastic_deformation_gradient.transpose() * _elastic_deformation_gradient;
   elastic_strain = ce - identity;
   elastic_strain *= 0.5;
+  // if (_qp == 0)
+  // {
+  //   std::cout << "And the value of the green elastic deformation gradient: " << std::endl;
+  //   std::cout << "  elastic gradient (0,0) " << elastic_strain(0,0) << std::endl;
+  //   std::cout << "  elastic gradient (0,1) " << elastic_strain(0,1) << std::endl;
+  //   std::cout << "  elastic gradient (0,2) " << elastic_strain(0,2) << std::endl;
+  //   std::cout << "  elastic gradient (1,0) " << elastic_strain(1,0) << std::endl;
+  //   std::cout << "  elastic gradient (1,1) " << elastic_strain(1,1) << std::endl;
+  //   std::cout << "  elastic gradient (1,2) " << elastic_strain(1,2) << std::endl;
+  //   std::cout << "  elastic gradient (2,0) " << elastic_strain(2,0) << std::endl;
+  //   std::cout << "  elastic gradient (2,1) " << elastic_strain(2,1) << std::endl;
+  //   std::cout << "  elastic gradient (2,2) " << elastic_strain(2,2) << std::endl;
+  //   std::cout << "----------------------------------------------------- " << std::endl;
+  //   std::cout << std::endl;
+  // }
 
   pk2_new = _elasticity_tensor[_qp] * elastic_strain;
 
   _residual_tensor = _pk2[_qp] - pk2_new;
+
+  // if (_qp == 0)
+  // {
+  //   std::cout << "PK2 new from the elastic strain: " << std::endl;
+  //   std::cout << "  pk2_new(0,0) " << pk2_new(0,0) << std::endl;
+  //   std::cout << "  pk2_new(0,1) " << pk2_new(0,1) << std::endl;
+  //   std::cout << "  pk2_new(0,2) " << pk2_new(0,2) << std::endl;
+  //   std::cout << "  pk2_new(1,0) " << pk2_new(1,0) << std::endl;
+  //   std::cout << "  pk2_new(1,1) " << pk2_new(1,1) << std::endl;
+  //   std::cout << "  pk2_new(1,2) " << pk2_new(1,2) << std::endl;
+  //   std::cout << "  pk2_new(2,0) " << pk2_new(2,0) << std::endl;
+  //   std::cout << "  pk2_new(2,1) " << pk2_new(2,1) << std::endl;
+  //   std::cout << "  pk2_new(2,2) " << pk2_new(2,2) << std::endl;
+  //   std::cout << std::endl;
+  //
+  //   std::cout << "so that the residual tensor calculated is:" << std::endl;
+  //   std::cout << "  residual(0,0) " << _residual_tensor(0,0) << std::endl;
+  //   std::cout << "  residual(0,1) " << _residual_tensor(0,1) << std::endl;
+  //   std::cout << "  residual(0,2) " << _residual_tensor(0,2) << std::endl;
+  //   std::cout << "  residual(1,0) " << _residual_tensor(1,0) << std::endl;
+  //   std::cout << "  residual(1,1) " << _residual_tensor(1,1) << std::endl;
+  //   std::cout << "  residual(1,2) " << _residual_tensor(1,2) << std::endl;
+  //   std::cout << "  residual(2,0) " << _residual_tensor(2,0) << std::endl;
+  //   std::cout << "  residual(2,1) " << _residual_tensor(2,1) << std::endl;
+  //   std::cout << "  residual(2,2) " << _residual_tensor(2,2) << std::endl;
+  //   std::cout << "-----------------------------------------" << std::endl;
+  // }
 }
 
 void
@@ -403,11 +576,18 @@ CrystalPlasticityUpdate::calcJacobian()
   std::vector<RankTwoTensor> dtaudpk2(_number_slip_systems);
   std::vector<RankTwoTensor> dfpinvdslip(_number_slip_systems);
 
+  // if (_qp == 0)
+  //   std::cout << "In the calculate Jacobian bit " << std::endl;
+
   for (unsigned int j = 0; j < _number_slip_systems; ++j)
   {
-    dtaudpk2[j] = (*_flow_direction[j])[_qp];
-    dfpinvdslip[j] = - _inverse_plastic_deformation_grad_old * (*_flow_direction[j])[_qp];
+    dtaudpk2[j] = _flow_direction[_qp][j];
+    dfpinvdslip[j] = - _inverse_plastic_deformation_grad_old * _flow_direction[_qp][j];
     dfpinvdpk2 += (dfpinvdslip[j] * dslip_dtau[j] * _substep_dt).outerProduct(dtaudpk2[j]);
+    // if (_qp == 0)
+    // {
+    //   std::cout << "On the slip system " << j << " the value of the slip derivative wrt to tau is " << dslip_dtau[j] << std::endl;
+    // }
   }
 
   _jacobian = RankFourTensor::IdentityFour() - (_elasticity_tensor[_qp] * deedfe * dfedfpinv * dfpinvdpk2);
@@ -520,7 +700,8 @@ CrystalPlasticityUpdate::lineSearchUpdate(const Real rnorm_prev, const RankTwoTe
       Real rnorm0 = _residual_tensor.L2norm();
       _pk2[_qp] = _pk2[_qp] + dpk2;
 
-      if ((rnorm1/rnorm0) < _line_search_tolerance || s_a*s_b > 0){
+      if ((rnorm1/rnorm0) < _line_search_tolerance || s_a*s_b > 0)
+      {
         calcResidual();
         return true;
       }
@@ -534,11 +715,13 @@ CrystalPlasticityUpdate::lineSearchUpdate(const Real rnorm_prev, const RankTwoTe
         s_m = _residual_tensor.doubleContraction(dpk2);
         rnorm = _residual_tensor.L2norm();
 
-        if (s_m*s_a < 0.0){
+        if (s_m*s_a < 0.0)
+        {
           step_b = step;
           s_b = s_m;
         }
-        if (s_m*s_b < 0.0){
+        if (s_m*s_b < 0.0)
+        {
           step_a = step;
           s_a = s_m;
         }
@@ -582,18 +765,7 @@ CrystalPlasticityUpdate::calculateFlowDirection()
   {
     for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
       for (unsigned int k = 0; k < LIBMESH_DIM; ++k)
-        (*_flow_direction[i])[_qp](j,k) = slip_direction(i*LIBMESH_DIM+j) * slip_plane_normal(i*LIBMESH_DIM+k);
-
-    std::cout << "  Within the calculation of the schmid tensor/ flow direction for slip system: " << i << std::endl;
-    std::cout << "    the flow direction (0,0) is " << (*_flow_direction[i])[_qp](0,0) << std::endl;
-    std::cout << "    the flow direction (0,1) is " << (*_flow_direction[i])[_qp](0,1) << std::endl;
-    std::cout << "    the flow direction (0,2) is " << (*_flow_direction[i])[_qp](0,2) << std::endl;
-    std::cout << "    the flow direction (1,0) is " << (*_flow_direction[i])[_qp](1,0) << std::endl;
-    std::cout << "    the flow direction (1,1) is " << (*_flow_direction[i])[_qp](1,1) << std::endl;
-    std::cout << "    the flow direction (1,2) is " << (*_flow_direction[i])[_qp](1,2) << std::endl;
-    std::cout << "    the flow direction (2,0) is " << (*_flow_direction[i])[_qp](2,0) << std::endl;
-    std::cout << "    the flow direction (2,1) is " << (*_flow_direction[i])[_qp](2,1) << std::endl;
-    std::cout << "    the flow direction (2,2) is " << (*_flow_direction[i])[_qp](2,2) << std::endl;
+        _flow_direction[_qp][i](j,k) = slip_direction(i*LIBMESH_DIM+j) * slip_plane_normal(i*LIBMESH_DIM+k);
   }
 
 }
@@ -640,7 +812,7 @@ CrystalPlasticityUpdate::getSlipSystems()
       mag += _slip_direction(i * LIBMESH_DIM + j) * _slip_plane_normal(i * LIBMESH_DIM + j);
 
     if (std::abs(mag) > 1e-8)
-      mooseError("CrystalPlasticitySlipRate Error: Slip direction and normal not orthonormal, System number = " << i << "\n");
+      mooseError("CrystalPlasticitySlipRate Error: Slip direction and normal not orthonormal, System number = ", i, "\n");
   }
 
   fileslipsys.close();

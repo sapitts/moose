@@ -12,23 +12,13 @@ InputParameters validParams<ComputeCrystalPlasticityStress>()
 {
   InputParameters params = validParams<ComputeFiniteStrainElasticStress>();
   params.addClassDescription("Compute stress using a crystal plasticity consitutive relation");
-  // params.addParam<unsigned int>("max_iterations", 30, "Maximum number of the stress update iterations over the stress change after all update materials are called");
-  // params.addParam<Real>("relative_tolerance", 1e-5, "Relative convergence tolerance for the stress update iterations over the stress change after all update materials are called");
-  // params.addParam<Real>("absolute_tolerance", 1e-5, "Absolute convergence tolerance for the stress update iterations over the stress change after all update materials are called");
-  // params.addParam<bool>("output_iteration_info", false, "Set to true to output stress update iteration information over the stress change");
   params.addRequiredParam<MaterialName>("crystal_plasticity_update_model", "The stress update crystal plasticity material objects to use to calculate stress.");
   return params;
 }
 
 ComputeCrystalPlasticityStress::ComputeCrystalPlasticityStress(const InputParameters & parameters) :
     ComputeFiniteStrainElasticStress(parameters),
-//    _max_its(parameters.get<unsigned int>("max_iterations")),
-//    _relative_tolerance(parameters.get<Real>("relative_tolerance")),
-//    _absolute_tolerance(parameters.get<Real>("absolute_tolerance")),
-//    _output_iteration_info(getParam<bool>("output_iteration_info")),
     _elasticity_tensor(getMaterialPropertyByName<RankFourTensor>(_base_name + "elasticity_tensor"))
-//    _elastic_strain_old(declarePropertyOld<RankTwoTensor>(_base_name + "elastic_strain")),
-//    _strain_increment(getMaterialProperty<RankTwoTensor>(_base_name + "strain_increment")),
 //    _model_name(getParam<MaterialName>("crystal_plasticity_update_model"))
 {
 }

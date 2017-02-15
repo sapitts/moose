@@ -141,6 +141,9 @@ CrystalPlasticitySlipRateGSS::calcSlipRate(unsigned int qp, Real dt, std::vector
 
   for (unsigned int i = 0; i < _variable_size; ++i)
   {
+    if (qp == 0)
+      std::cout << "  inside the slip increment calculation on system " << i << " and the slip resistance is " << _mat_prop_state_var[qp][i] << std::endl;
+
     val[i] = _a0(i) * std::pow(std::abs(tau(i) / _mat_prop_state_var[qp][i]), 1.0 / _xm(i)) * copysign(1.0, tau(i));
     if (std::abs(val[i] * dt) > _slip_incr_tol)
     {

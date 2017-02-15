@@ -76,7 +76,7 @@ protected:
    * solve internal variables stress as a function of the slip specified by the
    * constitutive model defined in the inheriting class
    */
-  void solveStatevar();
+  void solveStateVariables();
 
   /**
    * solves for stress, updates plastic deformation gradient.
@@ -128,6 +128,14 @@ protected:
    */
   void getSlipSystems();
 
+  /**
+   * This virtual method is called to set the constitutive internal state variables
+   * current value to the old property value for the start of the stress convergence
+   * while loop. This class also calculates the constitutive slip system resistance
+   * based on the values set for the constitutive state variables.
+   */
+  virtual void setInitialConstitutiveVariableValues(){};
+
   /*
    * This virtual method is called to calculate the total slip system slip
    * increment based on the constitutive model defined in the child class.
@@ -148,31 +156,13 @@ protected:
    * Finalizes the values of the state variables and slip system resistance
    * for the current timestep after convergence has been reached.
    */
-  virtual void updateConstitutiveSlipSystemResistanceAndVariables(){};
+  virtual void updateConstitutiveSlipSystemResistanceAndVariables(bool & /*error_tolerance*/){};
 
   /*
    * Determines if the state variables, e.g. defect densities, have converged
    * by comparing the change in the values over the iteration period.
    */
   virtual bool areConstitutiveStateVariablesConverged(){ return true; };
-  //
-  // /// Number of slip rate user objects
-  // unsigned int _num_uo_slip_rates;
-  //
-  // /// Number of slip resistance user objects
-  // unsigned int _num_uo_slip_resistances;
-  //
-  // /// Number of state variable user objects
-  // unsigned int _num_uo_state_vars;
-  //
-  // /// Number of state variable evolution rate component user objects
-  // unsigned int _num_uo_state_var_evol_rate_comps;
-  //
-  // /// Local state variable
-  // std::vector<std::vector<Real> > _state_vars_old;
-  //
-  // /// Local old state variable
-  // std::vector<std::vector<Real> > _state_vars_prev;
 
   /// optional parameter to define several mechanical systems on the same block, e.g. multiple phases
   const std::string _base_name;
@@ -191,6 +181,10 @@ protected:
   Real _abs_tol;
   /// Internal variable update equation tolerance
   Real _rel_state_var_tol;
+  /// Slip increment tolerance
+  Real _slip_incr_tol;
+  /// Tolerance for change in slip system resistance over an increment
+  Real _resistance_tol;
   /// Residual tolerance when variable value is zero. Default 1e-12.
   Real _zero_tol;
 
@@ -234,7 +228,7 @@ protected:
   MaterialProperty<RankTwoTensor> & _update_rotation;
 //  MaterialProperty<RankTwoTensor> & _update_rotation_old;
 
-  std::vector<MaterialProperty<RankTwoTensor> *> _flow_direction;
+  MaterialProperty<std::vector<RankTwoTensor> > & _flow_direction;
 
   const MaterialProperty<RankTwoTensor> & _deformation_gradient;
   const MaterialProperty<RankTwoTensor> & _deformation_gradient_old;

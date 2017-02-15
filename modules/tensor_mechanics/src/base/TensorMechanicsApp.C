@@ -95,6 +95,7 @@
 #include "ComputeCrystalPlasticityStress.h"
 #include "CrystalPlasticityUpdate.h"
 #include "CrystalPlasticityCDDUpdate.h"
+#include "CrystalPlasticityKhalindiUpdate.h"
 #include "StressBasedChemicalPotential.h"
 #include "FluxBasedStrainIncrement.h"
 #include "GBRelaxationStrainIncrement.h"
@@ -291,6 +292,7 @@ TensorMechanicsApp::registerObjects(Factory & factory)
   registerMaterial(ComputeCrystalPlasticityStress);
   registerMaterial(CrystalPlasticityUpdate);
   registerMaterial(CrystalPlasticityCDDUpdate);
+  registerMaterial(CrystalPlasticityKhalindiUpdate);
   registerMaterial(StressBasedChemicalPotential);
   registerMaterial(FluxBasedStrainIncrement);
   registerMaterial(GBRelaxationStrainIncrement);

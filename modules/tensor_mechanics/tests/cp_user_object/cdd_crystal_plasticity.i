@@ -47,22 +47,22 @@
     family = MONOMIAL
     block = 0
   [../]
-  #[./mobile_disl]
-  #  order = CONSTANT
-  #  family = MONOMIAL
-  #[../]
-  #[./immobile_disl]
-  #  order = CONSTANT
-  #  family = MONOMIAL
-  #[../]
+  [./mobile_disl]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./immobile_disl]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
   [./slip_increment]
     order = CONSTANT
     family = MONOMIAL
   [../]
-  #[./glide_velocity]
-  #  order = CONSTANT
-  #  family = MONOMIAL
-  #[../]
+  [./glide_velocity]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
   [./tau]
     order = CONSTANT
     family = MONOMIAL
@@ -134,20 +134,20 @@
     execute_on = timestep_end
     block = 0
   [../]
-  #[./mobile_disl]
-  #  type = MaterialStdVectorAux
-  #  variable = mobile_disl
-  #  property = mobile_dislocations
-  #  index = 0
-  #  execute_on = timestep_end
-  #[../]
-  #[./immobile_disl]
-  #  type = MaterialStdVectorAux
-  #  variable = immobile_disl
-  #  property = immobile_dislocations
-  #  index = 0
-  #  execute_on = timestep_end
-  #[../]
+  [./mobile_disl]
+    type = MaterialStdVectorAux
+    variable = mobile_disl
+    property = mobile_dislocations
+    index = 0
+    execute_on = timestep_end
+  [../]
+  [./immobile_disl]
+    type = MaterialStdVectorAux
+    variable = immobile_disl
+    property = immobile_dislocations
+    index = 0
+    execute_on = timestep_end
+  [../]
   [./slip_inc]
     type = MaterialStdVectorAux
     variable = slip_increment
@@ -155,13 +155,13 @@
     index = 0
     execute_on = timestep_end
   [../]
-  #[./glide_velocity]
-  #  type = MaterialStdVectorAux
-  #  variable = glide_velocity
-  #  property = dislocation_glide_velocity
-  #  index = 0
-  #  execute_on = timestep_end
-  #[../]
+  [./glide_velocity]
+    type = MaterialStdVectorAux
+    variable = glide_velocity
+    property = dislocation_glide_velocity
+    index = 0
+    execute_on = timestep_end
+  [../]
   [./tau]
     type = MaterialStdVectorAux
     variable = tau
@@ -198,37 +198,6 @@
   [../]
 []
 
-#[UserObjects]
-#  [./slip_rate_gss]
-#    type = CrystalPlasticitySlipRateGSS
-#    variable_size = 12
-#    slip_sys_file_name = input_slip_sys.txt
-#    num_slip_sys_flowrate_props = 2
-#    flowprops = '1 4 0.001 0.1 5 8 0.001 0.1 9 12 0.001 0.1'
-#    uo_state_var_name = state_var_gss
-#  [../]
-#  [./slip_resistance_gss]
-#    type = CrystalPlasticitySlipResistanceGSS
-#    variable_size = 12
-#    uo_state_var_name = state_var_gss
-#  [../]
-#  [./state_var_gss]
-#    type = CrystalPlasticityStateVariable
-#    variable_size = 12
-#    groups = '0 4 8 12'
-#    group_values = '60.8 60.8 60.8'
-#    uo_state_var_evol_rate_comp_name = state_var_evol_rate_comp_gss
-#    scale_factor = 1.0
-#  [../]
-#  [./state_var_evol_rate_comp_gss]
-#    type = CrystalPlasticityStateVarRateComponentGSS
-#    variable_size = 12
-#    hprops = '1.0 541.5 109.8 2.5'
-#    uo_slip_rate_name = slip_rate_gss
-#    uo_state_var_name = state_var_gss
-#  [../]
-#[]
-
 [Materials]
   [./elasticity_tensor]
     type = ComputeElasticityTensorCP
@@ -247,12 +216,13 @@
     crystal_plasticity_update_model = 'trial_xtalpl'
   [../]
   [./trial_xtalpl]
-#    type = CrystalPlasticityCDDUpdate
-    type = CrystalPlasticityKhalindiUpdate
+    type = CrystalPlasticityCDDUpdate
     block = 0
     number_slip_systems = 12
     slip_sys_file_name = input_slip_sys.txt
-#    Peierls_stress = 1.1e+02
+#    Peierls_stress = 1.1e+01
+    Peierls_stress = 11
+    resistance_tol = 10
   [../]
 []
 
@@ -281,22 +251,22 @@
     type = ElementAverageValue
     variable = gss
   [../]
-  #[./mobile_disl]
-  #  type = ElementAverageValue
-  #  variable = mobile_disl
-  #[../]
-  #[./immobile_disl]
-  #  type = ElementAverageValue
-  #  variable = immobile_disl
-  #[../]
+  [./mobile_disl]
+    type = ElementAverageValue
+    variable = mobile_disl
+  [../]
+  [./immobile_disl]
+    type = ElementAverageValue
+    variable = immobile_disl
+  [../]
   [./slip_increment]
     type = ElementAverageValue
     variable = slip_increment
   [../]
-  #[./glide_velocity]
-  #  type = ElementAverageValue
-  #  variable = glide_velocity
-  #[../]
+  [./glide_velocity]
+    type = ElementAverageValue
+    variable = glide_velocity
+  [../]
   [./tau]
     type = ElementAverageValue
     variable = tau
@@ -312,7 +282,7 @@
 
 [Executioner]
   type = Transient
-  dt = 0.05
+  dt = 0.005
 
   #Preconditioned JFNK (default)
   solve_type = 'PJFNK'
@@ -325,11 +295,15 @@
   nl_rel_tol = 1e-10
   ss_check_tol = 1e-10
   end_time = 1
-  dtmin = 0.01
-  num_steps = 10
+  dtmin = 0.0001
+  num_steps = 500
   nl_abs_step_tol = 1e-10
 []
 
 [Outputs]
   exodus = true
 []
+#
+#[Problem]
+#  use_legacy_uo_initialization = false
+#[]
