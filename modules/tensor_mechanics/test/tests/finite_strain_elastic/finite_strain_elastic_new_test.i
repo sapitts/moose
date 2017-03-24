@@ -19,7 +19,9 @@
   [./TensorMechanics]
     [./Master]
       [./all]
-        strain = FINITE
+        strain = finite
+        incremental = true
+        use_displaced_mesh = true
         add_variables = true
       [../]
     [../]

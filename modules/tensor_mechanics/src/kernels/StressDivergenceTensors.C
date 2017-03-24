@@ -126,7 +126,9 @@ StressDivergenceTensors::computeResidual()
   precalculateResidual();
   for (_i = 0; _i < _test.size(); ++_i)
     for (_qp = 0; _qp < _qrule->n_points(); ++_qp)
+    {
       _local_re(_i) += _JxW[_qp] * _coord[_qp] * computeQpResidual();
+    }
 
   re += _local_re;
 
@@ -146,7 +148,6 @@ StressDivergenceTensors::computeQpResidual()
   if (_volumetric_locking_correction)
     residual += _stress[_qp].trace() / 3.0 *
                 (_avg_grad_test[_i][_component] - _grad_test[_i][_qp](_component));
-
   return residual;
 }
 
@@ -162,7 +163,6 @@ StressDivergenceTensors::computeJacobian()
   if (_use_finite_deform_jacobian)
   {
     _finite_deform_Jacobian_mult.resize(_qrule->n_points());
-
     for (_qp = 0; _qp < _qrule->n_points(); ++_qp)
       computeFiniteDeformJacobian();
 
