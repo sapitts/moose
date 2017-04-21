@@ -8,7 +8,7 @@
     min_parallel = 4
     abs_zero = 1e-7
     max_time = 800
-    skip = 'see #8649'
+#    skip = 'see #8649'
   [../]
 
   [./frictional_mu04_penalty]
@@ -41,5 +41,16 @@
     min_parallel = 4
     abs_zero = 1e-7
     max_time = 800
+  [../]
+
+  [./frictionless_penalty_sm]
+    type = 'Exodiff'
+    input = 'frictionless_penalty_sm.i'
+    exodiff = 'frictionless_penalty_out.e'
+    heavy = true
+    min_parallel = 4
+    abs_zero = 1e-7
+    max_time = 800
+    prereq = 'frictionless_penalty'
   [../]
 []

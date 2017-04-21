@@ -18,11 +18,10 @@
   volumetric_locking_correction = false
 []
 
-[Modules/TensorMechanics/Master]
-  [./all]
-    strain = finite
-    incremental = true
-    add_variables = true
+[Variables]
+  [./disp_x]
+  [../]
+  [./disp_y]
   [../]
 []
 
@@ -43,6 +42,13 @@
   [./vertical_movement]
     type = ParsedFunction
     value = -t
+  [../]
+[]
+
+[SolidMechanics]
+  [./solid]
+    disp_x = disp_x
+    disp_y = disp_y
   [../]
 []
 
@@ -81,15 +87,32 @@
   [../]
 []
 
+[Postprocessors]
+  [./nonlinear_its]
+    type = NumNonlinearIterations
+    execute_on = timestep_end
+  [../]
+  [./penetration]
+    type = NodalVariableValue
+    variable = penetration
+    nodeid = 222
+  [../]
+  [./contact_pressure]
+    type = NodalVariableValue
+    variable = contact_pressure
+    nodeid = 222
+  [../]
+[]
+
 [BCs]
   [./left_x]
-    type = PresetBC
+    type = DirichletBC
     variable = disp_x
     boundary = 1
     value = 0.0
   [../]
   [./left_y]
-    type = PresetBC
+    type = DirichletBC
     variable = disp_y
     boundary = 1
     value = 0.0
@@ -108,39 +131,24 @@
   [../]
 []
 
-[Contact]
-  [./leftright]
-    slave = 3
-    master = 2
-    model = frictionless
-    penalty = 1e+7
-    formulation = penalty
-    system = constraint
-    normal_smoothing_distance = 0.1
-  [../]
-[]
-
 [Materials]
-  [./elasticity_tensor_1]
-    type = ComputeIsotropicElasticityTensor
+  [./left]
+    type = Elastic
     block = 1
-    youngs_modulus = 1.0e6
-    poissons_ratio = 0.0
+    disp_y = disp_y
+    disp_x = disp_x
+    poissons_ratio = 0.3
+    youngs_modulus = 1e6
+    formulation = NonlinearPlaneStrain
   [../]
-  [./stress_1]
-    type = ComputeFiniteStrainElasticStress
-    block = 1
-  [../]
-
-  [./elasticity_tensor_2]
-    type = ComputeIsotropicElasticityTensor
+  [./right]
+    type = Elastic
     block = 2
-    youngs_modulus = 1.0e6
-    poissons_ratio = 0.0
-  [../]
-  [./stress_2]
-    type = ComputeFiniteStrainElasticStress
-    block = 2
+    disp_y = disp_y
+    disp_x = disp_x
+    poissons_ratio = 0.3
+    youngs_modulus = 1e6
+    formulation = NonlinearPlaneStrain
   [../]
 []
 
@@ -170,7 +178,7 @@
 []
 
 [Outputs]
-  file_base = frictionless_penalty_out
+  file_base = frictionless_penalty_out_sm
   #interval = 10
   [./exodus]
     type = Exodus
@@ -182,19 +190,14 @@
   [../]
 []
 
-[Postprocessors]
-  [./nonlinear_its]
-    type = NumNonlinearIterations
-    execute_on = timestep_end
-  [../]
-  [./penetration]
-    type = NodalVariableValue
-    variable = penetration
-    nodeid = 222
-  [../]
-  [./contact_pressure]
-    type = NodalVariableValue
-    variable = contact_pressure
-    nodeid = 222
+[Contact]
+  [./leftright]
+    slave = 3
+    master = 2
+    model = frictionless
+    penalty = 1e+7
+    formulation = penalty
+    system = constraint
+    normal_smoothing_distance = 0.1
   [../]
 []

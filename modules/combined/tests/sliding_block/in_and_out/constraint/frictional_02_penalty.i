@@ -135,6 +135,7 @@
     function = vertical_movement
   [../]
 []
+
 [Materials]
   [./left]
     type = LinearIsotropicMaterial
@@ -158,8 +159,8 @@
   type = Transient
   solve_type = 'PJFNK'
 
-  petsc_options_iname = '-pc_type -sub_pc_type -pc_asm_overlap -ksp_gmres_restart'
-  petsc_options_value = 'asm     lu    20    101'
+  petsc_options_iname = '-pc_type -pc_factor_mat_solver_package'
+  petsc_options_value = 'lu            superlu_dist'
 
   line_search = 'none'
 
@@ -168,9 +169,9 @@
   dt = 0.1
   end_time = 15
   num_steps = 1000
-  l_tol = 1e-3
+  l_tol = 1e-8
   nl_rel_tol = 1e-10
-  nl_abs_tol = 1e-6
+  nl_abs_tol = 1e-12
   dtmin = 0.01
 
   [./Predictor]
