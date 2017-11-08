@@ -1,0 +1,57 @@
+## Mesh script to create a rubik cube model with various grain numbers and sizes:
+
+#{linear_number_grains = 3}
+#{grain_size = 0.25}
+
+## Create the brick and move the back corner to the origin
+create brick x {linear_number_grains * grain_size}
+move vertex 7 x {linear_number_grains * grain_size / 2.0} y {linear_number_grains * grain_size / 2.0} z {linear_number_grains * grain_size / 2.0}
+
+## Webcut sections to make the grains
+#{webcut_numbers = linear_number_grains -1}
+#{_x = 1}
+#{loop(webcut_numbers)}
+  webcut volume all with plane xplane offset {grain_size * _x} imprint merge
+  webcut volume all with plane yplane offset {grain_size * _x} imprint merge
+  webcut volume all with plane zplane offset {grain_size * _x} imprint merge
+  #{_x++}
+#{endloop}
+
+## check visually that all interior surfaces are merged
+draw surf with is_merged
+
+## Set mesh up
+volume all scheme submap
+imprint volume all
+volume all size {grain_size / 4.0}
+mesh volume all
+
+
+## Create the boundary conditions
+sideset 100 surface with y_coord = 0
+sideset 100 name "bottom"
+sideset 200 surface with x_coord = 0
+sideset 200 name "left"
+sideset 300 surface with z_coord = 0
+sideset 300 name "back"
+sideset 400 surface with y_coord = {linear_number_grains * grain_size}
+sideset 400 name "top"
+sideset 500 surface with x_coord = {linear_number_grains * grain_size}
+sideset 500 name "right"
+sideset 600 surface with z_coord = {linear_number_grains * grain_size}
+sideset 600 name "front"
+
+## Create a separate block for each grain
+# {_b = 1}
+#{all_blocks = linear_number_grains * linear_number_grains * linear_number_grains}
+#{loop(all_blocks)}
+  block {_b} volume {_b}
+  #{_b++}
+#{endloop}
+block all element type HEX8
+
+## And now save the generated mesh
+export mesh "rubik_polyxtal.e" dimension 3 block all overwrite
+
+
+
