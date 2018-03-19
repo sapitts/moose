@@ -1,0 +1,544 @@
+[Tests]
+  [./alpha1_02_alpha2_1_hab_02]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=1
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=0.2
+                Outputs/file_base="cdd_111-101load_ni_alpha1_02_alpha2_1_hab_02_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_02_alpha2_1_hab_1]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=1
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Outputs/file_base="cdd_111-101load_ni_alpha1_02_alpha2_1_hab_1_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_02_alpha2_1_hab_14]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=1
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.4
+                Outputs/file_base="cdd_111-101load_ni_alpha1_02_alpha2_1_hab_14_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_02_alpha2_2_hab_02]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=2
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=0.2
+                Outputs/file_base="cdd_111-101load_ni_alpha1_02_alpha2_2_hab_02_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_02_alpha2_2_hab_1]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=2
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Outputs/file_base="cdd_111-101load_ni_alpha1_02_alpha2_2_hab_1_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_02_alpha2_2_hab_14]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=2
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.4
+                Outputs/file_base="cdd_111-101load_ni_alpha1_02_alpha2_2_hab_14_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_02_alpha2_4_hab_02]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=0.2
+                Outputs/file_base="cdd_111-101load_ni_alpha1_02_alpha2_4_hab_02_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_02_alpha2_4_hab_1]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Outputs/file_base="cdd_111-101load_ni_alpha1_02_alpha2_4_hab_1_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_02_alpha2_4_hab_14]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.4
+                Outputs/file_base="cdd_111-101load_ni_alpha1_02_alpha2_4_hab_14_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_02_alpha2_6_hab_02]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=6
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=0.2
+                Outputs/file_base="cdd_111-101load_ni_alpha1_02_alpha2_6_hab_02_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_02_alpha2_6_hab_1]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=6
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Outputs/file_base="cdd_111-101load_ni_alpha1_02_alpha2_6_hab_1_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_02_alpha2_6_hab_14]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=6
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.4
+                Outputs/file_base="cdd_111-101load_ni_alpha1_02_alpha2_6_hab_14_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+
+  [./alpha1_01_alpha2_1_hab_02]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.01
+                Materials/trial_xtalpl/alpha_2=1
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=0.2
+                Outputs/file_base="cdd_111-101load_ni_alpha1_01_alpha2_1_hab_02_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_01_alpha2_1_hab_1]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.01
+                Materials/trial_xtalpl/alpha_2=1
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Outputs/file_base="cdd_111-101load_ni_alpha1_01_alpha2_1_hab_1_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_01_alpha2_1_hab_14]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.01
+                Materials/trial_xtalpl/alpha_2=1
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.4
+                Outputs/file_base="cdd_111-101load_ni_alpha1_01_alpha2_1_hab_14_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_01_alpha2_2_hab_02]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.01
+                Materials/trial_xtalpl/alpha_2=2
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=0.2
+                Outputs/file_base="cdd_111-101load_ni_alpha1_01_alpha2_2_hab_02_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_01_alpha2_2_hab_1]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.01
+                Materials/trial_xtalpl/alpha_2=2
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Outputs/file_base="cdd_111-101load_ni_alpha1_01_alpha2_2_hab_1_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_01_alpha2_2_hab_14]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.01
+                Materials/trial_xtalpl/alpha_2=2
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.4
+                Outputs/file_base="cdd_111-101load_ni_alpha1_01_alpha2_2_hab_14_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_01_alpha2_4_hab_02]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.01
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=0.2
+                Outputs/file_base="cdd_111-101load_ni_alpha1_01_alpha2_4_hab_02_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_01_alpha2_4_hab_1]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.01
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Outputs/file_base="cdd_111-101load_ni_alpha1_01_alpha2_4_hab_1_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_01_alpha2_4_hab_14]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.01
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.4
+                Outputs/file_base="cdd_111-101load_ni_alpha1_01_alpha2_4_hab_14_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_01_alpha2_6_hab_02]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.01
+                Materials/trial_xtalpl/alpha_2=6
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=0.2
+                Outputs/file_base="cdd_111-101load_ni_alpha1_01_alpha2_6_hab_02_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_01_alpha2_6_hab_1]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.01
+                Materials/trial_xtalpl/alpha_2=6
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Outputs/file_base="cdd_111-101load_ni_alpha1_01_alpha2_6_hab_1_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_01_alpha2_6_hab_14]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.01
+                Materials/trial_xtalpl/alpha_2=6
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.4
+                Outputs/file_base="cdd_111-101load_ni_alpha1_01_alpha2_6_hab_14_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+
+  [./alpha1_005_alpha2_1_hab_02]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.005
+                Materials/trial_xtalpl/alpha_2=1
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=0.2
+                Outputs/file_base="cdd_111-101load_ni_alpha1_005_alpha2_1_hab_02_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_005_alpha2_1_hab_1]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.005
+                Materials/trial_xtalpl/alpha_2=1
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Outputs/file_base="cdd_111-101load_ni_alpha1_005_alpha2_1_hab_1_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_005_alpha2_1_hab_14]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.005
+                Materials/trial_xtalpl/alpha_2=1
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.4
+                Outputs/file_base="cdd_111-101load_ni_alpha1_005_alpha2_1_hab_14_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_005_alpha2_2_hab_02]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.005
+                Materials/trial_xtalpl/alpha_2=2
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=0.2
+                Outputs/file_base="cdd_111-101load_ni_alpha1_005_alpha2_2_hab_02_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_005_alpha2_2_hab_1]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.005
+                Materials/trial_xtalpl/alpha_2=2
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Outputs/file_base="cdd_111-101load_ni_alpha1_005_alpha2_2_hab_1_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_005_alpha2_2_hab_14]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.005
+                Materials/trial_xtalpl/alpha_2=2
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.4
+                Outputs/file_base="cdd_111-101load_ni_alpha1_005_alpha2_2_hab_14_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_005_alpha2_4_hab_02]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.005
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=0.2
+                Outputs/file_base="cdd_111-101load_ni_alpha1_005_alpha2_4_hab_02_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_005_alpha2_4_hab_1]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.005
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Outputs/file_base="cdd_111-101load_ni_alpha1_005_alpha2_4_hab_1_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_005_alpha2_4_hab_14]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.005
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.4
+                Outputs/file_base="cdd_111-101load_ni_alpha1_005_alpha2_4_hab_14_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_005_alpha2_6_hab_02]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.005
+                Materials/trial_xtalpl/alpha_2=6
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=0.2
+                Outputs/file_base="cdd_111-101load_ni_alpha1_005_alpha2_6_hab_02_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_005_alpha2_6_hab_1]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.005
+                Materials/trial_xtalpl/alpha_2=6
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Outputs/file_base="cdd_111-101load_ni_alpha1_005_alpha2_6_hab_1_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+  [./alpha1_005_alpha2_6_hab_14]
+    type = 'RunApp'
+    input = 'cdd_111-101load_ni.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.005
+                Materials/trial_xtalpl/alpha_2=6
+                Materials/trial_xtalpl/alpha_3=0
+                Materials/trial_xtalpl/alpha_4=0
+                Materials/trial_xtalpl/alpha_5=0
+                Materials/trial_xtalpl/alpha_6=0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.4
+                Outputs/file_base="cdd_111-101load_ni_alpha1_005_alpha2_6_hab_14_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 90000
+  [../]
+[]

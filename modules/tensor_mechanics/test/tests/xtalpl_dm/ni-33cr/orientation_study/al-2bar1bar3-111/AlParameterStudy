@@ -1,0 +1,405 @@
+[Tests]
+  [./alpha2_4_alpha6_1_To_2]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=1.0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=1.325
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_4_alpha6_1_To_2_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+  [./alpha2_4_alpha6_1_To_4]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=1.0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=0.6625
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_4_alpha6_1_To_4_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+  [./alpha2_4_alpha6_1_To_6]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=1.0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=0.4417
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_4_alpha6_1_To_6_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+  [./alpha2_4_alpha6_1_To_8]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=1.0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=0.3313
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_4_alpha6_1_To_8_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+  [./alpha2_4_alpha6_1_To_10]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=1.0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=0.265
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_4_alpha6_1_To_10_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+  [./alpha2_4_alpha6_0pt1_To_2]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=0.1
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=1.325
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_4_alpha6_0pt1_To_2_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+  [./alpha2_4_alpha6_0pt1_To_4]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=0.1
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=0.6625
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_4_alpha6_0pt1_To_4_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+  [./alpha2_4_alpha6_0pt1_To_6]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=0.1
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=0.4417
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_4_alpha6_0pt1_To_6_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+  [./alpha2_4_alpha6_0pt1_To_8]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=0.1
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=0.3313
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_4_alpha6_0pt1_To_8_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+  [./alpha2_4_alpha6_0pt1_To_10]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=0.1
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=0.265
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_4_alpha6_0pt1_To_10_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+
+  [./alpha2_4_alpha6_01_To_2]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=0.01
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=1.325
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_4_alpha6_01_To_2_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+  [./alpha2_4_alpha6_01_To_4]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=0.01
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=0.6625
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_4_alpha6_01_To_4_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+  [./alpha2_4_alpha6_01_To_6]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=0.01
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=0.4417
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_4_alpha6_01_To_6_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+  [./alpha2_4_alpha6_01_To_8]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=0.01
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=0.3313
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_4_alpha6_01_To_8_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+  [./alpha2_4_alpha6_01_To_10]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=4
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=0.01
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=0.265
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_4_alpha6_01_To_10_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+
+  [./alpha2_6_alpha6_1_To_2]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=6
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=1.0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=1.325
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_6_alpha6_1_To_2_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+  [./alpha2_6_alpha6_1_To_4]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=6
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=1.0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=0.6625
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_6_alpha6_1_To_4_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+  [./alpha2_6_alpha6_1_To_6]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=6
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=1.0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=0.4417
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_6_alpha6_1_To_6_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+  [./alpha2_6_alpha6_1_To_8]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=6
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=1.0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=0.3313
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_6_alpha6_1_To_8_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+  [./alpha2_6_alpha6_1_To_10]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=6
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=1.0
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=0.265
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_6_alpha6_1_To_10_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+
+  [./alpha2_6_alpha6_0pt1_To_2]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=6
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=0.1
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=1.325
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_6_alpha6_0pt1_To_2_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+  [./alpha2_6_alpha6_0pt1_To_4]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=6
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=0.1
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=0.6625
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_6_alpha6_0pt1_To_4_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+  [./alpha2_6_alpha6_0pt1_To_6]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=6
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=0.1
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=0.4417
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_6_alpha6_0pt1_To_6_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+  [./alpha2_6_alpha6_0pt1_To_8]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=6
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=0.1
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=0.3313
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_6_alpha6_0pt1_To_8_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+  [./alpha2_6_alpha6_0pt1_To_10]
+    type = 'RunApp'
+    input = 'cdd_2bar1bar3-111load_al.i'
+    cli_args = 'Materials/trial_xtalpl/alpha_1=0.02
+                Materials/trial_xtalpl/alpha_2=6
+                Materials/trial_xtalpl/alpha_3=0.002
+                Materials/trial_xtalpl/alpha_4=0.002
+                Materials/trial_xtalpl/alpha_5=0.01
+                Materials/trial_xtalpl/alpha_6=0.1
+                Materials/trial_xtalpl/dislocation_latent_hardening_parameter=1.0
+                Materials/trial_xtalpl/Peierls_stress=0.265
+                Outputs/file_base="cdd_2bar1bar3-111load_al_alpha2_6_alpha6_0pt1_To_10_out"'
+    method = opt
+    max_parallel = 1
+    max_time = 180000
+  [../]
+[]
