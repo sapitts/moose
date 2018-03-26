@@ -1204,21 +1204,29 @@
     type = CrystalPlasticityCDDNiAlloyUpdate
     number_slip_systems = 12
     slip_sys_file_name = input_slip_sys.txt
-    number_cross_slip_directions = 0 #6
-    number_cross_slip_planes = 0 #2
+    number_cross_slip_directions = 6
+    number_cross_slip_planes = 2
     cross_slip_calculation_type = stochastic
+    number_twin_systems = 0
+    twin_system_file_name = input_slip_sys.txt
     temperature = 298.0
     initial_immobile_dislocation_density = 0.5e6 #half initial dislocation density Arsenlis and Parks 2002;
     initial_mobile_dislocation_density = 0.5e6 #half initial dislocation density in Arsenlis and Parks 2002;
     Baily_Hirsch_barrier_coefficient = 0.4
     dislocation_self_hardening_parameter = 1.0
-    dislocation_latent_hardening_parameter = 0.2
-    Peierls_stress = 2.65 #1.0e-4 times shear modulus
+    dislocation_latent_hardening_parameter = 1.0
+    Peierls_stress = 11.0 #based on 1.0e-4 times shear modulus
     shear_modulus = 26.5e3 #Hirth and Lothe for Al, pg 835
     burgers_vector = 2.863e-07
+    alpha_1 = 0.02
+    alpha_2 = 4.0
+    alpha_3 = 0.002
+    alpha_4 = 0.002
+    alpha_5 = 0.001
+    alpha_6 = 0.1
     tertiary_precipitate_mean_diameter = 0.0 # No additional hardening
     tertiary_precipitate_volume_fraction = 0.0 # No additional hardening
-    stol = 1.0e-3
+    stol = 0.1
     # slip_increment_tolerance = 1.0e-3 ## Seems to be too restrictive
     maximum_substep_iteration = 10
     maxiter = 30
@@ -1306,10 +1314,10 @@
     type = ElementAverageValue
     variable = mobile_disl_0
   [../]
-  # [./cross_slip_disl_0]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_0
-  # [../]
+  [./cross_slip_disl_0]
+    type = ElementAverageValue
+    variable = xslip_disl_0
+  [../]
   [./immobile_disl_0]
     type = ElementAverageValue
     variable = immobile_disl_0
@@ -1334,10 +1342,10 @@
     type = ElementAverageValue
     variable = mobile_disl_1
   [../]
-  # [./cross_slip_disl_1]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_1
-  # [../]
+  [./cross_slip_disl_1]
+    type = ElementAverageValue
+    variable = xslip_disl_1
+  [../]
   [./immobile_disl_1]
     type = ElementAverageValue
     variable = immobile_disl_1
@@ -1362,10 +1370,10 @@
     type = ElementAverageValue
     variable = mobile_disl_2
   [../]
-  # [./cross_slip_disl_2]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_2
-  # [../]
+  [./cross_slip_disl_2]
+    type = ElementAverageValue
+    variable = xslip_disl_2
+  [../]
   [./immobile_disl_2]
     type = ElementAverageValue
     variable = immobile_disl_2
@@ -1390,10 +1398,10 @@
     type = ElementAverageValue
     variable = mobile_disl_3
   [../]
-  # [./cross_slip_disl_3]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_3
-  # [../]
+  [./cross_slip_disl_3]
+    type = ElementAverageValue
+    variable = xslip_disl_3
+  [../]
   [./immobile_disl_3]
     type = ElementAverageValue
     variable = immobile_disl_3
@@ -1418,10 +1426,10 @@
     type = ElementAverageValue
     variable = mobile_disl_4
   [../]
-  # [./cross_slip_disl_4]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_4
-  # [../]
+  [./cross_slip_disl_4]
+    type = ElementAverageValue
+    variable = xslip_disl_4
+  [../]
   [./immobile_disl_4]
     type = ElementAverageValue
     variable = immobile_disl_4
@@ -1446,10 +1454,10 @@
     type = ElementAverageValue
     variable = mobile_disl_5
   [../]
-  # [./cross_slip_disl_5]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_5
-  # [../]
+  [./cross_slip_disl_5]
+    type = ElementAverageValue
+    variable = xslip_disl_5
+  [../]
   [./immobile_disl_5]
     type = ElementAverageValue
     variable = immobile_disl_5
@@ -1474,10 +1482,10 @@
     type = ElementAverageValue
     variable = mobile_disl_6
   [../]
-  # [./cross_slip_disl_6]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_6
-  # [../]
+  [./cross_slip_disl_6]
+    type = ElementAverageValue
+    variable = xslip_disl_6
+  [../]
   [./immobile_disl_6]
     type = ElementAverageValue
     variable = immobile_disl_6
@@ -1502,10 +1510,10 @@
     type = ElementAverageValue
     variable = mobile_disl_7
   [../]
-  # [./cross_slip_disl_7]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_7
-  # [../]
+  [./cross_slip_disl_7]
+    type = ElementAverageValue
+    variable = xslip_disl_7
+  [../]
   [./immobile_disl_7]
     type = ElementAverageValue
     variable = immobile_disl_7
@@ -1530,10 +1538,10 @@
     type = ElementAverageValue
     variable = mobile_disl_8
   [../]
-  # [./cross_slip_disl_8]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_8
-  # [../]
+  [./cross_slip_disl_8]
+    type = ElementAverageValue
+    variable = xslip_disl_8
+  [../]
   [./immobile_disl_8]
     type = ElementAverageValue
     variable = immobile_disl_8
@@ -1558,10 +1566,10 @@
     type = ElementAverageValue
     variable = mobile_disl_9
   [../]
-  # [./cross_slip_disl_9]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_9
-  # [../]
+  [./cross_slip_disl_9]
+    type = ElementAverageValue
+    variable = xslip_disl_9
+  [../]
   [./immobile_disl_9]
     type = ElementAverageValue
     variable = immobile_disl_9
@@ -1586,10 +1594,10 @@
     type = ElementAverageValue
     variable = mobile_disl_10
   [../]
-  # [./cross_slip_disl_10]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_10
-  # [../]
+  [./cross_slip_disl_10]
+    type = ElementAverageValue
+    variable = xslip_disl_10
+  [../]
   [./immobile_disl_10]
     type = ElementAverageValue
     variable = immobile_disl_10
@@ -1614,10 +1622,10 @@
     type = ElementAverageValue
     variable = mobile_disl_11
   [../]
-  # [./cross_slip_disl_11]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_11
-  # [../]
+  [./cross_slip_disl_11]
+    type = ElementAverageValue
+    variable = xslip_disl_11
+  [../]
   [./immobile_disl_11]
     type = ElementAverageValue
     variable = immobile_disl_11
@@ -1647,16 +1655,18 @@
   type = Transient
   solve_type = PJFNK
 
-  l_tol = 1e-3
-  petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -ksp_type -ksp_gmres_restart'
-  petsc_options_value = ' asm      1              lu            gmres     200'
+  l_tol = 1e-05
   nl_abs_tol = 1e-6
-  nl_rel_tol = 1e-4
+  nl_rel_tol = 1e-6
+
+  petsc_options_iname = '-pc_type -pc_hypre_type -pc_hypre_boomeramg_strong_threshold'
+  petsc_options_value = 'hypre    boomeramg      0.7'
 
   dtmax = 1.0e-3
   dtmin = 1.0e-6
+
   dt = 1.0e-3
-  end_time = 100.0
+  end_time = 305.0 ## for 2e-4 rate: 500.0
 []
 
 [Outputs]

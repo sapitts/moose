@@ -140,6 +140,12 @@ protected:
   /// Maximum amount of twinning volume fraction at a material point
   const Real _limit_twin_volume_fraction;
 
+  /**
+   * Boolean to include the twinning calculations based on the number of twinning
+   * systems set by the user.
+   */
+  bool _include_twinning_slip_contribution;
+
 };
 
 #endif //CRYSTALPLASTICITYCDDNIALLOYUPDATE_H

@@ -28,9 +28,10 @@ InputParameters validParams<CrystalPlasticityCDDNiAlloyUpdate>()
 
   params.addRequiredParam<unsigned int>("number_twin_systems", "The total number of possible active twinning systems for the crystalline material");
   params.addRequiredParam<FileName>("twin_system_file_name", "Name of the file containing the twinning systems");
-  return params;
   params.addParam<Real>("characteristic_twin_shear", 1.0/std::sqrt(2.0), "The amount of shear that is characteristic for a twin in this material");
   params.addParam<Real>("upper_limit_twin_volume_fraction", 0.8, "The maximumum amount of twinning volume fraction allowed");
+
+  return params;
 }
 
 CrystalPlasticityCDDNiAlloyUpdate::CrystalPlasticityCDDNiAlloyUpdate(const InputParameters & parameters) :
@@ -61,27 +62,36 @@ CrystalPlasticityCDDNiAlloyUpdate::CrystalPlasticityCDDNiAlloyUpdate(const Input
   if (_number_slip_systems >= 1000 || _number_twin_systems >= 1000)
     mooseError("CrystalPlasticityCDDNiAlloyUpdate assumes fewer than 1,000 possible slip or twin systems");
 
-  if (_number_slip_systems != _number_twin_systems)
-    mooseError("CrystalPlasticityCDDNiAlloyUpdate assumes equal numbers of twinning and glide slip systems");
+  if (_number_twin_systems == 0)
+    _include_twinning_slip_contribution = false;
+  else
+  {
+    _include_twinning_slip_contribution = true;
+    if (_number_slip_systems != _number_twin_systems)
+      mooseError("CrystalPlasticityCDDNiAlloyUpdate assumes equal numbers of twinning and glide slip systems");
+  }
 
-    setRandomResetFrequency(EXEC_TIMESTEP_BEGIN);
+  setRandomResetFrequency(EXEC_TIMESTEP_BEGIN);
 }
 
 void
 CrystalPlasticityCDDNiAlloyUpdate::initQpStatefulProperties()
 {
-  _volume_fraction_twins[_qp].resize(_number_twin_systems);
-  _twin_shear_increment[_qp].resize(_number_twin_systems);
-  _twin_system_resistance[_qp].resize(_number_twin_systems);
-  _tau_twin_sytem[_qp].resize(_number_twin_systems);
-
-  //Then loop over the slip systems and set the initial values from the params
-  for (unsigned int i = 0; i < _number_twin_systems; ++i)
+  if (_include_twinning_slip_contribution)
   {
-    _volume_fraction_twins[_qp][i] = 0.0;
-    _twin_shear_increment[_qp][i] = 0.0;
-    _twin_system_resistance[_qp][i] = 0.0;
-    _tau_twin_sytem[_qp][i] = 0.0;
+    _volume_fraction_twins[_qp].resize(_number_twin_systems);
+    _twin_shear_increment[_qp].resize(_number_twin_systems);
+    _twin_system_resistance[_qp].resize(_number_twin_systems);
+    _tau_twin_sytem[_qp].resize(_number_twin_systems);
+
+    //Then loop over the slip systems and set the initial values from the params
+    for (unsigned int i = 0; i < _number_twin_systems; ++i)
+    {
+      _volume_fraction_twins[_qp][i] = 0.0;
+      _twin_shear_increment[_qp][i] = 0.0;
+      _twin_system_resistance[_qp][i] = 0.0;
+      _tau_twin_sytem[_qp][i] = 0.0;
+    }
   }
 
   CrystalPlasticityCDDUpdateBase::initQpStatefulProperties();
@@ -137,9 +147,12 @@ CrystalPlasticityCDDNiAlloyUpdate::calculateConstitutiveEquivalentSlipIncrement(
   if (error_tolerance)
     return;
 
-  calculateTwinSlipIncrement(error_tolerance);
-  if (error_tolerance)
-    return;
+  if (_include_twinning_slip_contribution)
+  {
+    calculateTwinSlipIncrement(error_tolerance);
+    if (error_tolerance)
+      return;
+  }
 
   // Sum up the slip increments to find the equivalent plastic strain due to slip
   for (unsigned int i = 0; i < _number_slip_systems; ++i)
@@ -150,8 +163,11 @@ CrystalPlasticityCDDNiAlloyUpdate::calculateConstitutiveEquivalentSlipIncrement(
 
   // Sum the volume fraction of twins
   Real total_fraction_twins = 0.0;
-  for (unsigned int i = 0; i < _number_twin_systems; ++i)
-    total_fraction_twins += _volume_fraction_twins[_qp][i];
+  if (_include_twinning_slip_contribution)
+  {
+    for (unsigned int i = 0; i < _number_twin_systems; ++i)
+      total_fraction_twins += _volume_fraction_twins[_qp][i];
+  }
 
   // Sum the total equivalent slip increment for glide and twin
   equivalent_slip_increment = (1.0 - total_fraction_twins) * equivalent_glide_slip_increment;
@@ -184,13 +200,14 @@ CrystalPlasticityCDDNiAlloyUpdate::calculateConstitutiveSlipDerivative(std::vect
   std::vector<Real> dslip_twin_dtau(_number_twin_systems, 0.0);
 
   CrystalPlasticityCDDUpdateBase::calculateGlideSlipDerivative(dslip_glide_dtau);
-  calculateTwinSlipDerivative(dslip_twin_dtau);
+
+  if (_include_twinning_slip_contribution)
+    calculateTwinSlipDerivative(dslip_twin_dtau);
 
 //// This is the wrong way to implement this connection
 //// The implementation in the parent class method assumes that flow direction
 //// from the glide slip is the correct to use, and that's not the case here.
 //// will need to rework the parent class methods
-
 
   for (unsigned int i = 0; i < _number_twin_systems; ++i)
     dslip_dtau[i] = dslip_glide_dtau[i] + dslip_twin_dtau[i];
@@ -239,7 +256,8 @@ CrystalPlasticityCDDNiAlloyUpdate::updateConstitutiveSlipSystemResistanceAndVari
       return;
   }
 
-  calculateTwinVolumeFraction(error_tolerance);
+  if (_include_twinning_slip_contribution)
+    calculateTwinVolumeFraction(error_tolerance);
 
   calculateSlipSystemResistance(error_tolerance);
 }
