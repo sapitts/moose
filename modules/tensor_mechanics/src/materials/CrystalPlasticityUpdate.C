@@ -358,9 +358,6 @@ CrystalPlasticityUpdate::calcJacobian()
 {
   RankFourTensor dfedfpinv, deedfe, dfpinvdpk2;
 
-  //Declare the vector, size nss, for the dslip_dtau
-  std::vector<Real> dslip_dtau(_number_slip_systems, 0.0);
-
   for (unsigned int i = 0; i < LIBMESH_DIM; ++i)
     for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
       for (unsigned int k = 0; k < LIBMESH_DIM; ++k)
@@ -374,20 +371,32 @@ CrystalPlasticityUpdate::calcJacobian()
         deedfe(i,j,k,j) = deedfe(i,j,k,j) + _elastic_deformation_gradient(k,i) * 0.5;
       }
 
-  // Call the overwritten method in the inheriting class for the constitutive model specifics
-  calculateConstitutiveSlipDerivative(dslip_dtau);
-
-  std::vector<RankTwoTensor> dtaudpk2(_number_slip_systems);
-  std::vector<RankTwoTensor> dfpinvdslip(_number_slip_systems);
-
-  for (unsigned int j = 0; j < _number_slip_systems; ++j)
-  {
-    dtaudpk2[j] = _flow_direction[_qp][j];
-    dfpinvdslip[j] = - _inverse_plastic_deformation_grad_old * _flow_direction[_qp][j];
-    dfpinvdpk2 += (dfpinvdslip[j] * dslip_dtau[j] * _substep_dt).outerProduct(dtaudpk2[j]);
-  }
+  calculateTotalPlasticDeformationGradientDerivative(dfpinvdpk2);
 
   _jacobian = RankFourTensor::IdentityFour() - (_elasticity_tensor[_qp] * deedfe * dfedfpinv * dfpinvdpk2);
+}
+
+void
+CrystalPlasticityUpdate::calculateTotalPlasticDeformationGradientDerivative(RankFourTensor & dfpinvdpk2)
+{
+  calculateConstitutivePlasticDeformationGradientDerivative(dfpinvdpk2, _flow_direction[_qp], _number_slip_systems);
+}
+
+void
+CrystalPlasticityUpdate::calculateConstitutivePlasticDeformationGradientDerivative(RankFourTensor & dfpinvdpk2, std::vector<RankTwoTensor> & schmid_tensor, const unsigned int & number_dislocation_systems, unsigned int /*slip_model_number*/)
+{
+  std::vector<Real> dslip_dtau(number_dislocation_systems, 0.0);
+  std::vector<RankTwoTensor> dtaudpk2(number_dislocation_systems);
+  std::vector<RankTwoTensor> dfpinvdslip(number_dislocation_systems);
+
+  calculateConstitutiveSlipDerivative(dslip_dtau);
+
+  for (unsigned int j = 0; j < number_dislocation_systems; ++j)
+  {
+    dtaudpk2[j] = schmid_tensor[j];
+    dfpinvdslip[j] = - _inverse_plastic_deformation_grad_old * schmid_tensor[j];
+    dfpinvdpk2 += (dfpinvdslip[j] * dslip_dtau[j] * _substep_dt).outerProduct(dtaudpk2[j]);
+  }
 }
 
 void
@@ -536,33 +545,41 @@ CrystalPlasticityUpdate::lineSearchUpdate(const Real rnorm_prev, const RankTwoTe
 void
 CrystalPlasticityUpdate::calculateFlowDirection()
 {
-  DenseVector<Real> slip_direction(LIBMESH_DIM*_number_slip_systems), slip_plane_normal(LIBMESH_DIM*_number_slip_systems);
+  calculateSchmidTensor(_number_slip_systems, _slip_plane_normal, _slip_direction, _flow_direction[_qp]);
+}
+
+void
+CrystalPlasticityUpdate::calculateSchmidTensor(const unsigned int & number_dislocation_systems, DenseVector<Real> & plane_normal_vector, DenseVector<Real> & direction_vector, std::vector<RankTwoTensor> & schmid_tensor)
+{
+  DenseVector<Real> local_direction_vector(LIBMESH_DIM * number_dislocation_systems), local_plane_normal(LIBMESH_DIM * number_dislocation_systems);
 
   // Update slip direction and normal with crystal orientation
-  for (unsigned int i = 0; i < _number_slip_systems; ++i)
+  for (unsigned int i = 0; i < number_dislocation_systems; ++i)
   {
+    unsigned int system = i * LIBMESH_DIM;
     for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
     {
-      slip_direction(i*LIBMESH_DIM+j) = 0.0;
+      local_direction_vector(system + j) = 0.0;
       for (unsigned int k = 0; k < LIBMESH_DIM; ++k)
-        slip_direction(i*LIBMESH_DIM+j) = slip_direction(i*LIBMESH_DIM+j) + _crysrot[_qp](j,k) *
-        _slip_direction(i*LIBMESH_DIM+k);
+        local_direction_vector(system + j) = local_direction_vector(system + j) + _crysrot[_qp](j,k) *
+        direction_vector(system + k);
     }
 
     for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
     {
-      slip_plane_normal(i*LIBMESH_DIM+j) = 0.0;
+      local_plane_normal(system + j) = 0.0;
       for (unsigned int k = 0; k < LIBMESH_DIM; ++k)
-        slip_plane_normal(i*LIBMESH_DIM+j) = slip_plane_normal(i*LIBMESH_DIM+j) + _crysrot[_qp](j,k) * _slip_plane_normal(i*LIBMESH_DIM+k);
+        local_plane_normal(system + j) = local_plane_normal(system + j) + _crysrot[_qp](j,k) * plane_normal_vector(system + k);
     }
   }
 
   // Calculate Schmid tensor and resolved shear stresses
-  for (unsigned int i = 0; i < _number_slip_systems; ++i)
+  for (unsigned int i = 0; i < number_dislocation_systems; ++i)
   {
+    unsigned int system = i * LIBMESH_DIM;
     for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
       for (unsigned int k = 0; k < LIBMESH_DIM; ++k)
-        _flow_direction[_qp][i](j,k) = slip_direction(i*LIBMESH_DIM+j) * slip_plane_normal(i*LIBMESH_DIM+k);
+        schmid_tensor[i](j,k) = local_direction_vector(system + j) * local_plane_normal(system + k);
 
   }
 }
@@ -570,46 +587,63 @@ CrystalPlasticityUpdate::calculateFlowDirection()
 void
 CrystalPlasticityUpdate::getSlipSystems()
 {
+  bool orthonormal_error = false;
+
+  getPlaneNormalAndDirectionVectors(_slip_sys_file_name, _number_slip_systems, _slip_plane_normal, _slip_direction, orthonormal_error);
+
+  if (orthonormal_error)
+    mooseError("CrystalPlasticityUpdate Error: The slip system file contains a slip direction and plane normal pair that are not orthonormal");
+}
+
+void
+CrystalPlasticityUpdate::getPlaneNormalAndDirectionVectors(const FileName & vector_file_name, const unsigned int & number_dislocation_systems, DenseVector<Real> & plane_normal_vector, DenseVector<Real> & direction_vector, bool & orthonormal_error)
+{
   Real vec[LIBMESH_DIM];
   std::ifstream fileslipsys;
 
-  MooseUtils::checkFileReadable(_slip_sys_file_name);
+  MooseUtils::checkFileReadable(vector_file_name);
 
-  fileslipsys.open(_slip_sys_file_name.c_str());
+  fileslipsys.open(vector_file_name.c_str());
 
-  for (unsigned int i = 0; i < _number_slip_systems; ++i)
+  for (unsigned int i = 0; i < number_dislocation_systems; ++i)
   {
-    // Read the slip normal
+    // Read the plane normal
     for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
       if (!(fileslipsys >> vec[j]))
-        mooseError("CrystalPlasticityUpdate Error: Premature end of file reading slip system file \n");
+        mooseError("CrystalPlasticityUpdate Error: Premature end of file reading plane normal vectors from the file ", vector_file_name);
 
     // Normalize the vectors
-    Real mag;
-    mag = Utility::pow<2>(vec[0]) + Utility::pow<2>(vec[1]) + Utility::pow<2>(vec[2]);
-    mag = std::sqrt(mag);
+    Real magnitude;
+    magnitude = Utility::pow<2>(vec[0]) + Utility::pow<2>(vec[1]) + Utility::pow<2>(vec[2]);
+    magnitude = std::sqrt(magnitude);
 
     for (unsigned j = 0; j < LIBMESH_DIM; ++j)
-      _slip_plane_normal(i * LIBMESH_DIM + j) = vec[j] / mag;
+      plane_normal_vector(i * LIBMESH_DIM + j) = vec[j] / magnitude;
 
-    // Read the slip direction
+    // Read the direction
     for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
       if (!(fileslipsys >> vec[j]))
-        mooseError("CrystalPlasticityUpdate Error: Premature end of file reading slip system file \n");
+        mooseError("CrystalPlasticityUpdate Error: Premature end of file reading direction vectors from the file ", vector_file_name);
 
     // Normalize the vectors
-    mag = Utility::pow<2>(vec[0]) + Utility::pow<2>(vec[1]) + Utility::pow<2>(vec[2]);
-    mag = std::sqrt(mag);
+    magnitude = Utility::pow<2>(vec[0]) + Utility::pow<2>(vec[1]) + Utility::pow<2>(vec[2]);
+    magnitude = std::sqrt(magnitude);
 
     for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
-      _slip_direction(i * LIBMESH_DIM + j) = vec[j] / mag;
+      direction_vector(i * LIBMESH_DIM + j) = vec[j] / magnitude;
 
-    mag = 0.0;
+    // Check that the normalized vectors are orthonormal
+    magnitude = 0.0;
     for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
-      mag += _slip_direction(i * LIBMESH_DIM + j) * _slip_plane_normal(i * LIBMESH_DIM + j);
+      magnitude += direction_vector(i * LIBMESH_DIM + j) * plane_normal_vector(i * LIBMESH_DIM + j);
 
-    if (std::abs(mag) > 1e-8)
-      mooseError("CrystalPlasticityUpdate Error: Slip direction and normal not orthonormal, System number = ", i, "\n");
+    if (std::abs(magnitude) > 1.0e-8)
+    {
+      orthonormal_error = true;
+      break;
+    }
+    if (orthonormal_error)
+      break;
   }
 
   fileslipsys.close();

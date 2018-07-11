@@ -219,7 +219,7 @@
     crystal_plasticity_update_model = 'trial_xtalpl'
   [../]
   [./trial_xtalpl]
-    type = CrystalPlasticityKhalindiUpdate
+    type = CrystalPlasticityKalidindiUpdate
     block = 0
     number_slip_systems = 12
     slip_sys_file_name = input_slip_sys.txt

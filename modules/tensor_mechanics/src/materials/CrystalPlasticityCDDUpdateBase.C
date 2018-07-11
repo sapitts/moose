@@ -226,7 +226,7 @@ CrystalPlasticityCDDUpdateBase::calculateGlideSlipIncrement(bool & error_toleran
 }
 
 void
-CrystalPlasticityCDDUpdateBase::calculateConstitutiveSlipDerivative(std::vector<Real> & dslip_dtau)
+CrystalPlasticityCDDUpdateBase::calculateConstitutiveSlipDerivative(std::vector<Real> & dslip_dtau, unsigned int /*slip_model_number*/)
 {
   std::vector<Real> dslip_glide_dtau(_number_slip_systems, 0.0);
   calculateGlideSlipDerivative(dslip_glide_dtau);

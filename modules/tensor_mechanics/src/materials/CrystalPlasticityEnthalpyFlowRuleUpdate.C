@@ -246,7 +246,7 @@ CrystalPlasticityEnthalpyFlowRuleUpdate::calculateConstitutiveEquivalentSlipIncr
 }
 
 void
-CrystalPlasticityEnthalpyFlowRuleUpdate::calculateConstitutiveSlipDerivative(std::vector<Real> & dslip_dtau)
+CrystalPlasticityEnthalpyFlowRuleUpdate::calculateConstitutiveSlipDerivative(std::vector<Real> & dslip_dtau, unsigned int /*slip_model_number*/)
 {
   const Real activation_term = _activation_energy / (_boltzmann_constant * _temperature);
 

@@ -102,6 +102,26 @@ protected:
   */
   void calcJacobian();
 
+  /**
+   * Calculates the total value of $\frac{d\mathbf{F}^P^{-1}}{d\mathbf{PK2}}$ and
+   * is intended to be an overwritten helper method for inheriting classes with
+   * multiple constitutive dislocation slip mechanisms, e.g. glide and twinning,
+   * $\sum_i \frac{d\mathbf{F}^P^{-1}}{d\mathbf{PK2}_i}$
+   * In this base class implementation with only dislocation glide assumed, no
+   * specific sum is necessary.
+   */
+  virtual void calculateTotalPlasticDeformationGradientDerivative(RankFourTensor & dfpinvdpk2);
+
+  /**
+   * Calculates the value of $\frac{d\mathbf{F}^P^{-1}}{d\mathbf{PK2}}$ for a specific
+   * constitutive model based on the values of the Schmid tensor and number of
+   * dislocation movement systems (e.g. glide slip systems) provided by the calling
+   * class. Note that this class is written in a general manner to allow for reuse
+   * by the calling calculateTotalPlasticDeformationGradientDerivative class for
+   * a variable number of constitutive dislocation slip mechanisms.
+   */
+  void calculateConstitutivePlasticDeformationGradientDerivative(RankFourTensor & dfpinvdpk2, std::vector<RankTwoTensor> & schmid_tensor, const unsigned int & number_dislocation_systems, unsigned int slip_model_number = 0);
+
   ///@{Calculates the tangent moduli for use as a preconditioner, using the elastic or elastic-plastic option as specified by the user
   void calcTangentModuli(RankFourTensor & jacobian_mult);
   void elasticTangentModuli(RankFourTensor & jacobian_mult);
@@ -111,14 +131,28 @@ protected:
    /// performs the line search update
   bool lineSearchUpdate(const Real rnorm_prev, const RankTwoTensor);
 
-  /*
+  /**
    * Computes the Schmid tensor (m x n) for the original (reference) crystal
-   * lattice orientation for each slip system.
+   * lattice orientation for each glide slip system
    */
   void calculateFlowDirection();
 
-   /// Read in the cyrstal specific slip systems for the crystal from a file
+  /**
+   * A helper method to rotate the a direction and plane normal system set into
+   * the local crystal llatice orientation as defined by the crystal rotation
+   * tensor from the Elasticity tensor class.
+   */
+  void calculateSchmidTensor(const unsigned int & number_dislocation_systems, DenseVector<Real> & plane_normal_vector, DenseVector<Real> & direction_vector, std::vector<RankTwoTensor> & schmid_tensor);
+
+  /// Read in the crystal specific glide slip systems from a file
   void getSlipSystems();
+
+  /**
+   * A helper method to read in plane normal and direction vectors from a file
+   * and to normalize the vectors. This method is abstracted to allow for reuse
+   * in inheriting classes with multiple plane normal and direction vector pairs.
+   */
+  void getPlaneNormalAndDirectionVectors(const FileName & vector_file_name, const unsigned int & number_dislocation_systems, DenseVector<Real> & plane_normal_vector, DenseVector<Real> & direction_vector, bool & orthonormal_error);
 
   /**
    * A helper method to sort the slip systems of a crystal into cross slip families based
@@ -163,7 +197,7 @@ protected:
    * constiutive model defined in the child class.  This method must be overwritten
    * in the child class.
    */
-  virtual void calculateConstitutiveSlipDerivative(std::vector<Real> & /*dslip_dtau*/){};
+  virtual void calculateConstitutiveSlipDerivative(std::vector<Real> & /*dslip_dtau*/, unsigned int /*slip_model_number*/ = 0){};
 
   /*
    * Finalizes the values of the state variables and slip system resistance

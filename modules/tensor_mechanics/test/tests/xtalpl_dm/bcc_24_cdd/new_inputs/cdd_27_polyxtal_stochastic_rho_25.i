@@ -3,7 +3,7 @@
 []
 
 #[Problem]
-#  restart_file_base = 'cdd_27_polyxtal_stochastic_checkpoint_cp/LATEST'
+#  restart_file_base = 'cdd_27_polyxtal_stochastic_rho_25_checkpoint_cp/LATEST'
 #[]
 
 [GlobalParams]
@@ -12,551 +12,551 @@
 
 [AuxVariables]
   [./stress_zz]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./pk2_zz]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./fp_zz]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./e_zz]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./stress_xx]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./pk2_xx]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./fp_xx]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./e_xx]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./stress_yy]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./pk2_yy]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./fp_yy]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./e_yy]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./vonmises_stress_cauchy]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./eff_strain_green]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./vonmises_stress_pk2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./eff_strain_lag]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   #[./rot_out_001]
-  #  order = CONSTANT
+  #  order = FIRST
   #  family = MONOMIAL
   #[../]
   [./gss_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_12]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_12]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_12]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_12]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_12]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_13]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_13]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_13]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_13]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_13]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_14]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_14]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_14]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_14]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_14]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_15]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_15]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_15]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_15]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_15]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_16]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_16]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_16]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_16]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_16]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_17]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_17]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_17]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_17]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_17]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_18]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_18]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_18]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_18]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_18]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_19]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_19]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_19]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_19]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_19]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_20]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_20]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_20]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_20]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_20]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_21]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_21]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_21]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_21]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_21]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_22]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_22]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_22]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_22]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_22]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_23]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_23]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./xslip_disl_23]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_23]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_23]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
 []
@@ -1584,8 +1584,8 @@
     number_cross_slip_planes = 6
     cross_slip_calculation_type = stochastic
     temperature = 323.0
-    initial_immobile_dislocation_density = 3.5e7 #Lambrecht(2008) pure Fe
-    initial_mobile_dislocation_density = 3.5e7 #Lambrecht(2008) pure Fe
+    initial_immobile_dislocation_density = 2.5e7 #Lambrecht(2008) pure Fe
+    initial_mobile_dislocation_density = 2.5e7 #Lambrecht(2008) pure Fe
     dislocation_latent_hardening_parameter = 0.2
     alpha_1 = 0.03
     alpha_2 = 0.5
@@ -1610,243 +1610,243 @@
     block = 1
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 240.16
-    euler_angle_2 = 101.32
-    euler_angle_3 = 352.02
+    euler_angle_1 = 19.2528
+    euler_angle_2 = 84.0861
+    euler_angle_3 = 120.234
   [../]
   [./elasticity_tensor2]
     type = ComputeElasticityTensorConstantRotationCP
     block = 2
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 180.4590
-    euler_angle_2 = 99.09447
-    euler_angle_3 = 52.2868
+    euler_angle_1 = -95.5339
+    euler_angle_2 = 114.933
+    euler_angle_3 = -98.4500
   [../]
   [./elasticity_tensor3]
     type = ComputeElasticityTensorConstantRotationCP
     block = 3
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 196.6063
-    euler_angle_2 = 296.8829
-    euler_angle_3 = 188.9404
+    euler_angle_1 = -24.0545
+    euler_angle_2 = 123.534
+    euler_angle_3 = -153.698
   [../]
   [./elasticity_tensor4]
     type = ComputeElasticityTensorConstantRotationCP
     block = 4
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 4.1572
-    euler_angle_2 = 29.8822
-    euler_angle_3 = 278.7338
+    euler_angle_1 = -108.198
+    euler_angle_2 = 75.4294
+    euler_angle_3 = 49.01878
   [../]
   [./elasticity_tensor5]
     type = ComputeElasticityTensorConstantRotationCP
     block = 5
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 251.3313
-    euler_angle_2 = 30.7308
-    euler_angle_3 = 187.8662
+    euler_angle_1 = -169.214
+    euler_angle_2 = 18.5218
+    euler_angle_3 = -129.537
   [../]
   [./elasticity_tensor6]
     type = ComputeElasticityTensorConstantRotationCP
     block = 6
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 12.2855
-    euler_angle_2 = 352.0679
-    euler_angle_3 = 330.1793
+    euler_angle_1 = -53.3698
+    euler_angle_2 = 20.0772
+    euler_angle_3 = 129.309
   [../]
   [./elasticity_tensor7]
     type = ComputeElasticityTensorConstantRotationCP
     block = 7
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 240.9903
-    euler_angle_2 = 63.1406
-    euler_angle_3 = 61.4212
+    euler_angle_1 = -165.141
+    euler_angle_2 = 40.2221
+    euler_angle_3 = -81.8134
   [../]
   [./elasticity_tensor8]
     type = ComputeElasticityTensorConstantRotationCP
     block = 8
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 161.3026
-    euler_angle_2 = 164.0719
-    euler_angle_3 = 264.0001
+    euler_angle_1 = -16.9892
+    euler_angle_2 = 49.0637
+    euler_angle_3 = -176.822
   [../]
   [./elasticity_tensor9]
     type = ComputeElasticityTensorConstantRotationCP
     block = 9
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 292.0759
-    euler_angle_2 = 276.5720
-    euler_angle_3 = 330.4042
+    euler_angle_1 = 38.6993
+    euler_angle_2 = 25.9346
+    euler_angle_3 = 86.1972
   [../]
   [./elasticity_tensor10]
     type = ComputeElasticityTensorConstantRotationCP
     block = 10
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 88.7053
-    euler_angle_2 = 150.4662
-    euler_angle_3 = 314.5164
+    euler_angle_1 = 135.375
+    euler_angle_2 = 101.890
+    euler_angle_3 = -176.353
   [../]
   [./elasticity_tensor11]
     type = ComputeElasticityTensorConstantRotationCP
     block = 11
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 40.0
-    euler_angle_2 = 30.0
-    euler_angle_3 = 125.0
+    euler_angle_1 = -69.272
+    euler_angle_2 = 121.034
+    euler_angle_3 = -65.7251
   [../]
   [./elasticity_tensor12]
     type = ComputeElasticityTensorConstantRotationCP
     block = 12
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 313.6069
-    euler_angle_2 = 339.5335
-    euler_angle_3 = 256.3762
+    euler_angle_1 = 41.3272
+    euler_angle_2 = 17.5376
+    euler_angle_3 = 85.0863
   [../]
   [./elasticity_tensor13]
     type = ComputeElasticityTensorConstantRotationCP
     block = 13
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 47.3709
-    euler_angle_2 = 180.0265
-    euler_angle_3 = 263.1185
+    euler_angle_1 = -60.7589
+    euler_angle_2 = 134.312
+    euler_angle_3 = -30.6682
   [../]
   [./elasticity_tensor14]
     type = ComputeElasticityTensorConstantRotationCP
     block = 14
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 286.7049
-    euler_angle_2 = 353.8846
-    euler_angle_3 = 258.4065
+    euler_angle_1 = 154.900
+    euler_angle_2 = 168.733
+    euler_angle_3 = 84.2288
   [../]
   [./elasticity_tensor15]
     type = ComputeElasticityTensorConstantRotationCP
     block = 15
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 79.2340
-    euler_angle_2 = 257.7186
-    euler_angle_3 = 347.3924
+    euler_angle_1 = -77.3984
+    euler_angle_2 = 123.532
+    euler_angle_3 = 1.904877
   [../]
   [./elasticity_tensor16]
     type = ComputeElasticityTensorConstantRotationCP
     block = 16
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 4.0469
-    euler_angle_2 = 348.9573
-    euler_angle_3 = 189.9763
+    euler_angle_1 = 156.309
+    euler_angle_2 = 3.82265
+    euler_angle_3 = 139.979
   [../]
   [./elasticity_tensor17]
     type = ComputeElasticityTensorConstantRotationCP
     block = 17
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 205.8230
-    euler_angle_2 = 39.6600
-    euler_angle_3 = 287.8684
+    euler_angle_1 = -168.389
+    euler_angle_2 = 104.653
+    euler_angle_3 = -58.0441
   [../]
   [./elasticity_tensor18]
     type = ComputeElasticityTensorConstantRotationCP
     block = 18
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 92.7329
-    euler_angle_2 = 166.5210
-    euler_angle_3 = 200.3684
+    euler_angle_1 = -156.270
+    euler_angle_2 = 49.7805
+    euler_angle_3 = -12.4202
   [../]
   [./elasticity_tensor19]
     type = ComputeElasticityTensorConstantRotationCP
     block = 19
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 248.7980
-    euler_angle_2 = 122.2917
-    euler_angle_3 = 246.1565
+    euler_angle_1 = -141.593
+    euler_angle_2 = 83.2116
+    euler_angle_3 = 82.0224
   [../]
   [./elasticity_tensor20]
     type = ComputeElasticityTensorConstantRotationCP
     block = 20
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 66.7180
-    euler_angle_2 = 57.7519
-    euler_angle_3 = 344.6513
+    euler_angle_1 = 30.8481
+    euler_angle_2 = 5.79632
+    euler_angle_3 = 146.710
   [../]
   [./elasticity_tensor21]
     type = ComputeElasticityTensorConstantRotationCP
     block = 21
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 218.8807
-    euler_angle_2 = 237.8125
-    euler_angle_3 = 293.1010
+    euler_angle_1 = 30.1825
+    euler_angle_2 = 106.649
+    euler_angle_3 = -175.673
   [../]
   [./elasticity_tensor22]
     type = ComputeElasticityTensorConstantRotationCP
     block = 22
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 165.6675
-    euler_angle_2 = 186.9424
-    euler_angle_3 = 56.0883
+    euler_angle_1 = 31.1477
+    euler_angle_2 = 165.934
+    euler_angle_3 = 25.9529
   [../]
   [./elasticity_tensor23]
     type = ComputeElasticityTensorConstantRotationCP
     block = 23
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 267.5216
-    euler_angle_2 = 225.8327
-    euler_angle_3 = 171.9399
+    euler_angle_1 = -53.7036
+    euler_angle_2 = 60.6030
+    euler_angle_3 = 32.0346
   [../]
   [./elasticity_tensor24]
     type = ComputeElasticityTensorConstantRotationCP
     block = 24
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 230.0706
-    euler_angle_2 = 51.8110
-    euler_angle_3 = 24.0706
+    euler_angle_1 = -156.901
+    euler_angle_2 = 119.014
+    euler_angle_3 = -108.450
   [../]
   [./elasticity_tensor25]
     type = ComputeElasticityTensorConstantRotationCP
     block = 25
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 334.5507
-    euler_angle_2 = 138.3458
-    euler_angle_3 = 43.9932
+    euler_angle_1 = -175.830
+    euler_angle_2 = 21.9512
+    euler_angle_3 = -60.7388
   [../]
   [./elasticity_tensor26]
     type = ComputeElasticityTensorConstantRotationCP
     block = 26
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 61.4273
-    euler_angle_2 = 351.7213
-    euler_angle_3 = 334.4376
+    euler_angle_1 = -104.528
+    euler_angle_2 = 150.835
+    euler_angle_3 = -133.881
   [../]
   [./elasticity_tensor27]
     type = ComputeElasticityTensorConstantRotationCP
     block = 27
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
     fill_method = symmetric9
-    euler_angle_1 = 200.3009
-    euler_angle_2 = 213.2968
-    euler_angle_3 = 54.1347
+    euler_angle_1 = -92.2854
+    euler_angle_2 = 160.237
+    euler_angle_3 = -163.366
   [../]
 []
 
@@ -2412,26 +2412,16 @@
   type = Transient
   solve_type = PJFNK
 
-  # l_tol = 1e-3
-  # petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -ksp_type -ksp_gmres_restart'
-  # petsc_options_value = ' asm      2              lu            gmres     200'
-  # nl_abs_tol = 1e-6
-  # nl_rel_tol = 1e-4
+  l_tol = 1e-3
+  petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -ksp_type -ksp_gmres_restart'
+  petsc_options_value = ' asm      2              lu            gmres     200'
+  nl_abs_tol = 1e-6
+  nl_rel_tol = 1e-4
 
-  dtmax = 1.0
-  dtmin = 1.0e-6
-  dt = 1.0e-3
+  dtmax = 5.0e-4
+  dtmin = 1.0e-8
+  dt = 5.0e-4
   end_time = 500.0
-
-  l_tol = 1e-05
-  nl_abs_tol = 1e-10
-  nl_rel_step_tol = 1e-10
-  nl_rel_tol = 1e-10
-  nl_abs_step_tol = 1e-10
-
-  ## with correct spelling:
-  petsc_options_iname = '-pc_type -pc_hypre_type -pc_hypre_boomeramg_strong_threshold'
-  petsc_options_value = 'hypre    boomeramg      0.7'
 []
 
 [Outputs]

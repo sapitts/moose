@@ -68,7 +68,7 @@ protected:
    * constiutive model defined in the child class.  This method must be overwritten
    * in the child class.
    */
-  virtual void calculateConstitutiveSlipDerivative(std::vector<Real> & dslip_dtau) override;
+  virtual void calculateConstitutiveSlipDerivative(std::vector<Real> & dslip_dtau, unsigned int slip_model_number = 0) override;
 
   /*
    * Calculates the derivative of the slip increment due to dislocation glide

@@ -110,7 +110,7 @@ CrystalPlasticityKalidindiUpdate::calculateConstitutiveEquivalentSlipIncrement(R
 }
 
 void
-CrystalPlasticityKalidindiUpdate::calculateConstitutiveSlipDerivative(std::vector<Real> & dslip_dtau)
+CrystalPlasticityKalidindiUpdate::calculateConstitutiveSlipDerivative(std::vector<Real> & dslip_dtau, unsigned int /*slip_model_number*/)
 {
   for (unsigned int i = 0; i < _number_slip_systems; ++i)
   {

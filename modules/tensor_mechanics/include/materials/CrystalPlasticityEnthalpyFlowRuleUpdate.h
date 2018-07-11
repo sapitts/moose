@@ -58,7 +58,7 @@ protected:
    * constiutive model defined in the child class.  This method must be overwritten
    * in the child class.
    */
-  virtual void calculateConstitutiveSlipDerivative(std::vector<Real> & dslip_dtau) override;
+  virtual void calculateConstitutiveSlipDerivative(std::vector<Real> & dslip_dtau, unsigned int slip_model_number = 0) override;
 
   /*
    * Finalizes the values of the state variables and slip system resistance
