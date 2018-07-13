@@ -938,7 +938,9 @@
   [./trial_xtalpl]
     type = CrystalPlasticityCDDNiAlloyUpdate
     number_slip_systems = 12
-    slip_sys_file_name = input_slip_sys.txt
+    slip_sys_file_name = fcc_input_slip_sys.txt
+    number_twin_systems = 12
+    twin_system_file_name = fcc_input_twinning_systems.txt
     number_cross_slip_directions = 0 #6
     number_cross_slip_planes = 0 #2
     cross_slip_calculation_type = stochastic
@@ -949,6 +951,7 @@
     dislocation_self_hardening_parameter = 1
     dislocation_latent_hardening_parameter = 1.0
     Peierls_stress = 3.639 #0.5e-4 times shear modulus
+    coefficient_twin_resistance = 1.2
     shear_modulus = 72.773e3
     burgers_vector = 2.52e-7
     tertiary_precipitate_mean_diameter = 0.0 #2.50e-6 #Gwalani et al. (2016) Table 2, 8000 hrs aged
@@ -1297,17 +1300,18 @@
   dtmax = 1.0e-3
   dtmin = 1.0e-12
   dt = 1.0e-3
-  end_time = 1.0e-3
-
-  [./Predictor]
-    type = SimplePredictor
-    scale = 1.0
-    skip_times_old = '0.0'
-  [../]
+  end_time = 150
 []
 
 [Outputs]
   csv = true
-  interval = 50
+#  interval = 50
   exodus = false
+  # [pgraph]
+  #   type = PerfGraphOutput
+  #   execute_on = 'initial final'  # Default is "final"
+  #   level = 3                     # Default is 1
+  #   heaviest_branch = true        # Default is false
+  #   heaviest_sections = true      # Default is false
+  # []
 []

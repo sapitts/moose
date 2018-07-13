@@ -37,7 +37,16 @@ protected:
    */
   virtual void initQpStatefulProperties() override;
 
-  /*
+  /// Read in the crystal specific twinning systems from a file
+  void getTwinningSystems();
+
+  /**
+   * Computes the Schmid tensor (m x n) for the original (reference) crystal
+   * lattice orientation for each twinning system
+   */
+  void calculateTwinningSchmidTensor();
+
+  /**
    * This virtual method is called to calculate the total slip system slip
    * increment based on the constitutive model defined in the child class.
    * This method must be overwritten in the child class.
@@ -46,30 +55,23 @@ protected:
                                                             bool & error_tolerance) override;
 
   /**
-   * Calculates the plastic shear slip increment due to twinning growth
-   * following the phemonological model proposed in Kalidindi (2001)
-   * International Journal of Plasticity, 17(6) pp. 837-860, eqn 18.
+   * Calculates the sum of the glide slip and the twinning that contribute to the
+   * plastic velocity gradient.
    */
-  virtual void calculateTwinSlipIncrement(bool & error_tolerance);
+  virtual void calculateTotalPlasticDeformationGradientDerivative(RankFourTensor & total_dfpinvdpk2) override;
 
-  /*
+  /**
    * This virtual method is called to find the derivative of the slip increment
    * with respect to the applied shear stress on the slip system based on the
    * constiutive model defined in the child class.  This method must be overwritten
    * in the child class.
    */
-  virtual void calculateConstitutiveSlipDerivative(std::vector<Real> & dslip_dtau) override;
+  virtual void calculateConstitutiveSlipDerivative(std::vector<Real> & dslip_dtau, unsigned int slip_model_number = 0) override;
 
-  /*
+  /**
    * Calculates the derivative of the slip increment due to twinning growth
    */
   virtual void calculateTwinSlipDerivative(std::vector<Real> & dslip_twin_dtau);
-
-  /*
-   * Finalizes the values of the state variables and slip system resistance
-   * for the current timestep after convergence has been reached.
-   */
-  virtual void updateConstitutiveSlipSystemResistanceAndVariables(bool & error_tolerance) override;
 
   /**
    * Calculates the  twin volume fraction rate following the phemonological model
@@ -121,18 +123,25 @@ protected:
   /// File should contain twinning plane normal and direction.
   std::string _twin_system_file_name;
 
+  ///@{Twin system direction and normal and associated Schmid tensors
+  DenseVector<Real> _twin_direction;
+  DenseVector<Real> _twin_plane_normal;
+  MaterialProperty<std::vector<RankTwoTensor> > & _twin_schmid_tensor;
+  ///@}
+
   ///@{ Evolving state variable for twinned volume fraction of the crystal
-  MaterialProperty<std::vector<Real> > & _volume_fraction_twins;
-  const MaterialProperty<std::vector<Real> > & _volume_fraction_twins_old;
+  MaterialProperty<Real> & _total_volume_fraction_twins;
+  const MaterialProperty<Real> & _total_volume_fraction_twins_old;
+  MaterialProperty<std::vector<Real> > & _twin_volume_fraction_increment;
   ///@}
 
-  ///@{ Plastic shear due to growth of twins
-  MaterialProperty<std::vector<Real> > & _twin_shear_increment;
-  const Real _characteristic_twin_shear;
-  ///@}
+  /// Width of the twin based on the lattice parameter
+  const Real _characteristic_twin_shear; // this must get multiplied by a burgers vector or something
 
-  /// Resistance of the crystal to growth of twins
+  ///@{ Resistance of the crystal to growth of twins parameters
   MaterialProperty<std::vector<Real> > & _twin_system_resistance;
+  const Real _coefficient_twin_resistance;
+  ///@}
 
   /// Resolved applied shear stress on the twinning system
   MaterialProperty<std::vector<Real> > & _tau_twin_sytem;
@@ -145,7 +154,6 @@ protected:
    * systems set by the user.
    */
   bool _include_twinning_slip_contribution;
-
 };
 
 #endif //CRYSTALPLASTICITYCDDNIALLOYUPDATE_H
