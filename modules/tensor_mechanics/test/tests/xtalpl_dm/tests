@@ -1,0 +1,7 @@
+[Tests]
+  [./general_kalidindi]
+    type = 'Exodiff'
+    input = 'crystal_plasticity_update_method.i'
+    exodiff = 'crystal_plasticity_update_method_out.e'
+  [../]
+[]
