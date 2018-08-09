@@ -142,7 +142,7 @@ protected:
    * the local crystal llatice orientation as defined by the crystal rotation
    * tensor from the Elasticity tensor class.
    */
-  void calculateSchmidTensor(const unsigned int & number_dislocation_systems, DenseVector<Real> & plane_normal_vector, DenseVector<Real> & direction_vector, std::vector<RankTwoTensor> & schmid_tensor);
+  void calculateSchmidTensor(const unsigned int & number_dislocation_systems, const DenseVector<Real> & plane_normal_vector, const DenseVector<Real> & direction_vector, std::vector<RankTwoTensor> & schmid_tensor);
 
   /// Read in the crystal specific glide slip systems from a file
   void getSlipSystems();

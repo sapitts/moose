@@ -26,14 +26,14 @@ InputParameters validParams<CrystalPlasticityCDDUpdateBase>();
  * of the compute=false flag set in the parameter list. All materials inheriting
  * from this class must be called by a separate material, such as ComputeCrystalPlasticityStress.
  */
-
 class CrystalPlasticityCDDUpdateBase : public CrystalPlasticityUpdate
-
 {
 public:
   CrystalPlasticityCDDUpdateBase(const InputParameters & parameters);
 
 protected:
+  void initialSetup() override;
+
   /**
    * initializes the stateful properties such as
    * stress, plastic deformation gradient, slip system resistances, etc.
@@ -136,19 +136,21 @@ protected:
   MaterialProperty<std::vector<Real> > & _glide_slip_increment;
   const Real _temperature;
 
+  ///@{ Material properties from the previous iteration
   MaterialProperty<std::vector<Real> > & _previous_it_mobile;
   MaterialProperty<std::vector<Real> > & _previous_it_immobile;
   MaterialProperty<std::vector<Real> > & _previous_it_resistance;
+  ///@}
 
   MaterialProperty<RankTwoTensor> & _slip_increment_sum;
   MaterialProperty<RankTwoTensor> & _nyes_tensor;
   const MaterialProperty<RankTwoTensor> & _nyes_tensor_old;
 
-  /// Reference to a MooseVariable object
+  // /// Reference to a MooseVariable object
   // MooseVariable & _gnd_displacement_variable;
-
-  /// Shape function on the displaced mesh
-  // const VariableTestGradient & _gnd_grad_test;
+  //
+  // /// Shape function derivative on the displaced mesh
+  // const VariablePhiGradient & _gnd_grad_phi;
 
   MaterialProperty<std::vector<Real> > & _glide_velocity;
 
@@ -160,7 +162,6 @@ protected:
 
   const Real _shear_modulus;
   const Real _peierls_strength;
-  const bool _calculate_gnd_contribution;
 
   const Real _baily_hirsch_alpha;
   const Real _dislocation_latent_hardening;
@@ -174,6 +175,7 @@ protected:
   const Real _cross_slip_barrier_strength;
   const Real _alpha_6;
   const Real _radius_capture;
+  const Real _glide_path_coeff;
 
   const Real _cs_activation_barrier;
   const Real _cs_activation_volume;
@@ -185,6 +187,15 @@ protected:
     deterministic,
     stochastic
   } _cross_slip_type;
+
+  /// Flag to include calculations of geometrically necessary dislocations
+  const bool _calculate_gnd_contribution;
+
+  /// Coefficient for geometrically necessary dislocation density calculation
+  const Real _gnd_coefficient;
+
+  /// Gradient of the coupled plastic velocity gradient components
+  std::vector<const VariableGradient *> _gradient_Lp;
 
   const Real _inital_glide_velocity;
 };

@@ -137,10 +137,7 @@ CrystalPlasticityKalidindiUpdate::areConstitutiveStateVariablesConverged()
   {
     resistance_diff = std::abs(_previous_it_resistance[_qp][i] - _slip_system_resistance[_qp][i]);
     if (resistance_diff > _resistance_tol)
-    {
-      std::cout << " The value of the slip resistance on slip system " << i << " is greater than the tolerance and is " << resistance_diff << std::endl;
       return true;
-    }
   }
 
   return false;

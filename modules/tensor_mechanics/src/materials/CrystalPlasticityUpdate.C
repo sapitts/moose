@@ -549,7 +549,7 @@ CrystalPlasticityUpdate::calculateFlowDirection()
 }
 
 void
-CrystalPlasticityUpdate::calculateSchmidTensor(const unsigned int & number_dislocation_systems, DenseVector<Real> & plane_normal_vector, DenseVector<Real> & direction_vector, std::vector<RankTwoTensor> & schmid_tensor)
+CrystalPlasticityUpdate::calculateSchmidTensor(const unsigned int & number_dislocation_systems, const DenseVector<Real> & plane_normal_vector, const DenseVector<Real> & direction_vector, std::vector<RankTwoTensor> & schmid_tensor)
 {
   DenseVector<Real> local_direction_vector(LIBMESH_DIM * number_dislocation_systems), local_plane_normal(LIBMESH_DIM * number_dislocation_systems);
 
@@ -561,8 +561,7 @@ CrystalPlasticityUpdate::calculateSchmidTensor(const unsigned int & number_dislo
     {
       local_direction_vector(system + j) = 0.0;
       for (unsigned int k = 0; k < LIBMESH_DIM; ++k)
-        local_direction_vector(system + j) = local_direction_vector(system + j) + _crysrot[_qp](j,k) *
-        direction_vector(system + k);
+        local_direction_vector(system + j) = local_direction_vector(system + j) + _crysrot[_qp](j,k) * direction_vector(system + k);
     }
 
     for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
@@ -580,7 +579,6 @@ CrystalPlasticityUpdate::calculateSchmidTensor(const unsigned int & number_dislo
     for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
       for (unsigned int k = 0; k < LIBMESH_DIM; ++k)
         schmid_tensor[i](j,k) = local_direction_vector(system + j) * local_plane_normal(system + k);
-
   }
 }
 

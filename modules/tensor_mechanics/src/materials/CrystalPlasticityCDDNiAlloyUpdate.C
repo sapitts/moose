@@ -173,9 +173,6 @@ CrystalPlasticityCDDNiAlloyUpdate::calculateConstitutiveEquivalentSlipIncrement(
   for (unsigned int i = 0; i < _number_slip_systems; ++i)
     equivalent_glide_slip_increment += _flow_direction[_qp][i] * _glide_slip_increment[_qp][i];
 
-  // Now store off the plastic velocity gradient for use in the calculation of the geometrically necessary dislocations
-  _slip_increment_sum[_qp] = equivalent_slip_increment;
-
   if (_include_twinning_slip_contribution)
   {
     for (unsigned int i = 0; i < _number_twin_systems; ++i)
@@ -187,6 +184,12 @@ CrystalPlasticityCDDNiAlloyUpdate::calculateConstitutiveEquivalentSlipIncrement(
   // Sum the total equivalent slip increment for glide and twin
   equivalent_slip_increment = (1.0 - _total_volume_fraction_twins[_qp]) * equivalent_glide_slip_increment
                                + _total_volume_fraction_twins[_qp] * equivalent_twin_shear_increment;
+
+  // std::cout << "At qp " << _qp << " the value of the summed slip increment value is: " << std::endl;
+  // std::cout << equivalent_slip_increment << std::endl;
+
+  // Now store off the plastic velocity gradient for use in the GND calculation
+  _slip_increment_sum[_qp] = equivalent_slip_increment;
 
   error_tolerance = false;
 }

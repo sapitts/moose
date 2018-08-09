@@ -6,117 +6,81 @@
   type = GeneratedMesh
   dim = 3
   elem_type = HEX8
-  nx = 5
+  nx = 10
   xmin = 0
-  xmax = 0.1
+  xmax = 0.2
   ny = 1
   ymin = 0
-  ymax = 0.02
-  nz = 10
+  ymax = 0.01
+  nz = 5
   zmin = 0
-  zmax = 0.2
+  zmax = 0.1
 []
 
 [AuxVariables]
   [./stress_zz]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./pk2_zz]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./fp_zz]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./e_zz]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./stress_xx]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./pk2_xx]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./fp_xx]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./e_xx]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./stress_yy]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./pk2_yy]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./fp_yy]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./e_yy]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./vonmises_stress_cauchy]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./eff_strain_green]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./vonmises_stress_pk2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./eff_strain_lag]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
-  [../]
-  [./velocity_gradient_xx]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./velocity_gradient_xy]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./velocity_gradient_xz]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./velocity_gradient_yx]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./velocity_gradient_yy]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./velocity_gradient_yz]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./velocity_gradient_zx]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./velocity_gradient_zy]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./velocity_gradient_zz]
-    order = FIRST
-    family = LAGRANGE
   [../]
   [./euler_angle1]
     order = CONSTANT
@@ -131,283 +95,283 @@
     family = MONOMIAL
   [../]
   [./nyes_tensor_00]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./nyes_tensor_01]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./nyes_tensor_02]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./nyes_tensor_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./nyes_tensor_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./nyes_tensor_12]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./nyes_tensor_20]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./nyes_tensor_21]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./nyes_tensor_22]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gnd_density]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./slip_increment_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./slip_increment_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./slip_increment_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./slip_increment_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./slip_increment_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./slip_increment_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./slip_increment_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./slip_increment_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./slip_increment_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./slip_increment_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./slip_increment_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./gss_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./mobile_disl_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./slip_increment_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./immobile_disl_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
   [./tau_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   [../]
 []
@@ -415,7 +379,7 @@
 [Functions]
   [./bending_displacement]
     type = ParsedFunction
-    value = (0.05-x)/0.5*t
+    value = (0.05-z)/0.5*t
   [../]
 []
 
@@ -555,87 +519,6 @@
     rank_two_tensor = lage
     scalar_type = EffectiveStrain
     execute_on = timestep_end
-  [../]
-  [./velocity_grad_xx_recovered]
-    type = RankTwoAux
-    rank_two_tensor = plastic_velocity_gradient
-    variable = velocity_gradient_xx
-    patch_polynomial_order = FIRST
-    index_i = 0
-    index_j = 0
-    execute_on = 'timestep_end'
-  [../]
-  [./velocity_grad_xy_recovered]
-    type = RankTwoAux
-    rank_two_tensor = plastic_velocity_gradient
-    variable = velocity_gradient_xy
-    patch_polynomial_order = FIRST
-    index_i = 0
-    index_j = 1
-    execute_on = 'timestep_end'
-  [../]
-  [./velocity_grad_xz_recovered]
-    type = RankTwoAux
-    rank_two_tensor = plastic_velocity_gradient
-    variable = velocity_gradient_xz
-    patch_polynomial_order = FIRST
-    index_i = 0
-    index_j = 2
-    execute_on = 'timestep_end'
-  [../]
-  [./velocity_grad_yx_recovered]
-    type = RankTwoAux
-    rank_two_tensor = plastic_velocity_gradient
-    variable = velocity_gradient_yx
-    patch_polynomial_order = FIRST
-    index_i = 1
-    index_j = 0
-    execute_on = 'timestep_end'
-  [../]
-  [./velocity_grad_yy_recovered]
-    type = RankTwoAux
-    rank_two_tensor = plastic_velocity_gradient
-    variable = velocity_gradient_yy
-    patch_polynomial_order = FIRST
-    index_i = 1
-    index_j = 1
-    execute_on = 'timestep_end'
-  [../]
-  [./velocity_grad_yz_recovered]
-    type = RankTwoAux
-    rank_two_tensor = plastic_velocity_gradient
-    variable = velocity_gradient_yz
-    patch_polynomial_order = FIRST
-    index_i = 1
-    index_j = 2
-    execute_on = 'timestep_end'
-  [../]
-  [./velocity_grad_zx_recovered]
-    type = RankTwoAux
-    rank_two_tensor = plastic_velocity_gradient
-    variable = velocity_gradient_zx
-    patch_polynomial_order = FIRST
-    index_i = 2
-    index_j = 0
-    execute_on = 'timestep_end'
-  [../]
-  [./velocity_grad_zy_recovered]
-    type = RankTwoAux
-    rank_two_tensor = plastic_velocity_gradient
-    variable = velocity_gradient_zy
-    patch_polynomial_order = FIRST
-    index_i = 1
-    index_j = 2
-    execute_on = 'timestep_end'
-  [../]
-  [./velocity_grad_zz_recovered]
-    type = RankTwoAux
-    rank_two_tensor = plastic_velocity_gradient
-    variable = velocity_gradient_zz
-    patch_polynomial_order = FIRST
-    index_i = 2
-    index_j = 2
-    execute_on = 'timestep_end'
   [../]
   [./euler_angle1]
     type = MaterialRealVectorValueAux
@@ -1167,25 +1050,25 @@
   [./symmy]
     type = PresetBC
     variable = disp_y
-    boundary = back
+    boundary = left
     value = 0
   [../]
   [./symmx]
     type = PresetBC
     variable = disp_x
-    boundary = back
+    boundary = left
     value = 0
   [../]
   [./symmz]
     type = PresetBC
     variable = disp_z
-    boundary = back
+    boundary = left
     value = 0
   [../]
   [./bending_displacement]
     type = FunctionPresetBC
-    variable = disp_z
-    boundary = front
+    variable = disp_x
+    boundary = right
     function = bending_displacement
   [../]
 []
@@ -1204,31 +1087,30 @@
     crystal_plasticity_update_model = 'trial_xtalpl'
   [../]
   [./trial_xtalpl]
-    type = CrystalPlasticityCDDNiAlloyUpdate
-    # use_displaced_mesh = true
-    number_slip_systems = 12
-    slip_sys_file_name = 'fcc_input_slip_sys.txt'
-    number_twin_systems = 0
-    twin_system_file_name = 'fcc_input_slip_sys.txt'
-    number_cross_slip_directions = 0
-    number_cross_slip_planes = 0
+    type = CrystalPlasticityCDDBCCFeUpdate
+    use_displaced_mesh = true
+    number_slip_systems = 24
+    slip_sys_file_name = bcc_24_input_slip_sys.txt
+    number_cross_slip_directions = 4
+    number_cross_slip_planes = 6
     temperature = 298.0
-    initial_immobile_dislocation_density = 1.44e6 #half initial dislocation density in Reuber et.al. 2014;
-    initial_mobile_dislocation_density = 1.44e6 #half initial dislocation density in Reuber et.al. 2016;
-    alpha_1 = 0.04
-    alpha_2 = 4
+    initial_immobile_dislocation_density = 2.5e5 #Lee(2010) pure Fe, Table 1
+    initial_mobile_dislocation_density = 2.5e5 #Lee(2010) pure Fe, Table 1
+    dislocation_latent_hardening_parameter = 0.2
+    alpha_1 = 0.025
+    alpha_2 = 1
     alpha_3 = 0.002
     alpha_4 = 0.002
-    alpha_5 = 0.001
-    alpha_6 = 4
-    include_GND_contribution = true
-    plastic_velocity_gradient_components = 'velocity_gradient_xx velocity_gradient_xy velocity_gradient_xz velocity_gradient_yx velocity_gradient_yy velocity_gradient_yz velocity_gradient_zx velocity_gradient_zy velocity_gradient_zz'
-    tertiary_precipitate_mean_diameter = 0.0 # No additional hardening
-    tertiary_precipitate_volume_fraction = 0.0 #No additional hardening
-    Peierls_stress = 9.47 #1.0e-4 times shear modulus
-    shear_modulus = 94.7e3 #Hirth and Lothe for Ni, pg 835
-    burgers_vector = 2.48e-07
-    stol = 1.0e-3
+    alpha_5 = 0.044
+    alpha_6 = 0.001
+#    initial_mean_irradiation_cluster_defect_size = 0.0 #34.0e-6
+#    inital_irradiation_cluster_defect_density = 0.0 #5.0e13
+    #initial_irradiation_SIA_loop_density = 0.0 #8.15e10 #Bring down to same order of magnitude as Pritam seemed to use
+    Peierls_stress = 11.0 #Alpha-iron is 11MPa
+    shear_modulus = 80.0e3
+    apply_anisotropic_strength = false
+    stol = 0.1
+    cross_slip_calculation_type = stochastic
     maximum_substep_iteration = 10
     maxiter = 30
     maxiter_state_variable = 30
@@ -1306,42 +1188,6 @@
   [./effective_strain]
     type = ElementAverageValue
     variable = eff_strain_lag
-  [../]
-  [./velocity_gradient_xx]
-    type = AverageNodalVariableValue
-    variable = velocity_gradient_xx
-  [../]
-  [./velocity_gradient_xy]
-    type = AverageNodalVariableValue
-    variable = velocity_gradient_xy
-  [../]
-  [./velocity_gradient_xz]
-    type = AverageNodalVariableValue
-    variable = velocity_gradient_xz
-  [../]
-  [./velocity_gradient_yx]
-    type = AverageNodalVariableValue
-    variable = velocity_gradient_yx
-  [../]
-  [./velocity_gradient_yy]
-    type = AverageNodalVariableValue
-    variable = velocity_gradient_yy
-  [../]
-  [./velocity_gradient_yz]
-    type = AverageNodalVariableValue
-    variable = velocity_gradient_yz
-  [../]
-  [./velocity_gradient_zx]
-    type = AverageNodalVariableValue
-    variable = velocity_gradient_zx
-  [../]
-  [./velocity_gradient_zy]
-    type = AverageNodalVariableValue
-    variable = velocity_gradient_zy
-  [../]
-  [./velocity_gradient_zz]
-    type = AverageNodalVariableValue
-    variable = velocity_gradient_zz
   [../]
   [./euler_angle1]
     type = ElementAverageValue
@@ -1649,7 +1495,6 @@
   solve_type = PJFNK
 
   l_tol = 1e-3
-  l_max_its = 100
   petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -ksp_type -ksp_gmres_restart'
   petsc_options_value = ' asm      2              lu            gmres     200'
   nl_abs_tol = 1e-6
@@ -1663,12 +1508,8 @@
 []
 
 [Outputs]
-  file_base = cdd_ohashi_shear_beam_out
   csv = true
   interval = 25
-  [./exodus]
-    type = Exodus
-    elemental_as_nodal = true
-  [../]
+  exodus = true
   perf_graph = true
 []

@@ -42,6 +42,9 @@ protected:
   /// Crystal Rotation Matrix used to rotate the slip system direction and normal
   MaterialProperty<RankTwoTensor> & _crysrot;
 
+  /// Material property that stores the values of the Euler Angles for postprocessing
+  MaterialProperty<RealVectorValue> & _Euler_angles_material_property;
+
   /// Rotation matrix
   RotationTensor _R;
 

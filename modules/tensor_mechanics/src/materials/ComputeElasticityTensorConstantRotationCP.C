@@ -26,6 +26,7 @@ ComputeElasticityTensorConstantRotationCP::ComputeElasticityTensorConstantRotati
     const InputParameters & parameters)
   : ComputeElasticityTensor(parameters),
     _crysrot(declareProperty<RankTwoTensor>("crysrot")),
+    _Euler_angles_material_property(declareProperty<RealVectorValue>("Euler_angles")),
     _R(_Euler_angles),
     _crysrot_constant(_R.transpose())
 {
@@ -42,4 +43,5 @@ void
 ComputeElasticityTensorConstantRotationCP::initQpStatefulProperties()
 {
   _crysrot[_qp] = _crysrot_constant;
+  _Euler_angles_material_property[_qp] = _Euler_angles;
 }
