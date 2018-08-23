@@ -32,7 +32,7 @@ public:
   CrystalPlasticityCDDUpdateBase(const InputParameters & parameters);
 
 protected:
-  void initialSetup() override;
+  // void initialSetup() override;
 
   /**
    * initializes the stateful properties such as
@@ -195,7 +195,7 @@ protected:
   const Real _gnd_coefficient;
 
   /// Gradient of the coupled plastic velocity gradient components
-  std::vector<const VariableGradient *> _gradient_Lp;
+  // std::vector<const VariableGradient *> _gradient_Lp;
 
   const Real _inital_glide_velocity;
 };

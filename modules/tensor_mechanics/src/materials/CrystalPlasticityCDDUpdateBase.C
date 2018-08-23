@@ -121,7 +121,7 @@ CrystalPlasticityCDDUpdateBase::CrystalPlasticityCDDUpdateBase(const InputParame
     // Geometrically necessary dislocation parameters
     _calculate_gnd_contribution(getParam<bool>("include_GND_contribution")),
     _gnd_coefficient(getParam<Real>("GND_density_coefficient")),
-    _gradient_Lp(9),
+    // _gradient_Lp(9),
 
     _inital_glide_velocity(_gamma_reference / (_burgers_vector * _initial_mobile_dislocation_density))
 {
@@ -135,13 +135,14 @@ CrystalPlasticityCDDUpdateBase::CrystalPlasticityCDDUpdateBase(const InputParame
 
   setRandomResetFrequency(EXEC_TIMESTEP_BEGIN);
 }
-void
-CrystalPlasticityCDDUpdateBase::initialSetup()
-{
-  // fetch coupled gradients of the plastic velocity gradient
-  for (unsigned int i = 0; i < LIBMESH_DIM * LIBMESH_DIM; ++i)
-    _gradient_Lp[i] = &coupledGradient("plastic_velocity_gradient_components", i);
-}
+
+// void
+// CrystalPlasticityCDDUpdateBase::initialSetup()
+// {
+//   // fetch coupled gradients of the plastic velocity gradient
+//   for (unsigned int i = 0; i < LIBMESH_DIM * LIBMESH_DIM; ++i)
+//     _gradient_Lp[i] = &coupledGradient("plastic_velocity_gradient_components", i);
+// }
 
 void
 CrystalPlasticityCDDUpdateBase::initQpStatefulProperties()
@@ -530,27 +531,27 @@ CrystalPlasticityCDDUpdateBase::calculateGeometricallyNecessaryDislocations()
   RankTwoTensor increment_nyes_tensor;
   increment_nyes_tensor.zero();
 
-  for (unsigned int i = 0; i < LIBMESH_DIM; ++i)
-  {
-    for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
-    {
-      if (i == 0)
-      {
-        increment_nyes_tensor(0,j) = (*_gradient_Lp[2 * LIBMESH_DIM + j])[_qp](1)
-                                     - (*_gradient_Lp[LIBMESH_DIM + j])[_qp](2);
-      }
-      else if (i == 1)
-      {
-        increment_nyes_tensor(1,j) = (*_gradient_Lp[j])[_qp](2)
-                                     - (*_gradient_Lp[2 * LIBMESH_DIM + j])[_qp](0);
-      }
-      else if (i == 2)
-      {
-        increment_nyes_tensor(2,j) = (*_gradient_Lp[LIBMESH_DIM + j])[_qp](0)
-                                     - (*_gradient_Lp[j])[_qp](1);
-      }
-    }
-  }
+  // for (unsigned int i = 0; i < LIBMESH_DIM; ++i)
+  // {
+  //   for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
+  //   {
+  //     if (i == 0)
+  //     {
+  //       increment_nyes_tensor(0,j) = (*_gradient_Lp[2 * LIBMESH_DIM + j])[_qp](1)
+  //                                    - (*_gradient_Lp[LIBMESH_DIM + j])[_qp](2);
+  //     }
+  //     else if (i == 1)
+  //     {
+  //       increment_nyes_tensor(1,j) = (*_gradient_Lp[j])[_qp](2)
+  //                                    - (*_gradient_Lp[2 * LIBMESH_DIM + j])[_qp](0);
+  //     }
+  //     else if (i == 2)
+  //     {
+  //       increment_nyes_tensor(2,j) = (*_gradient_Lp[LIBMESH_DIM + j])[_qp](0)
+  //                                    - (*_gradient_Lp[j])[_qp](1);
+  //     }
+  //   }
+  // }
 
   _nyes_tensor[_qp] = increment_nyes_tensor + _nyes_tensor_old[_qp];
 
