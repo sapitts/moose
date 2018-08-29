@@ -4,8 +4,18 @@
 []
 
 [Mesh]
-  type = FileMesh
-  file = micropillar_compression_1pt5xph.e
+  type = GeneratedMesh
+  dim = 3
+  elem_type = HEX8
+  nx = 2
+  xmin = 0
+  xmax = 1
+  ny = 2
+  ymin = 0
+  ymax = 1
+  nz = 2
+  zmin = 0
+  zmax = 1
 []
 
 [AuxVariables]
@@ -85,6 +95,10 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
+  [./twin_volume_fraction]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
   [./gss_0]
     order = CONSTANT
     family = MONOMIAL
@@ -102,6 +116,14 @@
     family = MONOMIAL
   [../]
   [./tau_0]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./strength_twin_0]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_tau_0]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -125,6 +147,14 @@
    order = CONSTANT
    family = MONOMIAL
   [../]
+  [./strength_twin_1]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_tau_1]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
   [./gss_2]
     order = CONSTANT
     family = MONOMIAL
@@ -142,6 +172,14 @@
     family = MONOMIAL
   [../]
   [./tau_2]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./strength_twin_2]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_tau_2]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -165,6 +203,14 @@
    order = CONSTANT
    family = MONOMIAL
   [../]
+  [./strength_twin_3]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_tau_3]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
   [./gss_4]
     order = CONSTANT
     family = MONOMIAL
@@ -182,6 +228,14 @@
     family = MONOMIAL
   [../]
   [./tau_4]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./strength_twin_4]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_tau_4]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -205,6 +259,14 @@
    order = CONSTANT
    family = MONOMIAL
   [../]
+  [./strength_twin_5]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_tau_5]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
   [./gss_6]
     order = CONSTANT
     family = MONOMIAL
@@ -222,6 +284,14 @@
     family = MONOMIAL
   [../]
   [./tau_6]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./strength_twin_6]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_tau_6]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -245,6 +315,14 @@
    order = CONSTANT
    family = MONOMIAL
   [../]
+  [./strength_twin_7]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_tau_7]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
   [./gss_8]
     order = CONSTANT
     family = MONOMIAL
@@ -262,6 +340,14 @@
     family = MONOMIAL
   [../]
   [./tau_8]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./strength_twin_8]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_tau_8]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -285,6 +371,14 @@
    order = CONSTANT
    family = MONOMIAL
   [../]
+  [./strength_twin_9]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_tau_9]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
   [./gss_10]
     order = CONSTANT
     family = MONOMIAL
@@ -302,6 +396,14 @@
     family = MONOMIAL
   [../]
   [./tau_10]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./strength_twin_10]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_tau_10]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -325,12 +427,20 @@
    order = CONSTANT
    family = MONOMIAL
   [../]
+  [./strength_twin_11]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_tau_11]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
 []
 
 [Functions]
   [./tdisp]
     type = ParsedFunction
-    value = (-1.0e-4)/3.0*t
+    value = 2.0e-4*t
   [../]
 []
 
@@ -439,8 +549,8 @@
     type = RankTwoAux
     variable = e_yy
     rank_two_tensor = lage
-    index_j = 1
-    index_i = 1
+    index_j = 0
+    index_i = 0
     execute_on = timestep_end
   [../]
   [./vonmises_stress_cauchy]
@@ -471,11 +581,11 @@
     scalar_type = EffectiveStrain
     execute_on = timestep_end
   [../]
-  #[./rot_out_001]
-  #  type = CrystalPlasticityRotationOutAux
-  #  variable = rot_out_001
-  #  execute_on = timestep_end
-  #[../]
+  [./twin_volume_fraction]
+    type = MaterialRealAux
+    property = total_volume_fraction_twins
+    variable = twin_volume_fraction
+  [../]
   [./gss_0]
     type = MaterialStdVectorAux
     variable = gss_0
@@ -508,6 +618,20 @@
    type = MaterialStdVectorAux
    variable = tau_0
    property = applied_shear_stress
+   index = 0
+   execute_on = timestep_end
+  [../]
+  [./strength_twin_0]
+   type = MaterialStdVectorAux
+   variable = strength_twin_0
+   property = twin_system_resistance
+   index = 0
+   execute_on = timestep_end
+  [../]
+  [./twin_tau_0]
+   type = MaterialStdVectorAux
+   variable = twin_tau_0
+   property = applied_shear_stress_twin_system
    index = 0
    execute_on = timestep_end
   [../]
@@ -546,6 +670,20 @@
    index = 1
    execute_on = timestep_end
   [../]
+  [./strength_twin_1]
+   type = MaterialStdVectorAux
+   variable = strength_twin_1
+   property = twin_system_resistance
+   index = 1
+   execute_on = timestep_end
+  [../]
+  [./twin_tau_1]
+   type = MaterialStdVectorAux
+   variable = twin_tau_1
+   property = applied_shear_stress_twin_system
+   index = 1
+   execute_on = timestep_end
+  [../]
   [./gss_2]
     type = MaterialStdVectorAux
     variable = gss_2
@@ -578,6 +716,20 @@
    type = MaterialStdVectorAux
    variable = tau_2
    property = applied_shear_stress
+   index = 2
+   execute_on = timestep_end
+  [../]
+  [./strength_twin_2]
+   type = MaterialStdVectorAux
+   variable = strength_twin_2
+   property = twin_system_resistance
+   index = 2
+   execute_on = timestep_end
+  [../]
+  [./twin_tau_2]
+   type = MaterialStdVectorAux
+   variable = twin_tau_2
+   property = applied_shear_stress_twin_system
    index = 2
    execute_on = timestep_end
   [../]
@@ -616,6 +768,20 @@
    index = 3
    execute_on = timestep_end
   [../]
+  [./strength_twin_3]
+   type = MaterialStdVectorAux
+   variable = strength_twin_3
+   property = twin_system_resistance
+   index = 3
+   execute_on = timestep_end
+  [../]
+  [./twin_tau_3]
+   type = MaterialStdVectorAux
+   variable = twin_tau_3
+   property = applied_shear_stress_twin_system
+   index = 3
+   execute_on = timestep_end
+  [../]
   [./gss_4]
     type = MaterialStdVectorAux
     variable = gss_4
@@ -648,6 +814,20 @@
    type = MaterialStdVectorAux
    variable = tau_4
    property = applied_shear_stress
+   index = 4
+   execute_on = timestep_end
+  [../]
+  [./strength_twin_4]
+   type = MaterialStdVectorAux
+   variable = strength_twin_4
+   property = twin_system_resistance
+   index = 4
+   execute_on = timestep_end
+  [../]
+  [./twin_tau_4]
+   type = MaterialStdVectorAux
+   variable = twin_tau_4
+   property = applied_shear_stress_twin_system
    index = 4
    execute_on = timestep_end
   [../]
@@ -686,6 +866,20 @@
    index = 5
    execute_on = timestep_end
   [../]
+  [./strength_twin_5]
+   type = MaterialStdVectorAux
+   variable = strength_twin_5
+   property = twin_system_resistance
+   index = 5
+   execute_on = timestep_end
+  [../]
+  [./twin_tau_5]
+   type = MaterialStdVectorAux
+   variable = twin_tau_5
+   property = applied_shear_stress_twin_system
+   index = 5
+   execute_on = timestep_end
+  [../]
   [./gss_6]
     type = MaterialStdVectorAux
     variable = gss_6
@@ -718,6 +912,20 @@
    type = MaterialStdVectorAux
    variable = tau_6
    property = applied_shear_stress
+   index = 6
+   execute_on = timestep_end
+  [../]
+  [./strength_twin_6]
+   type = MaterialStdVectorAux
+   variable = strength_twin_6
+   property = twin_system_resistance
+   index = 6
+   execute_on = timestep_end
+  [../]
+  [./twin_tau_6]
+   type = MaterialStdVectorAux
+   variable = twin_tau_6
+   property = applied_shear_stress_twin_system
    index = 6
    execute_on = timestep_end
   [../]
@@ -756,6 +964,20 @@
    index = 7
    execute_on = timestep_end
   [../]
+  [./strength_twin_7]
+   type = MaterialStdVectorAux
+   variable = strength_twin_7
+   property = twin_system_resistance
+   index = 7
+   execute_on = timestep_end
+  [../]
+  [./twin_tau_7]
+   type = MaterialStdVectorAux
+   variable = twin_tau_7
+   property = applied_shear_stress_twin_system
+   index = 7
+   execute_on = timestep_end
+  [../]
   [./gss_8]
     type = MaterialStdVectorAux
     variable = gss_8
@@ -788,6 +1010,20 @@
    type = MaterialStdVectorAux
    variable = tau_8
    property = applied_shear_stress
+   index = 8
+   execute_on = timestep_end
+  [../]
+  [./strength_twin_8]
+   type = MaterialStdVectorAux
+   variable = strength_twin_8
+   property = twin_system_resistance
+   index = 8
+   execute_on = timestep_end
+  [../]
+  [./twin_tau_8]
+   type = MaterialStdVectorAux
+   variable = twin_tau_8
+   property = applied_shear_stress_twin_system
    index = 8
    execute_on = timestep_end
   [../]
@@ -826,6 +1062,20 @@
    index = 9
    execute_on = timestep_end
   [../]
+  [./strength_twin_9]
+   type = MaterialStdVectorAux
+   variable = strength_twin_9
+   property = twin_system_resistance
+   index = 9
+   execute_on = timestep_end
+  [../]
+  [./twin_tau_9]
+   type = MaterialStdVectorAux
+   variable = twin_tau_9
+   property = applied_shear_stress_twin_system
+   index = 9
+   execute_on = timestep_end
+  [../]
   [./gss_10]
     type = MaterialStdVectorAux
     variable = gss_10
@@ -858,6 +1108,20 @@
    type = MaterialStdVectorAux
    variable = tau_10
    property = applied_shear_stress
+   index = 10
+   execute_on = timestep_end
+  [../]
+  [./strength_twin_10]
+   type = MaterialStdVectorAux
+   variable = strength_twin_10
+   property = twin_system_resistance
+   index = 10
+   execute_on = timestep_end
+  [../]
+  [./twin_tau_10]
+   type = MaterialStdVectorAux
+   variable = twin_tau_10
+   property = applied_shear_stress_twin_system
    index = 10
    execute_on = timestep_end
   [../]
@@ -896,31 +1160,45 @@
    index = 11
    execute_on = timestep_end
   [../]
+  [./strength_twin_11]
+   type = MaterialStdVectorAux
+   variable = strength_twin_11
+   property = twin_system_resistance
+   index = 11
+   execute_on = timestep_end
+  [../]
+  [./twin_tau_11]
+   type = MaterialStdVectorAux
+   variable = twin_tau_11
+   property = applied_shear_stress_twin_system
+   index = 11
+   execute_on = timestep_end
+  [../]
 []
 
 [BCs]
-  [./roller_bot_x]
-    type = PresetBC
-    variable = disp_x
-    boundary = substrate-bottom
-    value = 0
-  [../]
-  [./fixed_sides_y]
-    type = PresetBC
-    variable = disp_y
-    boundary = 'substrate-right substrate-left'
-    value = 0
-  [../]
-  [./fixed_sides_z]
+  [./fixed_bot_z]
     type = PresetBC
     variable = disp_z
-    boundary = 'substrate-back substrate-front'
+    boundary = back
+    value = 0
+  [../]
+  [./fixed_bot_x]
+    type = PresetBC
+    variable = disp_x
+    boundary = left
+    value = 0
+  [../]
+  [./fixed_bot_y]
+    type = PresetBC
+    variable = disp_y
+    boundary = bottom
     value = 0
   [../]
   [./tdisp]
     type = FunctionPresetBC
     variable = disp_x
-    boundary = pillar-top
+    boundary = right
     function = tdisp
   [../]
 []
@@ -930,6 +1208,9 @@
     type = ComputeElasticityTensorConstantRotationCP
     C_ijkl = '332.365e3 186.817e3 186.817e3 332.365e3 186.817e3 332.365e3 72.773e3 72.773e3 72.773e3' #Values for 298K, Blaizot et.al. 2016
     fill_method = symmetric9
+    euler_angle_1 = 0
+    euler_angle_2 = 45.0
+    euler_angle_3 = 0
   [../]
   [./stress]
     type = ComputeCrystalPlasticityStress
@@ -939,8 +1220,9 @@
     type = CrystalPlasticityCDDNiAlloyUpdate
     number_slip_systems = 12
     slip_sys_file_name = fcc_input_slip_sys.txt
-    number_twin_systems = 0
-    twin_system_file_name = fcc_input_slip_sys.txt
+    number_twin_systems = 12
+    twin_system_file_name = fcc_input_twinning_systems.txt
+    upper_limit_twin_volume_fraction = 3.0e-3
     number_cross_slip_directions = 0 #6
     number_cross_slip_planes = 0 #2
     cross_slip_calculation_type = stochastic
@@ -950,7 +1232,8 @@
     Baily_Hirsch_barrier_coefficient = 0.4
     dislocation_self_hardening_parameter = 1
     dislocation_latent_hardening_parameter = 1.0
-    Peierls_stress = 3.639 #0.5e-4 times shear modulus
+    Peierls_stress = 1 #3.639 #0.5e-4 times shear modulus
+    coefficient_twin_resistance = 1.0
     shear_modulus = 72.773e3
     burgers_vector = 2.52e-7
     tertiary_precipitate_mean_diameter = 0.0 #2.50e-6 #Gwalani et al. (2016) Table 2, 8000 hrs aged
@@ -958,8 +1241,9 @@
     orowan_bowing_hardening_coefficient = 0.0 #0.05
     tertiary_apb_shearing_coefficient = 0.0 #0.95
     stol = 1.0e-3
+    zero_tol = 1e-8
     # slip_increment_tolerance = 1.0e-3 ## Seems to be too restrictive
-    maximum_substep_iteration = 10 # is 10 for BCC
+    maximum_substep_iteration = 2 # is 10 for BCC
     maxiter = 30
     maxiter_state_variable = 30
     line_search_method = CUT_HALF
@@ -969,20 +1253,50 @@
 []
 
 [Postprocessors]
+  [./nodal_force_x_int]
+    type = SideIntegralVariablePostprocessor
+    variable = nodal_force_x
+    boundary = right
+  [../]
+  [./nodal_force_x_avg]
+    type = SideAverageValue
+    variable = nodal_force_x
+    boundary = right
+  [../]
   [./nodal_force_x_sum]
     type = NodalSum
     variable = nodal_force_x
-    boundary = pillar-top
+    boundary = right
+  [../]
+  [./nodal_force_y_int]
+    type = SideIntegralVariablePostprocessor
+    variable = nodal_force_y
+    boundary = right
+  [../]
+  [./nodal_force_y_avg]
+    type = SideAverageValue
+    variable = nodal_force_y
+    boundary = right
   [../]
   [./nodal_force_y_sum]
     type = NodalSum
     variable = nodal_force_y
-    boundary = pillar-top
+    boundary = right
+  [../]
+  [./nodal_force_z_int]
+    type = SideIntegralVariablePostprocessor
+    variable = nodal_force_z
+    boundary = right
+  [../]
+  [./nodal_force_z_avg]
+    type = SideAverageValue
+    variable = nodal_force_z
+    boundary = right
   [../]
   [./nodal_force_z_sum]
     type = NodalSum
     variable = nodal_force_z
-    boundary = pillar-top
+    boundary = right
   [../]
   [./stress_zz]
     type = ElementAverageValue
@@ -996,6 +1310,10 @@
     type = ElementAverageValue
     variable = fp_zz
   [../]
+  #[./rot_out_001]
+  #  type = ElementAverageValue
+  #  variable = rot_out_001
+  #[../]
   [./e_zz]
     type = ElementAverageValue
     variable = e_zz
@@ -1048,6 +1366,10 @@
     type = ElementAverageValue
     variable = eff_strain_lag
   [../]
+  [./twin_volume_fraction]
+    type = ElementAverageValue
+    variable = twin_volume_fraction
+  [../]
   [./gss_0]
     type = ElementAverageValue
     variable = gss_0
@@ -1067,6 +1389,14 @@
   [./tau_0]
    type = ElementAverageValue
    variable = tau_0
+  [../]
+  [./strength_twin_0]
+   type = ElementAverageValue
+   variable = strength_twin_0
+  [../]
+  [./twin_tau_0]
+   type = ElementAverageValue
+   variable = twin_tau_0
   [../]
   [./gss_1]
     type = ElementAverageValue
@@ -1088,6 +1418,14 @@
    type = ElementAverageValue
    variable = tau_1
   [../]
+  [./strength_twin_1]
+   type = ElementAverageValue
+   variable = strength_twin_1
+  [../]
+  [./twin_tau_1]
+   type = ElementAverageValue
+   variable = twin_tau_1
+  [../]
   [./gss_2]
     type = ElementAverageValue
     variable = gss_2
@@ -1107,6 +1445,14 @@
   [./tau_2]
    type = ElementAverageValue
    variable = tau_2
+  [../]
+  [./strength_twin_2]
+   type = ElementAverageValue
+   variable = strength_twin_2
+  [../]
+  [./twin_tau_2]
+   type = ElementAverageValue
+   variable = twin_tau_2
   [../]
   [./gss_3]
     type = ElementAverageValue
@@ -1128,6 +1474,14 @@
    type = ElementAverageValue
    variable = tau_3
   [../]
+  [./strength_twin_3]
+   type = ElementAverageValue
+   variable = strength_twin_3
+  [../]
+  [./twin_tau_3]
+   type = ElementAverageValue
+   variable = twin_tau_3
+  [../]
   [./gss_4]
     type = ElementAverageValue
     variable = gss_4
@@ -1147,6 +1501,14 @@
   [./tau_4]
    type = ElementAverageValue
    variable = tau_4
+  [../]
+  [./strength_twin_4]
+   type = ElementAverageValue
+   variable = strength_twin_4
+  [../]
+  [./twin_tau_4]
+   type = ElementAverageValue
+   variable = twin_tau_4
   [../]
   [./gss_5]
     type = ElementAverageValue
@@ -1168,6 +1530,14 @@
    type = ElementAverageValue
    variable = tau_5
   [../]
+  [./strength_twin_5]
+   type = ElementAverageValue
+   variable = strength_twin_5
+  [../]
+  [./twin_tau_5]
+   type = ElementAverageValue
+   variable = twin_tau_5
+  [../]
   [./gss_6]
     type = ElementAverageValue
     variable = gss_6
@@ -1187,6 +1557,14 @@
   [./tau_6]
    type = ElementAverageValue
    variable = tau_6
+  [../]
+  [./strength_twin_6]
+   type = ElementAverageValue
+   variable = strength_twin_6
+  [../]
+  [./twin_tau_6]
+   type = ElementAverageValue
+   variable = twin_tau_6
   [../]
   [./gss_7]
     type = ElementAverageValue
@@ -1208,6 +1586,14 @@
    type = ElementAverageValue
    variable = tau_7
   [../]
+  [./strength_twin_7]
+   type = ElementAverageValue
+   variable = strength_twin_7
+  [../]
+  [./twin_tau_7]
+   type = ElementAverageValue
+   variable = twin_tau_7
+  [../]
   [./gss_8]
     type = ElementAverageValue
     variable = gss_8
@@ -1227,6 +1613,14 @@
   [./tau_8]
    type = ElementAverageValue
    variable = tau_8
+  [../]
+  [./strength_twin_8]
+   type = ElementAverageValue
+   variable = strength_twin_8
+  [../]
+  [./twin_tau_8]
+   type = ElementAverageValue
+   variable = twin_tau_8
   [../]
   [./gss_9]
     type = ElementAverageValue
@@ -1248,6 +1642,14 @@
    type = ElementAverageValue
    variable = tau_9
   [../]
+  [./strength_twin_9]
+   type = ElementAverageValue
+   variable = strength_twin_9
+  [../]
+  [./twin_tau_9]
+   type = ElementAverageValue
+   variable = twin_tau_9
+  [../]
   [./gss_10]
     type = ElementAverageValue
     variable = gss_10
@@ -1267,6 +1669,14 @@
   [./tau_10]
    type = ElementAverageValue
    variable = tau_10
+  [../]
+  [./strength_twin_10]
+   type = ElementAverageValue
+   variable = strength_twin_10
+  [../]
+  [./twin_tau_10]
+   type = ElementAverageValue
+   variable = twin_tau_10
   [../]
   [./gss_11]
     type = ElementAverageValue
@@ -1288,6 +1698,14 @@
    type = ElementAverageValue
    variable = tau_11
   [../]
+  [./strength_twin_11]
+   type = ElementAverageValue
+   variable = strength_twin_11
+  [../]
+  [./twin_tau_11]
+   type = ElementAverageValue
+   variable = twin_tau_11
+  [../]
 []
 
 [Preconditioning]
@@ -1308,21 +1726,15 @@
   nl_rel_tol = 1e-4
 
   dtmax = 1.0e-3
-  dtmin = 1.0e-6
+  dtmin = 1.0e-12
   dt = 1.0e-3
-  end_time = 120.0
-
-  [./Predictor]
-    type = SimplePredictor
-    scale = 1.0
-    skip_times_old = '0.0'
-  [../]
+  end_time = 150
 []
 
 [Outputs]
   csv = true
-  interval = 50
-  exodus = true
+#  interval = 50
+  exodus = false
   [pgraph]
     type = PerfGraphOutput
     execute_on = 'initial final'  # Default is "final"

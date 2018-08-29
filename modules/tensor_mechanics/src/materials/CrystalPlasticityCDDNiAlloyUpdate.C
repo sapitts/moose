@@ -57,7 +57,8 @@ CrystalPlasticityCDDNiAlloyUpdate::CrystalPlasticityCDDNiAlloyUpdate(const Input
     _twin_schmid_tensor(declareProperty<std::vector<RankTwoTensor>>("twinning_schmid_tensor")),
     _total_volume_fraction_twins(declareProperty<Real>("total_volume_fraction_twins")),
     _total_volume_fraction_twins_old(getMaterialPropertyOld<Real>("total_volume_fraction_twins")),
-    _twin_volume_fraction_increment(declareProperty<std::vector<Real> >("twin_volume_fraction_increment")),
+    _twin_shear_increment(declareProperty<std::vector<Real> >("twin_volume_fraction_increment")),
+    _previous_iteration_twin_volume_fraction(declareProperty<Real>("previous_iteration_twin_volume_fraction")),
     _characteristic_twin_shear(getParam<Real>("characteristic_twin_shear")),
     _twin_system_resistance(declareProperty<std::vector<Real> >("twin_system_resistance")),
     _coefficient_twin_resistance(getParam<Real>("coefficient_twin_resistance")),
@@ -84,7 +85,7 @@ CrystalPlasticityCDDNiAlloyUpdate::initQpStatefulProperties()
   if (_include_twinning_slip_contribution)
   {
     _twin_schmid_tensor[_qp].resize(_number_twin_systems);
-    _twin_volume_fraction_increment[_qp].resize(_number_twin_systems);
+    _twin_shear_increment[_qp].resize(_number_twin_systems);
     _twin_system_resistance[_qp].resize(_number_twin_systems);
     _tau_twin_sytem[_qp].resize(_number_twin_systems);
 
@@ -92,7 +93,7 @@ CrystalPlasticityCDDNiAlloyUpdate::initQpStatefulProperties()
     for (unsigned int i = 0; i < _number_twin_systems; ++i)
     {
       _twin_schmid_tensor[_qp][i].zero();
-      _twin_volume_fraction_increment[_qp][i] = 0.0;
+      _twin_shear_increment[_qp][i] = 0.0;
       _twin_system_resistance[_qp][i] = 0.0;
       _tau_twin_sytem[_qp][i] = 0.0;
     }
@@ -101,6 +102,13 @@ CrystalPlasticityCDDNiAlloyUpdate::initQpStatefulProperties()
   }
 
   CrystalPlasticityCDDUpdateBase::initQpStatefulProperties();
+}
+
+void
+CrystalPlasticityCDDNiAlloyUpdate::setInitialConstitutiveVariableValues()
+{
+  _total_volume_fraction_twins[_qp] = _total_volume_fraction_twins_old[_qp];
+  CrystalPlasticityCDDUpdateBase::setInitialConstitutiveVariableValues();
 }
 
 void
@@ -141,8 +149,17 @@ CrystalPlasticityCDDNiAlloyUpdate::initSlipSystemResistance()
 
   if (_include_twinning_slip_contribution)
   {
+    Real sum = 0.0;
+    const Real barrier_coeffient = _baily_hirsch_alpha * _burgers_vector * _shear_modulus;
+
+    for (unsigned int i = 0; i < _number_slip_systems; ++i)
+      sum += _mobile_dislocations[_qp][i] + _immobile_dislocations[_qp][i];
+
+    const Real forest_strength = barrier_coeffient * std::sqrt(sum);
+
     for (unsigned int i = 0; i < _number_twin_systems; ++i)
-      _twin_system_resistance[_qp][i] = _coefficient_twin_resistance * _peierls_strength;
+      _twin_system_resistance[_qp][i] = forest_strength +
+                                        _coefficient_twin_resistance * _peierls_strength;
   }
 }
 
@@ -162,11 +179,10 @@ CrystalPlasticityCDDNiAlloyUpdate::calculateConstitutiveEquivalentSlipIncrement(
   if (_include_twinning_slip_contribution)
   {
     for (unsigned int i = 0; i < _number_twin_systems; ++i)
+    {
       _tau_twin_sytem[_qp][i] = _pk2[_qp].doubleContraction(_twin_schmid_tensor[_qp][i]);
-
-    calculateTwinVolumeFraction(error_tolerance);
-    if (error_tolerance)
-      return;
+      // std::cout << "What do I get for a tau here? " << _tau_twin_sytem[_qp][i] << std::endl;
+    }
   }
 
   // Sum up the slip increments to find the equivalent plastic strain due to glide
@@ -175,18 +191,16 @@ CrystalPlasticityCDDNiAlloyUpdate::calculateConstitutiveEquivalentSlipIncrement(
 
   if (_include_twinning_slip_contribution)
   {
+    calculateTwinSlipIncrement(error_tolerance);
     for (unsigned int i = 0; i < _number_twin_systems; ++i)
-      equivalent_twin_shear_increment += _twin_schmid_tensor[_qp][i] * _twin_volume_fraction_increment[_qp][i];
-
-    equivalent_twin_shear_increment *= _characteristic_twin_shear;
+      equivalent_twin_shear_increment += _twin_schmid_tensor[_qp][i] * _twin_shear_increment[_qp][i];
   }
+  // std::cout << "The equivalent twin shear increment is " << equivalent_twin_shear_increment << std::endl;
 
   // Sum the total equivalent slip increment for glide and twin
   equivalent_slip_increment = (1.0 - _total_volume_fraction_twins[_qp]) * equivalent_glide_slip_increment
                                + _total_volume_fraction_twins[_qp] * equivalent_twin_shear_increment;
 
-  // std::cout << "At qp " << _qp << " the value of the summed slip increment value is: " << std::endl;
-  // std::cout << equivalent_slip_increment << std::endl;
 
   // Now store off the plastic velocity gradient for use in the GND calculation
   _slip_increment_sum[_qp] = equivalent_slip_increment;
@@ -195,51 +209,74 @@ CrystalPlasticityCDDNiAlloyUpdate::calculateConstitutiveEquivalentSlipIncrement(
 }
 
 void
-CrystalPlasticityCDDNiAlloyUpdate::calculateTwinVolumeFraction(bool & error_tolerance)
+CrystalPlasticityCDDNiAlloyUpdate::calculateTwinSlipIncrement(bool & error_tolerance)
 {
-  if (MooseUtils::relativeFuzzyGreaterEqual(_total_volume_fraction_twins_old[_qp], _limit_twin_volume_fraction))
+  // std::cout << "Inside calculateTwinSlipIncrement at element " << _current_elem->id() << " and qp " << _qp << std::endl;
+  if (MooseUtils::relativeFuzzyLessThan(_total_volume_fraction_twins_old[_qp], _limit_twin_volume_fraction))
   {
-    // run the calculations to find the volume fraction increment
-    Real total_volume_fraction_increment = 0.0;
     for (unsigned int i = 0; i < _number_twin_systems; ++i)
     {
       if ( _tau_twin_sytem[_qp][i] >= _twin_system_resistance[_qp][i] )
       {
         const Real driving_force = (_tau_twin_sytem[_qp][i] / _twin_system_resistance[_qp][i]);
-        _twin_volume_fraction_increment[_qp][i] = std::pow(driving_force, (1.0 / _m_exp))
-                                       * _gamma_reference * _substep_dt / _characteristic_twin_shear;
+        _twin_shear_increment[_qp][i] = std::pow(driving_force, (1.0 / _m_exp))
+                                       * _gamma_reference * _substep_dt;
       }
       else  // Constitutive law: less than zero applied stress, no twinning
-        _twin_volume_fraction_increment[_qp][i] = 0.0;
+        _twin_shear_increment[_qp][i] = 0.0;
 
-      total_volume_fraction_increment += _twin_volume_fraction_increment[_qp][i];
+      // std::cout << "  on twin system " << i << "  the calculated twin shear increment is " << _twin_shear_increment[_qp][i]  << std::endl;
     }
+  }
+  else // Once reach the limit of volume fraction, all subsequent increments will be zero
+  {
+    // _total_volume_fraction_twins[_qp] = _total_volume_fraction_twins_old[_qp];
+    std::fill(_twin_shear_increment[_qp].begin(), _twin_shear_increment[_qp].end(), 0.0);
+  }
 
-    if ((_total_volume_fraction_twins_old[_qp] < _zero_tol) && (total_volume_fraction_increment > _zero_tol))
+  // std::cout << "In summing twinning contributions to slip at element " << _current_elem->id() << " and qp " << _qp << std::endl;
+  for (unsigned int i = 0; i < _number_twin_systems; ++i)
+  {
+    // std::cout << "  on the twin system " << i << " the twin shear increment is " << _twin_shear_increment[_qp][i] << std::endl;
+    if (_twin_shear_increment[_qp][i] > _slip_incr_tol)
     {
-        // std::cout << "Hit the zero old volume fraction and too big volume fraction increment: " << total_volume_fraction_increment << std::endl;
-      error_tolerance = true;
-      return;
-    }
-    else if (total_volume_fraction_increment > _rel_state_var_tol * _total_volume_fraction_twins_old[_qp]) // Might need a vol fraction specific tolerance variable
-    {
-  #ifdef DEBUG
-        mooseWarning("Maximum allowable twinning volume fraction increment exceeded with a value of ", total_volume_fraction_increment, " at element ", _current_elem->id(), " and qp ", _qp);
-  #endif
-        error_tolerance = true;
-        return;
-    }
-    else
-      _total_volume_fraction_twins[_qp] = total_volume_fraction_increment + _total_volume_fraction_twins_old[_qp];
-
-    if (_total_volume_fraction_twins[_qp] > _limit_twin_volume_fraction) // Constitutive law limit
-    {
+#ifdef DEBUG
+      mooseWarning("Maximum allowable twinning volume fraction increment exceeded on twin system ", i, " with a value of ", _twin_shear_increment[_qp][i], " at element ", _current_elem->id(), " and qp ", _qp);
+#endif
       error_tolerance = true;
       return;
     }
   }
-  else // Once reach the limit of volume fraction, all subsequent increments will be zero
-    std::fill(_twin_volume_fraction_increment[_qp].begin(), _twin_volume_fraction_increment[_qp].end(), 0.0);
+  error_tolerance = false;
+}
+
+void
+CrystalPlasticityCDDNiAlloyUpdate::calculateTwinVolumeFraction(bool & error_tolerance)
+{
+  // std::cout << "Inside calculateTwinVolumeFraction at element " << _current_elem->id() << " and qp " << _qp << std::endl;
+  Real total_volume_fraction_increment = 0.0;
+  for (unsigned int i = 0; i < _number_twin_systems; ++i)
+    total_volume_fraction_increment += _twin_shear_increment[_qp][i];
+
+  total_volume_fraction_increment /= _characteristic_twin_shear;
+
+
+  if (_total_volume_fraction_twins_old[_qp] < _zero_tol && total_volume_fraction_increment < 0.0)
+    _total_volume_fraction_twins[_qp] = _total_volume_fraction_twins_old[_qp];
+  else
+    _total_volume_fraction_twins[_qp] = total_volume_fraction_increment + _total_volume_fraction_twins_old[_qp];
+
+  if (_total_volume_fraction_twins[_qp] < 0.0)
+  {
+    error_tolerance = true;
+    return;
+  }
+  else if (MooseUtils::relativeFuzzyGreaterThan(_total_volume_fraction_twins[_qp], _limit_twin_volume_fraction, _zero_tol))
+  {
+    error_tolerance = true;
+    return;
+  }
+  error_tolerance = false;
 }
 
 void
@@ -278,9 +315,98 @@ CrystalPlasticityCDDNiAlloyUpdate::calculateTwinSlipDerivative(std::vector<Real>
     else
     {
       const Real twin_slip_derivative = _m_exp * _tau_twin_sytem[_qp][i];
-      dslip_twin_dtau[i] = _twin_volume_fraction_increment[_qp][i] / twin_slip_derivative;
+      dslip_twin_dtau[i] = _twin_shear_increment[_qp][i] / twin_slip_derivative;
     }
   }
+}
+
+void
+CrystalPlasticityCDDNiAlloyUpdate::updateConstitutiveSlipSystemResistanceAndVariables(bool & error_tolerance)
+{
+  CrystalPlasticityCDDUpdateBase::updateConstitutiveSlipSystemResistanceAndVariables(error_tolerance);
+
+  if (error_tolerance)
+    return;
+
+  if (_include_twinning_slip_contribution)
+  {
+    _previous_iteration_twin_volume_fraction[_qp] = _total_volume_fraction_twins[_qp];
+
+    calculateTwinVolumeFraction(error_tolerance);
+    if (error_tolerance)
+      return;
+
+    calculateTwinSystemResistance(error_tolerance);
+  }
+}
+
+bool
+CrystalPlasticityCDDNiAlloyUpdate::areConstitutiveStateVariablesConverged()
+{
+  bool not_converged_flag = false;
+
+  const Real twin_diff = std::abs(_previous_iteration_twin_volume_fraction[_qp]
+                        - _total_volume_fraction_twins[_qp]);
+
+  if (_total_volume_fraction_twins_old[_qp] < _zero_tol)
+  {
+    if (twin_diff > _zero_tol)
+    {
+      std::cout << "Hit a value of too little old twin volume fraction and too much new twin volume fraction! \n with twin diff " << twin_diff << std::endl;
+      not_converged_flag = true;
+    }
+  }
+  else
+  {
+    if (twin_diff > _rel_state_var_tol * _total_volume_fraction_twins_old[_qp])
+    {
+      std::cout << " Failed in twinning because the change in volume fraction is too large at " << twin_diff << std::endl;
+      std::cout << " twin volume fraction: " << _total_volume_fraction_twins[_qp] << " with the tolerance: " << _rel_state_var_tol << " and the old value: " << _total_volume_fraction_twins_old[_qp] << std::endl;
+      not_converged_flag = true;
+    }
+  }
+
+  if (!not_converged_flag)
+    not_converged_flag = CrystalPlasticityCDDUpdateBase::areConstitutiveStateVariablesConverged();
+
+  return not_converged_flag;
+}
+
+Real CrystalPlasticityCDDNiAlloyUpdate::calculateMeanFreeGlidePath()
+{
+  Real forest_only_glide_path_inv = CrystalPlasticityCDDUpdateBase::calculateMeanFreeGlidePath();
+
+  Real twin_glide_path_inv = std::sqrt(1.0 - _total_volume_fraction_twins[_qp]);
+  // std::cout << "The value of the forest mean free glide path is " << forest_only_glide_path_inv << std::endl;
+  // std::cout << " and the value of the twin glide path contribution is " << twin_glide_path_inv << std::endl;
+
+  Real glide_path_inv = forest_only_glide_path_inv / twin_glide_path_inv;
+
+  return glide_path_inv;
+}
+
+void
+CrystalPlasticityCDDNiAlloyUpdate::calculateTwinSystemResistance(bool & error_tolerance)
+{
+  Real sum = 0.0;
+  const Real barrier_coeffient = _baily_hirsch_alpha * _burgers_vector * _shear_modulus;
+
+  for (unsigned int i = 0; i < _number_slip_systems; ++i)
+    sum += _mobile_dislocations[_qp][i] + _immobile_dislocations[_qp][i];
+
+  const Real forest_strength = barrier_coeffient * std::sqrt(sum);
+
+  const Real twin_forest = _baily_hirsch_alpha * _shear_modulus * _total_volume_fraction_twins[_qp];
+
+  for (unsigned int i = 0; i < _number_twin_systems; ++i)
+    _twin_system_resistance[_qp][i] = forest_strength + twin_forest +
+                                      _coefficient_twin_resistance * _peierls_strength;
+
+
+  //Now perform the check to see if the slip system should be updated
+  // But I don't need this right now because these values are set by glide dislcoations
+  // and are checked there
+  error_tolerance = false;
 }
 
 Real

@@ -234,6 +234,9 @@ CrystalPlasticityCDDUpdateBase::calculateGlideSlipIncrement(bool & error_toleran
     {
 #ifdef DEBUG
       mooseWarning("Maximum allowable glide slip increment exceeded on slip system ", i, " with a value of ", std::abs(_glide_slip_increment[_qp][i]), "At element ", _current_elem->id(), " and qp ", _qp);
+      std::cout << "  the glide velocity is " << _glide_velocity[_qp][i] << std::endl;
+      std::cout << "The applied tau is " << _tau[_qp][i] << std::endl;
+      std::cout << "  the slip system resistance is " << _slip_system_resistance[_qp][i] << std::endl;
 #endif
       error_tolerance = true;
       return;
@@ -357,13 +360,7 @@ CrystalPlasticityCDDUpdateBase::calculateDislocationDensities(bool & error_toler
   if (_calculate_gnd_contribution)
     calculateGeometricallyNecessaryDislocations();
 
-  // Calculate the mean free glide path for dislocation motion on each slip system
-  Real glide_path_inv = 0.0;
-  for (unsigned int i = 0; i < _number_slip_systems; ++i)
-    glide_path_inv += _mobile_dislocations[_qp][i] + _immobile_dislocations[_qp][i];
-
-  glide_path_inv = std::sqrt(glide_path_inv + _geometrical_necessary_dislocations[_qp])
-                  * _glide_path_coeff;
+  Real glide_path_inv = calculateMeanFreeGlidePath();
 
   //Calculate terms of the CDD dislocation evolution for each slip system
   for (unsigned int i = 0; i < _number_slip_systems; ++i)
@@ -409,6 +406,19 @@ CrystalPlasticityCDDUpdateBase::calculateDislocationDensities(bool & error_toler
     }
   }
   error_tolerance = false;
+}
+
+Real
+CrystalPlasticityCDDUpdateBase::calculateMeanFreeGlidePath()
+{
+  Real glide_path_inv = 0.0;
+  for (unsigned int i = 0; i < _number_slip_systems; ++i)
+    glide_path_inv += _mobile_dislocations[_qp][i] + _immobile_dislocations[_qp][i];
+
+  glide_path_inv = std::sqrt(glide_path_inv + _geometrical_necessary_dislocations[_qp])
+                    * _glide_path_coeff;
+
+  return glide_path_inv;
 }
 
 void

@@ -9,6 +9,7 @@
 
 #include "CrystalPlasticityEnthalpyFlowRuleUpdate.h"
 #include "libmesh/utility.h"
+#include "MooseRandom.h"
 
 registerMooseObject("TensorMechanicsApp", CrystalPlasticityEnthalpyFlowRuleUpdate);
 

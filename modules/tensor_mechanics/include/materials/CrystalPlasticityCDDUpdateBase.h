@@ -89,6 +89,18 @@ protected:
 
   void calculateDislocationDensities(bool & error_tolerance);
 
+  /**
+   * Finds the mean free glide path for forest hardening from the total number
+   * of dislocations within the system
+   */
+  virtual Real calculateMeanFreeGlidePath();
+
+  /**
+   * Calculates the cross slip of dislocations based on the probabilty of cross
+   * slip calculation from Rhee et al. (1998).
+   * Uses either a Monte Carlo or a addative approach to determine how the cross
+   * slip probablity is incorporated in to the cross slip of dislocations
+   */
   void calculateDislocationCrossSlip();
 
   /**

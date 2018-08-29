@@ -37,6 +37,8 @@ protected:
    */
   virtual void initQpStatefulProperties() override;
 
+  virtual void setInitialConstitutiveVariableValues() override;
+
   /// Read in the crystal specific twinning systems from a file
   void getTwinningSystems();
 
@@ -73,10 +75,27 @@ protected:
    */
   virtual void calculateTwinSlipDerivative(std::vector<Real> & dslip_twin_dtau);
 
+  virtual void updateConstitutiveSlipSystemResistanceAndVariables(bool & error_tolerance) override;
+
+  virtual bool areConstitutiveStateVariablesConverged() override;
+
   /**
-   * Calculates the  twin volume fraction rate following the phemonological model
+   * Calculates the mean free path for glide dislocations as a function of the
+   * total glide dislocations and the volume fraction of twinned dislocations
+   * following Kalidindi (1998)
+   */
+  virtual Real calculateMeanFreeGlidePath() override;
+
+  /**
+   * Calculates the  twin shear increment following the phemonological model
    * proposed in Kalidindi (2001) International Journal of Plasticity, 17(6)
    * pp. 837-860, eqn 19.
+   */
+  void calculateTwinSlipIncrement(bool & error_tolerance);
+
+  /**
+   * Calculates the  twin volume fraction from the twin shear increment computed
+   * in calculateTwinSlipIncrement following Kalidindi (2001)
    */
   void calculateTwinVolumeFraction(bool & error_tolerance);
 
@@ -86,6 +105,12 @@ protected:
    * sets the value for the static_resistance_contribution vector.
    */
   virtual void initSlipSystemResistance() override;
+
+  /**
+   * Calculates the twin system resistance as a function of the glide dislocations
+   * forest following Hazeli (2015) IJP 68, 55-76 eq 6
+  */
+  void calculateTwinSystemResistance(bool & error_tolerance);
 
   /**
    * Calculates the constant hardening effect due to Orowan bowing of
@@ -129,14 +154,15 @@ protected:
   MaterialProperty<std::vector<RankTwoTensor> > & _twin_schmid_tensor;
   ///@}
 
-  ///@{ Evolving state variable for twinned volume fraction of the crystal
+  ///@{Evolving state variable for twinned volume fraction of the crystal
   MaterialProperty<Real> & _total_volume_fraction_twins;
   const MaterialProperty<Real> & _total_volume_fraction_twins_old;
-  MaterialProperty<std::vector<Real> > & _twin_volume_fraction_increment;
+  MaterialProperty<std::vector<Real> > & _twin_shear_increment;
+  MaterialProperty<Real> & _previous_iteration_twin_volume_fraction;
   ///@}
 
   /// Width of the twin based on the lattice parameter
-  const Real _characteristic_twin_shear; // this must get multiplied by a burgers vector or something
+  const Real _characteristic_twin_shear;
 
   ///@{ Resistance of the crystal to growth of twins parameters
   MaterialProperty<std::vector<Real> > & _twin_system_resistance;
