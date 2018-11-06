@@ -2214,11 +2214,16 @@
   ## with correct spelling:
   petsc_options_iname = '-pc_type -pc_hypre_type -pc_hypre_boomeramg_strong_threshold'
   petsc_options_value = 'hypre    boomeramg      0.7'
+
+  [./Predictor]
+    type = SimplePredictor
+    scale = 1.0
+  [../]
 []
 
 [Outputs]
   csv = true
   interval = 50
-  print_perf_log = true
+  perf_graph = true
   exodus = true
 []

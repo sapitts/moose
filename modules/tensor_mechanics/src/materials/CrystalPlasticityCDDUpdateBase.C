@@ -41,7 +41,7 @@ InputParameters validParams<CrystalPlasticityCDDUpdateBase>()
   params.addParam<Real>("cross_slip_barrier_strength", 5.0, "The strength of the crystal to resist cross slip");
   params.addParam<Real>("alpha_6", 1.0, "Mobile-immobile dislocation annhiliaton coefficient");
   params.addParam<Real>("radius_capture_annhiliation", 15.0, "Multiplier of the Burger's vector to determine the radius of capture for two annhiliating dislocations on the same slip plane");
-  params.addParam<Real>("mean_free_glide_path_coefficient", 1.0, "The coefficient for the calculation of the mean free glide path used to calculate mobile and immobile dislocation densities");
+  params.addParam<Real>("mean_free_glide_path_coefficient", 1.0, "The coefficient for the calculation of the mean free glide path term from the mobile and immobile dislocation densities");
 
   params.addParam<Real>("cross_slip_activation_barrier_factor", 0.004, "The factor by which to multiply the shear modulus to calculate the strength barrier which a dislocation must overcome to cross slip");
   params.addParam<Real>("cross_slip_activation_volume_factor", 20.0, "The factor by which to multiply the burger's vector to determine the volume required for a dislocation to cross slip");

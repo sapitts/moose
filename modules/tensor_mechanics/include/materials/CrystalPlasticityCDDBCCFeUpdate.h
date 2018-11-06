@@ -61,6 +61,12 @@ protected:
   virtual bool areConstitutiveStateVariablesConverged() override;
 
   /**
+   * Calculates the mean free path for glide dislocations as a function of the
+   * total glide dislocations and the sia loop density, following Chakraborty (2016)
+   */
+  virtual Real calculateMeanFreeGlidePath() override;
+
+  /**
    * Calculates the total slip system resistance contribution for those
    * hardening mechanisms which depend on evolving quantities, such as
    * dislocations. This method adds the evolved resistance quanity to the
@@ -118,6 +124,7 @@ protected:
   MaterialProperty<Real> & _previous_it_sia_loop;
   MaterialProperty<Real> & _sia_loop_slip_resistance;
   const Real _sia_loop_size;
+  const Real _sia_loop_glide_path_coeff;
   const Real _sia_loop_hardening_coefficient;
   const Real _sia_loop_hardening_exponent;
   const Real _sia_loop_annhiliation_coefficient;

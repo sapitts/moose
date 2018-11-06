@@ -26,6 +26,7 @@ InputParameters validParams<CrystalPlasticityCDDBCCFeUpdate>()
 
   params.addParam<Real>("initial_irradiation_SIA_loop_density", 0.0, "Initial density of the self interstitial atoms loops that form from irrdiation dose; this density is the sum across all of the SIA loop planes, in 1/mm^3");
   params.addParam<Real>("irradiation_SIA_loop_size", 2.48e-5, "Average size of the self interstitial atoms loops, in mm");
+  params.addParam<Real>("irradiation_SIA_mean_free_glide_path_coefficient", 0.5, "The coefficient for the calculation of the mean free glide path term from the SIA loop density");
   params.addParam<Real>("irradiation_SIA_loop_hardening_coefficient", 0.1, "Leading coefficient for the 3D obstacle hardening model applied to the strength from dislocation - SIA loop interactions");
   params.addParam<Real>("irradiation_SIA_loop_hardening_exponent", 0.5, "Exponential term for the contribution of the SIA loops to the slip system strength from dislocation - SIA loop interactions");
   params.addParam<Real>("irradiation_SIA_loop_annihilation_coefficient", 1.0, "Leading coefficient for the evolution of self interstitial loop density, representing the annilation of loops by dislocations");
@@ -50,6 +51,7 @@ CrystalPlasticityCDDBCCFeUpdate::CrystalPlasticityCDDBCCFeUpdate(const InputPara
     _previous_it_sia_loop(declareProperty<Real>("previous_iteration_SIA_loop_density")),
     _sia_loop_slip_resistance(declareProperty<Real>("irradiation_SIA_loop_slip_resistance")),
     _sia_loop_size(getParam<Real>("irradiation_SIA_loop_size")),
+    _sia_loop_glide_path_coeff(getParam<Real>("irradiation_SIA_mean_free_glide_path_coefficient")),
     _sia_loop_hardening_coefficient(getParam<Real>("irradiation_SIA_loop_hardening_coefficient")),
     _sia_loop_hardening_exponent(getParam<Real>("irradiation_SIA_loop_hardening_exponent")),
     _sia_loop_annhiliation_coefficient(getParam<Real>("irradiation_SIA_loop_annihilation_coefficient")),
@@ -130,7 +132,6 @@ CrystalPlasticityCDDBCCFeUpdate::updateConstitutiveSlipSystemResistanceAndVariab
     return;
   }
 
-
   if (_calculate_sia_loop_hardening)
     calculateIradiationSIALoopDensity();
 
@@ -154,6 +155,20 @@ CrystalPlasticityCDDBCCFeUpdate::areConstitutiveStateVariablesConverged()
     return true;
 
   return false;
+}
+
+Real
+CrystalPlasticityCDDBCCFeUpdate::calculateMeanFreeGlidePath()
+{
+  Real forest_only_glide_path_inv = CrystalPlasticityCDDUpdateBase::calculateMeanFreeGlidePath();
+
+  Real sia_glide_path_inv = _sia_loop_glide_path_coeff * std::sqrt(_sia_loop_size *_sia_loop_density[_qp]);
+  std::cout << "The value of the forest mean free glide path is " << forest_only_glide_path_inv << std::endl;
+  std::cout << " and the value of the twin glide path contribution is " << sia_glide_path_inv << std::endl;
+
+  Real glide_path_inv = forest_only_glide_path_inv + sia_glide_path_inv;
+
+  return glide_path_inv;
 }
 
 void
