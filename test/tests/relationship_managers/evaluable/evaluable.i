@@ -61,7 +61,7 @@
   [evaluable_uo0]
     type = ElemSideNeighborLayersTester
     execute_on = initial
-    element_side_neighbor_layers = 2
+    element_side_neighbor_layers = 4
     rank = 0
   []
   [evaluable_uo1]

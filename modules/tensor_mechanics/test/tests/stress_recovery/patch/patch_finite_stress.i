@@ -5,37 +5,38 @@
 [Mesh]
   type = GeneratedMesh
   dim = 2
-  nx = 2
-  ny = 2
-  elem_type = QUAD4
+  nx = 10
+  ny = 10
+  elem_type = QUAD9
+  uniform_refine = 0
 []
 
 [Variables]
   [disp_x]
-    order = FIRST
+    order = Second
     family = LAGRANGE
   []
   [disp_y]
-    order = FIRST
+    order = Second
     family = LAGRANGE
   []
 []
 
 [AuxVariables]
   [stress_xx]
-    order = FIRST
+    order = Second
     family = MONOMIAL
   []
   [stress_yy]
-    order = FIRST
+    order = Second
     family = MONOMIAL
   []
   [stress_xx_recovered]
-    order = FIRST
+    order = Second
     family = LAGRANGE
   []
   [stress_yy_recovered]
-    order = FIRST
+    order = Second
     family = LAGRANGE
   []
 []
@@ -105,7 +106,7 @@
 [BCs]
   [top_xdisp]
     type = FunctionPresetBC
-    variable = disp_x
+    variable = disp_y
     boundary = 'top'
     function = 0
   []
@@ -126,6 +127,25 @@
     variable = disp_y
     boundary = 'bottom'
     function = 0
+  []
+[]
+
+[Postprocessors]
+  [stress_xx]
+    type = ElementAverageValue
+    variable = stress_xx
+  []
+  [stress_yy]
+    type = ElementAverageValue
+    variable = stress_yy
+  []
+  [stress_xx_recovered]
+    type = ElementAverageValue
+    variable = stress_xx_recovered
+  []
+  [stress_yy_recovered]
+    type = ElementAverageValue
+    variable = stress_yy_recovered
   []
 []
 
@@ -155,4 +175,5 @@
 [Outputs]
   exodus = true
   print_linear_residuals = false
+  console = true
 []

@@ -131,6 +131,25 @@
   []
 []
 
+[Postprocessors]
+  [stress_xx]
+    type = ElementAverageValue
+    variable = stress_xx
+  []
+  [stress_yy]
+    type = ElementAverageValue
+    variable = stress_yy
+  []
+  [stress_xx_recovered]
+    type = ElementAverageValue
+    variable = stress_xx_recovered
+  []
+  [stress_yy_recovered]
+    type = ElementAverageValue
+    variable = stress_yy_recovered
+  []
+[]
+
 [Preconditioning]
   [smp]
     type = SMP
