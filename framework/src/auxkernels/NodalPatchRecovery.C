@@ -9,6 +9,7 @@
 
 #include "NodalPatchRecovery.h"
 #include "SwapBackSentinel.h"
+#include "ElementPointNeighbors.h"
 
 template <>
 InputParameters
@@ -20,11 +21,9 @@ validParams<NodalPatchRecovery>()
                              orders,
                              "Polynomial order used in least squares fitting of material property "
                              "over the local patch of elements connected to a given node");
+  params.registerRelationshipManagers("ElementPointNeighbors");
+  params.addPrivateParam<unsigned short>("element_point_neighbor_layers", 2);
   params.addParamNamesToGroup("patch_polynomial_order", "Advanced");
-
-  // TODO make this class work with relationship manager
-  // params.registerRelationshipManagers("ElementSideNeighborLayers");
-  // params.addPrivateParam<unsigned int short>("element_side_neighbor_layers", 2);
 
   return params;
 }
@@ -42,17 +41,6 @@ NodalPatchRecovery::NodalPatchRecovery(const InputParameters & parameters)
   // it is very likely that the patch recovery is not used at its max accuracy
   if (_patch_polynomial_order < static_cast<unsigned int>(_var.order()))
     mooseWarning("Specified 'patch_polynomial_order' is lower than the AuxVariable's order");
-
-  // TODO remove the manual ghosting once relationship manager is working correctly
-  // no need to ghost if this aux is elemental
-  if (isNodal())
-  {
-    MeshBase & meshhelper = _mesh.getMesh();
-    meshhelper.allow_renumbering(false);
-    for (const auto & elem :
-         as_range(meshhelper.semilocal_elements_begin(), meshhelper.semilocal_elements_end()))
-      _fe_problem.addGhostedElem(elem->id());
-  }
 }
 
 std::vector<std::vector<unsigned int>>
@@ -163,12 +151,7 @@ NodalPatchRecovery::compute()
     AuxKernel::compute();
     return;
   }
-
-  // Limit current use of NodalPatchRecovery to a single processor
-  if (_communicator.size() > 1)
-    mooseError("The nodal patch recovery option, which calculates the Zienkiewicz-Zhu patch "
-               "recovery for nodal variables (family = LAGRANGE), is not currently implemented for "
-               "parallel runs. Run in serial if you must use the nodal patch capability");
+  std::cout << "Do I make it into the compute section of the NPR? \n";
 
   // Use Zienkiewicz-Zhu patch recovery for nodal variables
   reinitPatch();
@@ -197,10 +180,27 @@ NodalPatchRecovery::compute()
     mooseError("There are not enough sample points to recover the nodal value, try reducing the "
                "polynomial order or using a higher-order quadrature scheme.");
 
+  // std::cout << " For the node id: " << _current_node->id() << " the following elements are attached: \n";
   // general treatment for side nodes and internal nodes
   for (auto elem_id : elem_ids)
   {
+    std::cout << elem_id << std::endl;
+
+    // std::cout << "So now let's check what happens when I use the RelationshipManager method \n";
+    // for (const auto & current_elem : _fe_problem.getEvaluableElementRange())
+    //   std::cout << current_elem->id() << std::endl;
+
+    // const auto & mesh = _subproblem.mesh().getMesh();
+    //
+    // std::cout << "Checking a method for getting element pointers \n";
+    // for (const auto & elem : mesh.active_element_ptr_range())
+    //   std::cout << elem->id() << std::endl;
+    //
+    // std::cout << "\n ************************************* \n";
+
     const Elem * elem = _mesh.elemPtr(elem_id);
+
+    std::cout << " and getting some element information " << (*elem) << std::endl;
 
     if (!elem->is_semilocal(_mesh.processor_id()))
       mooseError("skipped non local elem!");
@@ -208,10 +208,29 @@ NodalPatchRecovery::compute()
     _fe_problem.prepare(elem, _tid);
     _fe_problem.reinitElem(elem, _tid);
 
+    std::cout << "Have I been able to reinit the element? \n";
+
     // Set up Sentinel class so that, even if reinitMaterials() throws, we
     // still remember to swap back during stack unwinding.
     SwapBackSentinel sentinel(_fe_problem, &FEProblem::swapBackMaterials, _tid);
-    _fe_problem.reinitMaterials(elem->subdomain_id(), _tid);
+
+    std::cout << "  and what about the sentinel swapback bit? \n";
+    std::cout << "what's with the pointer to subdomain_id? " << elem->subdomain_id() << std::endl;
+    std::cout << "Okay, so clearly the problem is right here with reiniting the materials \n";
+
+    // _fe_problem.reinitMaterials(elem->subdomain_id(), _tid);
+
+
+    const auto & mesh = _subproblem.mesh().getMesh();
+    // for (const auto & elem : _fe_problem.getEvaluableElementRange())
+    for (const auto & elem : mesh.active_element_ptr_range())
+    {
+      std::cout << (*elem) << std::endl;
+      _fe_problem.reinitMaterials(elem->subdomain_id(), _tid);
+    }
+
+
+    std::cout << "Made it through reiniting the material on this element \n";
 
     for (_qp = 0; _qp < _q_point.size(); _qp++)
     {
