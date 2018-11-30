@@ -86,7 +86,7 @@ CrystalPlasticityUpdate::CrystalPlasticityUpdate(const InputParameters & paramet
     _slip_direction(_number_slip_systems * LIBMESH_DIM),
     _slip_plane_normal(_number_slip_systems * LIBMESH_DIM),
     _flow_direction(declareProperty<std::vector<RankTwoTensor>>("flow_direction")),
-    _tau(declareProperty<std::vector<Real> > ("applied_shear_stress")),
+    _tau(declareProperty<std::vector<Real>>("applied_shear_stress")),
     _update_rotation(declareProperty<RankTwoTensor>("update_rot")),
     _crysrot(getMaterialProperty<RankTwoTensor>("crysrot")) // defined in the elasticity tensor classes for crystal plasticity
 {
