@@ -7,19 +7,19 @@
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
-#include "CrystalPlasticityCDDUpdateBase.h"
+#include "CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs.h"
 #include "libmesh/utility.h"
 #include "SystemBase.h"
 #include "MooseVariable.h"
 
 template <>
-InputParameters validParams<CrystalPlasticityCDDUpdateBase>()
+InputParameters validParams<CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs>()
 {
   InputParameters params = validParams<CrystalPlasticityUpdate>();
   params.addClassDescription("Continuum Dislocation Dynamics model for crystal plasticity, relating mobile dislocations to slip through Orowan's law.");
   params.addParam<Real>("temperature", 323.0, "The coupled temperature, in K");
 
-  // params.addParam<NonlinearVariableName>("displacement_variable", "disp_x", "The name of one of the displacement variables used in the simulation");
+  params.addParam<NonlinearVariableName>("displacement_variable", "disp_x", "The name of one of the displacement variables used in the simulation");
 
   params.addParam<Real>("burgers_vector", 2.48e-7, "The Burger's vector for the material, in mm");
   params.addParam<Real>("initial_mobile_dislocation_density", 1.0e6, "Initial density of mobile dislocation densities, in 1/mm^2");
@@ -50,13 +50,13 @@ InputParameters validParams<CrystalPlasticityCDDUpdateBase>()
   params.addParam<MooseEnum>("cross_slip_calculation_type", cross_slip_calculation_type, "Type of method to use when calculating cross slip.  The deterministic method will allow cross slip from all slip systems in the family onto a single recieving slip system while the deterministic method allows cross slip among random slip system pairs based on a Monte Carlo analysis");
 
   params.addParam<bool>("include_GND_contribution", false, "Whether or not to include Geometrically Necessary Dislocations in the crystal plasticity model");
-  params.addCoupledVar("plastic_velocity_gradient_components", "The nodal patch recovery auxvariable storing the plastic velocity gradient components. The order (x,x) (x,y) (x,z) (y,x) (y,y) (y,z) (z,x) (z,y) and (z,z) is assumed.");
+  // params.addCoupledVar("plastic_velocity_gradient_components", "The nodal patch recovery auxvariable storing the plastic velocity gradient components. The order (x,x) (x,y) (x,z) (y,x) (y,y) (y,z) (z,x) (z,y) and (z,z) is assumed.");
   params.addParam<Real>("GND_density_coefficient", 1.0, "Coefficient used to multiply by the burgers vector when calculating the geometrically necessary dislocations from the Nye's tensor");
 
   return params;
 }
 
-CrystalPlasticityCDDUpdateBase::CrystalPlasticityCDDUpdateBase(const InputParameters & parameters) :
+CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs(const InputParameters & parameters) :
     CrystalPlasticityUpdate(parameters),
     _mobile_dislocations(declareProperty<std::vector<Real> > ("mobile_dislocations")),
     _mobile_dislocations_old(getMaterialPropertyOld<std::vector<Real> > ("mobile_dislocations")),
@@ -82,9 +82,9 @@ CrystalPlasticityCDDUpdateBase::CrystalPlasticityCDDUpdateBase(const InputParame
     _nyes_tensor(declareProperty<RankTwoTensor>("Nyes_dislocation_tensor")),
     _nyes_tensor_old(getMaterialPropertyOld<RankTwoTensor>("Nyes_dislocation_tensor")),
 
-    // // Variables required to get the shape function derivatives on each element
-    // _gnd_displacement_variable(_fe_problem.getStandardVariable(_tid, parameters.get<NonlinearVariableName>("displacement_variable"))),
-    // _gnd_grad_phi(_assembly.gradPhi(_gnd_displacement_variable)),
+    // Variables required to get the shape function derivatives on each element
+    _gnd_displacement_variable(_fe_problem.getStandardVariable(_tid, parameters.get<NonlinearVariableName>("displacement_variable"))),
+    _gnd_grad_phi(_assembly.gradPhi(_gnd_displacement_variable)),
 
     // Dislocation driving force values
     _glide_velocity(declareProperty<std::vector<Real> >("dislocation_glide_velocity")),
@@ -126,7 +126,7 @@ CrystalPlasticityCDDUpdateBase::CrystalPlasticityCDDUpdateBase(const InputParame
     _inital_glide_velocity(_gamma_reference / (_burgers_vector * _initial_mobile_dislocation_density))
 {
   if (_number_slip_systems >= 1000)
-    mooseError("CrystalPlasticityCDDUpdateBase assumes fewer than 1,000 possible slip systems");
+    mooseError("CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs assumes fewer than 1,000 possible slip systems");
 
   if (_calculate_gnd_contribution && (coupledComponents("plastic_velocity_gradient_components") != (LIBMESH_DIM * LIBMESH_DIM)))
   {
@@ -134,14 +134,10 @@ CrystalPlasticityCDDUpdateBase::CrystalPlasticityCDDUpdateBase(const InputParame
   }
 
   setRandomResetFrequency(EXEC_TIMESTEP_BEGIN);
-
-  // fetch coupled gradients of the plastic velocity gradient
-  for (unsigned int i = 0; i < LIBMESH_DIM * LIBMESH_DIM; ++i)
-    _gradient_Lp[i] = &coupledGradient("plastic_velocity_gradient_components", i);
 }
 
 // void
-// CrystalPlasticityCDDUpdateBase::initialSetup()
+// CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::initialSetup()
 // {
 //   // fetch coupled gradients of the plastic velocity gradient
 //   for (unsigned int i = 0; i < LIBMESH_DIM * LIBMESH_DIM; ++i)
@@ -149,7 +145,7 @@ CrystalPlasticityCDDUpdateBase::CrystalPlasticityCDDUpdateBase(const InputParame
 // }
 
 void
-CrystalPlasticityCDDUpdateBase::initQpStatefulProperties()
+CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::initQpStatefulProperties()
 {
   _mobile_dislocations[_qp].resize(_number_slip_systems);
   _immobile_dislocations[_qp].resize(_number_slip_systems);
@@ -182,7 +178,7 @@ CrystalPlasticityCDDUpdateBase::initQpStatefulProperties()
 }
 
 void
-CrystalPlasticityCDDUpdateBase::setInitialConstitutiveVariableValues()
+CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::setInitialConstitutiveVariableValues()
 {
   _slip_system_resistance[_qp] = _slip_system_resistance_old[_qp];
 
@@ -191,7 +187,7 @@ CrystalPlasticityCDDUpdateBase::setInitialConstitutiveVariableValues()
 }
 
 void
-CrystalPlasticityCDDUpdateBase::calculateConstitutiveEquivalentSlipIncrement(RankTwoTensor & equivalent_slip_increment,
+CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::calculateConstitutiveEquivalentSlipIncrement(RankTwoTensor & equivalent_slip_increment,
                                                                          bool & error_tolerance)
 {
   equivalent_slip_increment.zero();
@@ -214,7 +210,7 @@ CrystalPlasticityCDDUpdateBase::calculateConstitutiveEquivalentSlipIncrement(Ran
 }
 
 void
-CrystalPlasticityCDDUpdateBase::calculateGlideSlipIncrement(bool & error_tolerance)
+CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::calculateGlideSlipIncrement(bool & error_tolerance)
 {
   for (unsigned int i = 0; i < _number_slip_systems; ++i)
   {
@@ -249,7 +245,7 @@ CrystalPlasticityCDDUpdateBase::calculateGlideSlipIncrement(bool & error_toleran
 }
 
 void
-CrystalPlasticityCDDUpdateBase::calculateConstitutiveSlipDerivative(std::vector<Real> & dslip_dtau, unsigned int /*slip_model_number*/)
+CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::calculateConstitutiveSlipDerivative(std::vector<Real> & dslip_dtau, unsigned int /*slip_model_number*/)
 {
   std::vector<Real> dslip_glide_dtau(_number_slip_systems, 0.0);
   calculateGlideSlipDerivative(dslip_glide_dtau);
@@ -257,7 +253,7 @@ CrystalPlasticityCDDUpdateBase::calculateConstitutiveSlipDerivative(std::vector<
 }
 
 void
-CrystalPlasticityCDDUpdateBase::calculateGlideSlipDerivative(std::vector<Real> & dslip_glide_dtau)
+CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::calculateGlideSlipDerivative(std::vector<Real> & dslip_glide_dtau)
 {
   for (unsigned int i = 0; i < _number_slip_systems; ++i)
   {
@@ -272,7 +268,7 @@ CrystalPlasticityCDDUpdateBase::calculateGlideSlipDerivative(std::vector<Real> &
 }
 
 void
-CrystalPlasticityCDDUpdateBase::updateConstitutiveSlipSystemResistanceAndVariables(bool & error_tolerance)
+CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::updateConstitutiveSlipSystemResistanceAndVariables(bool & error_tolerance)
 {
   // Set the previous value of the slip system resistance here for comparison in the convergence check
   _previous_it_resistance[_qp] = _slip_system_resistance[_qp];
@@ -306,7 +302,7 @@ CrystalPlasticityCDDUpdateBase::updateConstitutiveSlipSystemResistanceAndVariabl
 }
 
 bool
-CrystalPlasticityCDDUpdateBase::areConstitutiveStateVariablesConverged()
+CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::areConstitutiveStateVariablesConverged()
 {
   Real mobile_diff, immobile_diff = 0.0;
 
@@ -353,7 +349,7 @@ CrystalPlasticityCDDUpdateBase::areConstitutiveStateVariablesConverged()
 }
 
 void
-CrystalPlasticityCDDUpdateBase::calculateDislocationDensities(bool & error_tolerance)
+CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::calculateDislocationDensities(bool & error_tolerance)
 {
   std::vector<Real> increment_mobile(_number_slip_systems, 0.0);
   std::vector<Real> increment_immobile(_number_slip_systems, 0.0);
@@ -413,7 +409,7 @@ CrystalPlasticityCDDUpdateBase::calculateDislocationDensities(bool & error_toler
 }
 
 Real
-CrystalPlasticityCDDUpdateBase::calculateMeanFreeGlidePath()
+CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::calculateMeanFreeGlidePath()
 {
   Real glide_path_inv = 0.0;
   for (unsigned int i = 0; i < _number_slip_systems; ++i)
@@ -426,7 +422,7 @@ CrystalPlasticityCDDUpdateBase::calculateMeanFreeGlidePath()
 }
 
 void
-CrystalPlasticityCDDUpdateBase::calculateDislocationCrossSlip()
+CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::calculateDislocationCrossSlip()
 {
   if (_cross_slip_type == stochastic)
   {
@@ -540,30 +536,11 @@ CrystalPlasticityCDDUpdateBase::calculateDislocationCrossSlip()
 }
 
 void
-CrystalPlasticityCDDUpdateBase::calculateGeometricallyNecessaryDislocations()
+CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::calculateGeometricallyNecessaryDislocations()
 {
   RankTwoTensor increment_nyes_tensor;
   increment_nyes_tensor.zero();
 
-  // Implementation based on the curl3 concept in Das et al. (2018) IJP
-  for (unsigned int i = 0; i < LIBMESH_DIM; ++i)
-  {
-    for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
-    {
-      if (j == 0)
-        increment_nyes_tensor(i,0) = (*_gradient_Lp[i * LIBMESH_DIM + 2])[_qp](1) - (*_gradient_Lp[i * LIBMESH_DIM + 1])[_qp](2);
-      else if (j == 1)
-        increment_nyes_tensor(i,1) = (*_gradient_Lp[i * LIBMESH_DIM + 0])[_qp](2) - (*_gradient_Lp[i * LIBMESH_DIM + 2])[_qp](0);
-      else if (j == 2)
-        increment_nyes_tensor(i,j) = (*_gradient_Lp[i * LIBMESH_DIM + 1])[_qp](0) - (*_gradient_Lp[i * LIBMESH_DIM + 0])[_qp](1);
-    }
-  }
-
-  std::cout << "The incremental nye's tensor for element " << _current_elem->id() << " and qp point " << _qp << "is: " << increment_nyes_tensor << std::endl;
-
-
-  // // implementation that I had which gave me 'top heavy' results in the gnds in
-  // // the Ohashi shear beam bending problem
   // for (unsigned int i = 0; i < LIBMESH_DIM; ++i)
   // {
   //   for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
@@ -595,7 +572,7 @@ CrystalPlasticityCDDUpdateBase::calculateGeometricallyNecessaryDislocations()
 
 
 void
-CrystalPlasticityCDDUpdateBase::calculateSlipSystemResistance(bool & error_tolerance)
+CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::calculateSlipSystemResistance(bool & error_tolerance)
 {
   std::vector<Real> forest_strength(_number_slip_systems, 0.0);
   calculateDislocationForestHardening(forest_strength);
@@ -625,7 +602,7 @@ CrystalPlasticityCDDUpdateBase::calculateSlipSystemResistance(bool & error_toler
 }
 
 void
-CrystalPlasticityCDDUpdateBase::initSlipSystemResistance()
+CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::initSlipSystemResistance()
 {
   for (unsigned int i = 0; i < _number_slip_systems; ++i)
     _static_resistance_contribution[_qp][i] = _peierls_strength;
@@ -645,7 +622,7 @@ CrystalPlasticityCDDUpdateBase::initSlipSystemResistance()
 }
 
 void
-CrystalPlasticityCDDUpdateBase::calculateDislocationForestHardening(
+CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::calculateDislocationForestHardening(
                                           std::vector<Real> & forest_strength)
 {
   const Real barrier_coeffient = _baily_hirsch_alpha * _burgers_vector * _shear_modulus;

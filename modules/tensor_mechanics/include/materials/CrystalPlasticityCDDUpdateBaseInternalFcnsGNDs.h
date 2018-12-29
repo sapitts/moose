@@ -7,18 +7,18 @@
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
-#ifndef CRYSTALPLASTICITYCDDUPDATEBASE_H
-#define CRYSTALPLASTICITYCDDUPDATEBASE_H
+#ifndef CRYSTALPLASTICITYCDDUPDATEBASEINTERNALFCNSGNDS_H
+#define CRYSTALPLASTICITYCDDUPDATEBASEINTERNALFCNSGNDS_H
 
 #include "CrystalPlasticityUpdate.h"
 
-class CrystalPlasticityCDDUpdateBase;
+class CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs;
 
 template<>
-InputParameters validParams<CrystalPlasticityCDDUpdateBase>();
+InputParameters validParams<CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs>();
 
 /**
- * CrystalPlasticityCDDUpdateBase uses the multiplicative decomposition of deformation gradient
+ * CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs uses the multiplicative decomposition of deformation gradient
  * and solves the PK2 stress residual equation at the intermediate configuration to evolve the material state.
  * The internal variables are updated using an interative predictor-corrector algorithm.
  * Backward Euler integration rule is used for the rate equations.
@@ -26,10 +26,10 @@ InputParameters validParams<CrystalPlasticityCDDUpdateBase>();
  * of the compute=false flag set in the parameter list. All materials inheriting
  * from this class must be called by a separate material, such as ComputeCrystalPlasticityStress.
  */
-class CrystalPlasticityCDDUpdateBase : public CrystalPlasticityUpdate
+class CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs : public CrystalPlasticityUpdate
 {
 public:
-  CrystalPlasticityCDDUpdateBase(const InputParameters & parameters);
+  CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs(const InputParameters & parameters);
 
 protected:
   // void initialSetup() override;
@@ -158,11 +158,11 @@ protected:
   MaterialProperty<RankTwoTensor> & _nyes_tensor;
   const MaterialProperty<RankTwoTensor> & _nyes_tensor_old;
 
-  // /// Reference to a MooseVariable object
-  // MooseVariable & _gnd_displacement_variable;
-  //
-  // /// Shape function derivative on the displaced mesh
-  // const VariablePhiGradient & _gnd_grad_phi;
+  /// Reference to a MooseVariable object
+  MooseVariable & _gnd_displacement_variable;
+
+  /// Shape function derivative on the displaced mesh
+  const VariablePhiGradient & _gnd_grad_phi;
 
   MaterialProperty<std::vector<Real> > & _glide_velocity;
 
@@ -212,4 +212,4 @@ protected:
   const Real _inital_glide_velocity;
 };
 
-#endif //CRYSTALPLASTICITYCDDUPDATEBASE_H
+#endif //CRYSTALPLASTICITYCDDUPDATEBASEINTERNALFCNSGNDS_H

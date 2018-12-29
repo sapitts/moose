@@ -7,15 +7,15 @@
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
-#include "CrystalPlasticityCDDNiAlloyUpdate.h"
+#include "CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs.h"
 #include "libmesh/utility.h"
 
-registerMooseObject("TensorMechanicsApp", CrystalPlasticityCDDNiAlloyUpdate);
+registerMooseObject("TensorMechanicsApp", CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs);
 
 template <>
-InputParameters validParams<CrystalPlasticityCDDNiAlloyUpdate>()
+InputParameters validParams<CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs>()
 {
-  InputParameters params = validParams<CrystalPlasticityCDDUpdateBase>();
+  InputParameters params = validParams<CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs>();
   params.addClassDescription("Continuum Dislocation Dynamics crystal plasticity model for Ni-Cr alloys which experience formation of aging long-range ordered precipiates");
 
   params.addParam<Real>("tertiary_precipitate_mean_diameter", 0.0, "The average diameter of the tertiary gamma prime long-range ordered precipitates, in mm");
@@ -35,8 +35,8 @@ InputParameters validParams<CrystalPlasticityCDDNiAlloyUpdate>()
   return params;
 }
 
-CrystalPlasticityCDDNiAlloyUpdate::CrystalPlasticityCDDNiAlloyUpdate(const InputParameters & parameters) :
-    CrystalPlasticityCDDUpdateBase(parameters),
+CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs::CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs(const InputParameters & parameters) :
+    CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs(parameters),
 
     // tertiary LRO gamma prime geometric parameters
     _tertiary_mean_diameter(getParam<Real>("tertiary_precipitate_mean_diameter")),
@@ -66,7 +66,7 @@ CrystalPlasticityCDDNiAlloyUpdate::CrystalPlasticityCDDNiAlloyUpdate(const Input
     _limit_twin_volume_fraction(getParam<Real>("upper_limit_twin_volume_fraction"))
 {
   if (_number_slip_systems >= 1000 || _number_twin_systems >= 1000)
-    mooseError("CrystalPlasticityCDDNiAlloyUpdate assumes fewer than 1,000 possible slip or twin systems");
+    mooseError("CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs assumes fewer than 1,000 possible slip or twin systems");
 
   if (_number_twin_systems == 0)
     _include_twinning_slip_contribution = false;
@@ -77,14 +77,10 @@ CrystalPlasticityCDDNiAlloyUpdate::CrystalPlasticityCDDNiAlloyUpdate(const Input
     getTwinningSystems();
 
   setRandomResetFrequency(EXEC_TIMESTEP_BEGIN);
-
-  // fetch coupled gradients of the plastic velocity gradient
-  for (unsigned int i = 0; i < LIBMESH_DIM * LIBMESH_DIM; ++i)
-    _gradient_Lp[i] = &coupledGradient("plastic_velocity_gradient_components", i);
 }
 
 void
-CrystalPlasticityCDDNiAlloyUpdate::initQpStatefulProperties()
+CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs::initQpStatefulProperties()
 {
   if (_include_twinning_slip_contribution)
   {
@@ -105,18 +101,18 @@ CrystalPlasticityCDDNiAlloyUpdate::initQpStatefulProperties()
   calculateTwinningSchmidTensor();
   }
 
-  CrystalPlasticityCDDUpdateBase::initQpStatefulProperties();
+  CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::initQpStatefulProperties();
 }
 
 void
-CrystalPlasticityCDDNiAlloyUpdate::setInitialConstitutiveVariableValues()
+CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs::setInitialConstitutiveVariableValues()
 {
   _total_volume_fraction_twins[_qp] = _total_volume_fraction_twins_old[_qp];
-  CrystalPlasticityCDDUpdateBase::setInitialConstitutiveVariableValues();
+  CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::setInitialConstitutiveVariableValues();
 }
 
 void
-CrystalPlasticityCDDNiAlloyUpdate::initSlipSystemResistance()
+CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs::initSlipSystemResistance()
 {
   // Calculate the strength due to Orowan bowing
   Real bowing_strength = 0.0;
@@ -168,7 +164,7 @@ CrystalPlasticityCDDNiAlloyUpdate::initSlipSystemResistance()
 }
 
 void
-CrystalPlasticityCDDNiAlloyUpdate::calculateConstitutiveEquivalentSlipIncrement(RankTwoTensor & equivalent_slip_increment,
+CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs::calculateConstitutiveEquivalentSlipIncrement(RankTwoTensor & equivalent_slip_increment,
                                                                          bool & error_tolerance)
 {
   RankTwoTensor equivalent_glide_slip_increment, equivalent_twin_shear_increment;
@@ -176,7 +172,7 @@ CrystalPlasticityCDDNiAlloyUpdate::calculateConstitutiveEquivalentSlipIncrement(
   equivalent_twin_shear_increment.zero();
   equivalent_slip_increment.zero();
 
-  CrystalPlasticityCDDUpdateBase::calculateGlideSlipIncrement(error_tolerance);
+  CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::calculateGlideSlipIncrement(error_tolerance);
   if (error_tolerance)
     return;
 
@@ -213,7 +209,7 @@ CrystalPlasticityCDDNiAlloyUpdate::calculateConstitutiveEquivalentSlipIncrement(
 }
 
 void
-CrystalPlasticityCDDNiAlloyUpdate::calculateTwinSlipIncrement(bool & error_tolerance)
+CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs::calculateTwinSlipIncrement(bool & error_tolerance)
 {
   // std::cout << "Inside calculateTwinSlipIncrement at element " << _current_elem->id() << " and qp " << _qp << std::endl;
   if (MooseUtils::relativeFuzzyLessThan(_total_volume_fraction_twins_old[_qp], _limit_twin_volume_fraction))
@@ -255,7 +251,7 @@ CrystalPlasticityCDDNiAlloyUpdate::calculateTwinSlipIncrement(bool & error_toler
 }
 
 void
-CrystalPlasticityCDDNiAlloyUpdate::calculateTwinVolumeFraction(bool & error_tolerance)
+CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs::calculateTwinVolumeFraction(bool & error_tolerance)
 {
   // std::cout << "Inside calculateTwinVolumeFraction at element " << _current_elem->id() << " and qp " << _qp << std::endl;
   Real total_volume_fraction_increment = 0.0;
@@ -284,7 +280,7 @@ CrystalPlasticityCDDNiAlloyUpdate::calculateTwinVolumeFraction(bool & error_tole
 }
 
 void
-CrystalPlasticityCDDNiAlloyUpdate::calculateTotalPlasticDeformationGradientDerivative(RankFourTensor & total_dfpinvdpk2)
+CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs::calculateTotalPlasticDeformationGradientDerivative(RankFourTensor & total_dfpinvdpk2)
 {
   RankFourTensor dfpinv_dpk2_glide, dfpinv_dpk2_twin;
   const unsigned int glide_slip_model = 1;
@@ -300,17 +296,17 @@ CrystalPlasticityCDDNiAlloyUpdate::calculateTotalPlasticDeformationGradientDeriv
 
 
 void
-CrystalPlasticityCDDNiAlloyUpdate::calculateConstitutiveSlipDerivative(std::vector<Real> & dslip_dtau, unsigned int slip_model_number)
+CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs::calculateConstitutiveSlipDerivative(std::vector<Real> & dslip_dtau, unsigned int slip_model_number)
 {
   if (slip_model_number == 1)
-    CrystalPlasticityCDDUpdateBase::calculateGlideSlipDerivative(dslip_dtau);
+    CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::calculateGlideSlipDerivative(dslip_dtau);
 
   if (slip_model_number == 2)
     calculateTwinSlipDerivative(dslip_dtau);
 }
 
 void
-CrystalPlasticityCDDNiAlloyUpdate::calculateTwinSlipDerivative(std::vector<Real> & dslip_twin_dtau)
+CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs::calculateTwinSlipDerivative(std::vector<Real> & dslip_twin_dtau)
 {
   for (unsigned int i = 0; i < _number_twin_systems; ++i)
   {
@@ -325,9 +321,9 @@ CrystalPlasticityCDDNiAlloyUpdate::calculateTwinSlipDerivative(std::vector<Real>
 }
 
 void
-CrystalPlasticityCDDNiAlloyUpdate::updateConstitutiveSlipSystemResistanceAndVariables(bool & error_tolerance)
+CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs::updateConstitutiveSlipSystemResistanceAndVariables(bool & error_tolerance)
 {
-  CrystalPlasticityCDDUpdateBase::updateConstitutiveSlipSystemResistanceAndVariables(error_tolerance);
+  CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::updateConstitutiveSlipSystemResistanceAndVariables(error_tolerance);
 
   if (error_tolerance)
     return;
@@ -345,7 +341,7 @@ CrystalPlasticityCDDNiAlloyUpdate::updateConstitutiveSlipSystemResistanceAndVari
 }
 
 bool
-CrystalPlasticityCDDNiAlloyUpdate::areConstitutiveStateVariablesConverged()
+CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs::areConstitutiveStateVariablesConverged()
 {
   bool not_converged_flag = false;
 
@@ -371,14 +367,14 @@ CrystalPlasticityCDDNiAlloyUpdate::areConstitutiveStateVariablesConverged()
   }
 
   if (!not_converged_flag)
-    not_converged_flag = CrystalPlasticityCDDUpdateBase::areConstitutiveStateVariablesConverged();
+    not_converged_flag = CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::areConstitutiveStateVariablesConverged();
 
   return not_converged_flag;
 }
 
-Real CrystalPlasticityCDDNiAlloyUpdate::calculateMeanFreeGlidePath()
+Real CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs::calculateMeanFreeGlidePath()
 {
-  Real forest_only_glide_path_inv = CrystalPlasticityCDDUpdateBase::calculateMeanFreeGlidePath();
+  Real forest_only_glide_path_inv = CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::calculateMeanFreeGlidePath();
 
   Real twin_glide_path_inv = std::sqrt(1.0 - _total_volume_fraction_twins[_qp]);
   // std::cout << "The value of the forest mean free glide path is " << forest_only_glide_path_inv << std::endl;
@@ -390,7 +386,7 @@ Real CrystalPlasticityCDDNiAlloyUpdate::calculateMeanFreeGlidePath()
 }
 
 void
-CrystalPlasticityCDDNiAlloyUpdate::calculateTwinSystemResistance(bool & error_tolerance)
+CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs::calculateTwinSystemResistance(bool & error_tolerance)
 {
   Real sum = 0.0;
   const Real barrier_coeffient = _baily_hirsch_alpha * _burgers_vector * _shear_modulus;
@@ -414,7 +410,7 @@ CrystalPlasticityCDDNiAlloyUpdate::calculateTwinSystemResistance(bool & error_to
 }
 
 Real
-CrystalPlasticityCDDNiAlloyUpdate::calculateOrowanBowingHardening()
+CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs::calculateOrowanBowingHardening()
 {
   // Interparticle spacing calculation:
   //   leave room for multiple precipitates sizes in future development
@@ -429,7 +425,7 @@ CrystalPlasticityCDDNiAlloyUpdate::calculateOrowanBowingHardening()
 }
 
 Real
-CrystalPlasticityCDDNiAlloyUpdate::calculateAPBWeaklyCoupledShearingHardening()
+CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs::calculateAPBWeaklyCoupledShearingHardening()
 {
   // Interparticle spacing calculation
   const Real geo_term = 8.0 / (3.0 * libMesh::pi * _tertiary_volume_fraction);
@@ -450,7 +446,7 @@ CrystalPlasticityCDDNiAlloyUpdate::calculateAPBWeaklyCoupledShearingHardening()
 }
 
 void
-CrystalPlasticityCDDNiAlloyUpdate::getTwinningSystems()
+CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs::getTwinningSystems()
 {
   bool orthonormal_error = false;
 
@@ -461,7 +457,7 @@ CrystalPlasticityCDDNiAlloyUpdate::getTwinningSystems()
 }
 
 void
-CrystalPlasticityCDDNiAlloyUpdate::calculateTwinningSchmidTensor()
+CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs::calculateTwinningSchmidTensor()
 {
   CrystalPlasticityUpdate::calculateSchmidTensor(_number_twin_systems, _twin_plane_normal, _twin_direction, _twin_schmid_tensor[_qp]);
 }

@@ -6,13 +6,13 @@
   type = GeneratedMesh
   dim = 3
   elem_type = HEX8
-  nx = 10
+  nx = 5
   xmin = 0
   xmax = 0.1
   ny = 1
   ymin = 0
-  ymax = 0.005
-  nz = 20
+  ymax = 0.02
+  nz = 10
   zmin = 0
   zmax = 0.2
 []
@@ -563,7 +563,7 @@
     patch_polynomial_order = FIRST
     index_i = 0
     index_j = 0
-    execute_on = 'nonlinear'
+    # execute_on = 'nonlinear'
   [../]
   [./velocity_grad_xy_recovered]
     type = RankTwoAux
@@ -572,7 +572,7 @@
     patch_polynomial_order = FIRST
     index_i = 0
     index_j = 1
-    execute_on = 'nonlinear'
+    # execute_on = 'nonlinear'
   [../]
   [./velocity_grad_xz_recovered]
     type = RankTwoAux
@@ -581,7 +581,7 @@
     patch_polynomial_order = FIRST
     index_i = 0
     index_j = 2
-    execute_on = 'nonlinear'
+    # execute_on = 'nonlinear'
   [../]
   [./velocity_grad_yx_recovered]
     type = RankTwoAux
@@ -590,7 +590,7 @@
     patch_polynomial_order = FIRST
     index_i = 1
     index_j = 0
-    execute_on = 'nonlinear'
+    # execute_on = 'nonlinear'
   [../]
   [./velocity_grad_yy_recovered]
     type = RankTwoAux
@@ -599,7 +599,7 @@
     patch_polynomial_order = FIRST
     index_i = 1
     index_j = 1
-    execute_on = 'nonlinear'
+    # execute_on = 'nonlinear'
   [../]
   [./velocity_grad_yz_recovered]
     type = RankTwoAux
@@ -608,7 +608,7 @@
     patch_polynomial_order = FIRST
     index_i = 1
     index_j = 2
-    execute_on = 'nonlinear'
+    # execute_on = 'nonlinear'
   [../]
   [./velocity_grad_zx_recovered]
     type = RankTwoAux
@@ -617,7 +617,7 @@
     patch_polynomial_order = FIRST
     index_i = 2
     index_j = 0
-    execute_on = 'nonlinear'
+    # execute_on = 'nonlinear'
   [../]
   [./velocity_grad_zy_recovered]
     type = RankTwoAux
@@ -626,7 +626,7 @@
     patch_polynomial_order = FIRST
     index_i = 1
     index_j = 2
-    execute_on = 'nonlinear'
+    # execute_on = 'nonlinear'
   [../]
   [./velocity_grad_zz_recovered]
     type = RankTwoAux
@@ -635,7 +635,7 @@
     patch_polynomial_order = FIRST
     index_i = 2
     index_j = 2
-    execute_on = 'nonlinear'
+    # execute_on = 'nonlinear'
   [../]
   [./euler_angle1]
     type = MaterialRealVectorValueAux
@@ -1653,10 +1653,10 @@
   petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -ksp_type -ksp_gmres_restart'
   petsc_options_value = ' asm      2              lu            gmres     200'
   nl_abs_tol = 1e-6
-  nl_rel_tol = 1e-6 #1e-4 #tighten down while using larger timestep for the elastic region
+  nl_rel_tol = 1e-4 #1e-6 #tighten down while using larger timestep for the elastic region
 
   dtmax = 1.0
-  dtmin = 1.0e-4  #1.0e-10
+  dtmin = 1.0e-10  #1.0e-4 for elastic only
 
   dt = 1.0e-2 #was 1.0e-6
   end_time = 1.0 #looks like should see plasticity start at 0.42 or so

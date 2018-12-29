@@ -86,6 +86,13 @@ CrystalPlasticityCDDBCCFeUpdate::CrystalPlasticityCDDBCCFeUpdate(const InputPara
 
   if (_number_slip_systems >= 1000)
     mooseError("CrystalPlasticityCDDUpdateBase assumes fewer than 1,000 possible slip systems");
+
+  // not sure if I need these last two or not
+  setRandomResetFrequency(EXEC_TIMESTEP_BEGIN);
+
+  // fetch coupled gradients of the plastic velocity gradient
+  for (unsigned int i = 0; i < LIBMESH_DIM * LIBMESH_DIM; ++i)
+    _gradient_Lp[i] = &coupledGradient("plastic_velocity_gradient_components", i);
 }
 
 void
