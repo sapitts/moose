@@ -6,13 +6,13 @@
   type = GeneratedMesh
   dim = 3
   elem_type = HEX8
-  nx = 10
+  nx = 5
   xmin = 0
   xmax = 0.1
   ny = 1
   ymin = 0
-  ymax = 0.005
-  nz = 20
+  ymax = 0.02
+  nz = 10
   zmin = 0
   zmax = 0.2
 []
@@ -81,6 +81,42 @@
   [./eff_strain_lag]
     order = CONSTANT
     family = MONOMIAL
+  [../]
+  [./velocity_gradient_xx]
+    order = FIRST
+    family = LAGRANGE
+  [../]
+  [./velocity_gradient_xy]
+    order = FIRST
+    family = LAGRANGE
+  [../]
+  [./velocity_gradient_xz]
+    order = FIRST
+    family = LAGRANGE
+  [../]
+  [./velocity_gradient_yx]
+    order = FIRST
+    family = LAGRANGE
+  [../]
+  [./velocity_gradient_yy]
+    order = FIRST
+    family = LAGRANGE
+  [../]
+  [./velocity_gradient_yz]
+    order = FIRST
+    family = LAGRANGE
+  [../]
+  [./velocity_gradient_zx]
+    order = FIRST
+    family = LAGRANGE
+  [../]
+  [./velocity_gradient_zy]
+    order = FIRST
+    family = LAGRANGE
+  [../]
+  [./velocity_gradient_zz]
+    order = FIRST
+    family = LAGRANGE
   [../]
   [./euler_angle1]
     order = CONSTANT
@@ -519,6 +555,87 @@
     rank_two_tensor = lage
     scalar_type = EffectiveStrain
     execute_on = timestep_end
+  [../]
+  [./velocity_grad_xx_recovered]
+    type = RankTwoAux
+    rank_two_tensor = plastic_velocity_gradient
+    variable = velocity_gradient_xx
+    patch_polynomial_order = FIRST
+    index_i = 0
+    index_j = 0
+    # execute_on = 'nonlinear'
+  [../]
+  [./velocity_grad_xy_recovered]
+    type = RankTwoAux
+    rank_two_tensor = plastic_velocity_gradient
+    variable = velocity_gradient_xy
+    patch_polynomial_order = FIRST
+    index_i = 0
+    index_j = 1
+    # execute_on = 'nonlinear'
+  [../]
+  [./velocity_grad_xz_recovered]
+    type = RankTwoAux
+    rank_two_tensor = plastic_velocity_gradient
+    variable = velocity_gradient_xz
+    patch_polynomial_order = FIRST
+    index_i = 0
+    index_j = 2
+    # execute_on = 'nonlinear'
+  [../]
+  [./velocity_grad_yx_recovered]
+    type = RankTwoAux
+    rank_two_tensor = plastic_velocity_gradient
+    variable = velocity_gradient_yx
+    patch_polynomial_order = FIRST
+    index_i = 1
+    index_j = 0
+    # execute_on = 'nonlinear'
+  [../]
+  [./velocity_grad_yy_recovered]
+    type = RankTwoAux
+    rank_two_tensor = plastic_velocity_gradient
+    variable = velocity_gradient_yy
+    patch_polynomial_order = FIRST
+    index_i = 1
+    index_j = 1
+    # execute_on = 'nonlinear'
+  [../]
+  [./velocity_grad_yz_recovered]
+    type = RankTwoAux
+    rank_two_tensor = plastic_velocity_gradient
+    variable = velocity_gradient_yz
+    patch_polynomial_order = FIRST
+    index_i = 1
+    index_j = 2
+    # execute_on = 'nonlinear'
+  [../]
+  [./velocity_grad_zx_recovered]
+    type = RankTwoAux
+    rank_two_tensor = plastic_velocity_gradient
+    variable = velocity_gradient_zx
+    patch_polynomial_order = FIRST
+    index_i = 2
+    index_j = 0
+    # execute_on = 'nonlinear'
+  [../]
+  [./velocity_grad_zy_recovered]
+    type = RankTwoAux
+    rank_two_tensor = plastic_velocity_gradient
+    variable = velocity_gradient_zy
+    patch_polynomial_order = FIRST
+    index_i = 1
+    index_j = 2
+    # execute_on = 'nonlinear'
+  [../]
+  [./velocity_grad_zz_recovered]
+    type = RankTwoAux
+    rank_two_tensor = plastic_velocity_gradient
+    variable = velocity_gradient_zz
+    patch_polynomial_order = FIRST
+    index_i = 2
+    index_j = 2
+    # execute_on = 'nonlinear'
   [../]
   [./euler_angle1]
     type = MaterialRealVectorValueAux
@@ -1087,7 +1204,7 @@
     crystal_plasticity_update_model = 'trial_xtalpl'
   [../]
   [./trial_xtalpl]
-    type = CrystalPlasticityCDDNiAlloyUpdateInternalFcnsGNDs
+    type = CrystalPlasticityCDDNiAlloyUpdate
     # use_displaced_mesh = true
     number_slip_systems = 12
     slip_sys_file_name = 'fcc_input_slip_sys.txt'
@@ -1105,7 +1222,7 @@
     alpha_5 = 0.001
     alpha_6 = 4
     include_GND_contribution = true
-
+    plastic_velocity_gradient_components = 'velocity_gradient_xx velocity_gradient_xy velocity_gradient_xz velocity_gradient_yx velocity_gradient_yy velocity_gradient_yz velocity_gradient_zx velocity_gradient_zy velocity_gradient_zz'
     tertiary_precipitate_mean_diameter = 0.0 # No additional hardening
     tertiary_precipitate_volume_fraction = 0.0 #No additional hardening
     Peierls_stress = 9.47 #1.0e-4 times shear modulus
@@ -1189,6 +1306,42 @@
   [./effective_strain]
     type = ElementAverageValue
     variable = eff_strain_lag
+  [../]
+  [./velocity_gradient_xx]
+    type = AverageNodalVariableValue
+    variable = velocity_gradient_xx
+  [../]
+  [./velocity_gradient_xy]
+    type = AverageNodalVariableValue
+    variable = velocity_gradient_xy
+  [../]
+  [./velocity_gradient_xz]
+    type = AverageNodalVariableValue
+    variable = velocity_gradient_xz
+  [../]
+  [./velocity_gradient_yx]
+    type = AverageNodalVariableValue
+    variable = velocity_gradient_yx
+  [../]
+  [./velocity_gradient_yy]
+    type = AverageNodalVariableValue
+    variable = velocity_gradient_yy
+  [../]
+  [./velocity_gradient_yz]
+    type = AverageNodalVariableValue
+    variable = velocity_gradient_yz
+  [../]
+  [./velocity_gradient_zx]
+    type = AverageNodalVariableValue
+    variable = velocity_gradient_zx
+  [../]
+  [./velocity_gradient_zy]
+    type = AverageNodalVariableValue
+    variable = velocity_gradient_zy
+  [../]
+  [./velocity_gradient_zz]
+    type = AverageNodalVariableValue
+    variable = velocity_gradient_zz
   [../]
   [./euler_angle1]
     type = ElementAverageValue
@@ -1503,23 +1656,27 @@
   nl_rel_tol = 1e-6 #1e-4 #tighten down while using larger timestep for the elastic region
 
   dtmax = 1.0
-  dtmin = 1.0e-4  #1.0e-10
-
-  dt = 1.0e-4 #was 1.0e-6
+  dtmin = 1.0e-4  #1.0e-4 for elastic only
+  dt = 1.0e-2 #was 1.0e-6
   end_time = 1.0 #looks like should see plasticity start at 0.42 or so
+
+  [./Predictor]
+    type = SimplePredictor
+    scale = 1.0
+    skip_times_old = '0.0'
+  [../]
 []
 
 [Outputs]
-  # file_base = cdd_ohashi_shear_beam_out
   csv = true
-  # interval = 25
+  interval = 25
   [./out]
     type = Exodus
     elemental_as_nodal = true
   [../]
   [./checkpoint]
     type = Checkpoint
-    interval = 50
+    interval = 5
     num_files = 3
   [../]
   perf_graph = true

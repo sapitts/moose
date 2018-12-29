@@ -3,7 +3,18 @@
 []
 
 [Mesh]
-  file = parallel_bixtal_2elem_depth.e
+  type = GeneratedMesh
+  dim = 3
+  elem_type = HEX8
+  nx = 40
+  xmin = 0
+  xmax = 0.1
+  ny = 1
+  ymin = 0
+  ymax = 0.0025
+  nz = 80
+  zmin = 0
+  zmax = 0.2
 []
 
 [AuxVariables]
@@ -167,6 +178,10 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
+  [./slip_increment_0]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
   [./immobile_disl_0]
     order = CONSTANT
     family = MONOMIAL
@@ -180,6 +195,10 @@
     family = MONOMIAL
   [../]
   [./mobile_disl_1]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./slip_increment_1]
     order = CONSTANT
     family = MONOMIAL
   [../]
@@ -199,6 +218,10 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
+  [./slip_increment_2]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
   [./immobile_disl_2]
     order = CONSTANT
     family = MONOMIAL
@@ -212,6 +235,10 @@
     family = MONOMIAL
   [../]
   [./mobile_disl_3]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./slip_increment_3]
     order = CONSTANT
     family = MONOMIAL
   [../]
@@ -231,6 +258,10 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
+  [./slip_increment_4]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
   [./immobile_disl_4]
     order = CONSTANT
     family = MONOMIAL
@@ -244,6 +275,10 @@
     family = MONOMIAL
   [../]
   [./mobile_disl_5]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./slip_increment_5]
     order = CONSTANT
     family = MONOMIAL
   [../]
@@ -263,6 +298,10 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
+  [./slip_increment_6]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
   [./immobile_disl_6]
     order = CONSTANT
     family = MONOMIAL
@@ -276,6 +315,10 @@
     family = MONOMIAL
   [../]
   [./mobile_disl_7]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./slip_increment_7]
     order = CONSTANT
     family = MONOMIAL
   [../]
@@ -295,6 +338,10 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
+  [./slip_increment_8]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
   [./immobile_disl_8]
     order = CONSTANT
     family = MONOMIAL
@@ -308,6 +355,10 @@
     family = MONOMIAL
   [../]
   [./mobile_disl_9]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./slip_increment_9]
     order = CONSTANT
     family = MONOMIAL
   [../]
@@ -327,6 +378,10 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
+  [./slip_increment_10]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
   [./immobile_disl_10]
     order = CONSTANT
     family = MONOMIAL
@@ -343,6 +398,10 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
+  [./slip_increment_11]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
   [./immobile_disl_11]
     order = CONSTANT
     family = MONOMIAL
@@ -350,6 +409,13 @@
   [./tau_11]
     order = CONSTANT
     family = MONOMIAL
+  [../]
+[]
+
+[Functions]
+  [./bending_displacement]
+    type = ParsedFunction
+    value = 2.0e-3*(0.05-x)*t
   [../]
 []
 
@@ -497,7 +563,7 @@
     patch_polynomial_order = FIRST
     index_i = 0
     index_j = 0
-    # execute_on = 'nonlinear'
+    execute_on = 'nonlinear'
   [../]
   [./velocity_grad_xy_recovered]
     type = RankTwoAux
@@ -506,7 +572,7 @@
     patch_polynomial_order = FIRST
     index_i = 0
     index_j = 1
-    # execute_on = 'nonlinear'
+    execute_on = 'nonlinear'
   [../]
   [./velocity_grad_xz_recovered]
     type = RankTwoAux
@@ -515,7 +581,7 @@
     patch_polynomial_order = FIRST
     index_i = 0
     index_j = 2
-    # execute_on = 'nonlinear'
+    execute_on = 'nonlinear'
   [../]
   [./velocity_grad_yx_recovered]
     type = RankTwoAux
@@ -524,7 +590,7 @@
     patch_polynomial_order = FIRST
     index_i = 1
     index_j = 0
-    # execute_on = 'nonlinear'
+    execute_on = 'nonlinear'
   [../]
   [./velocity_grad_yy_recovered]
     type = RankTwoAux
@@ -533,7 +599,7 @@
     patch_polynomial_order = FIRST
     index_i = 1
     index_j = 1
-    # execute_on = 'nonlinear'
+    execute_on = 'nonlinear'
   [../]
   [./velocity_grad_yz_recovered]
     type = RankTwoAux
@@ -542,7 +608,7 @@
     patch_polynomial_order = FIRST
     index_i = 1
     index_j = 2
-    # execute_on = 'nonlinear'
+    execute_on = 'nonlinear'
   [../]
   [./velocity_grad_zx_recovered]
     type = RankTwoAux
@@ -551,7 +617,7 @@
     patch_polynomial_order = FIRST
     index_i = 2
     index_j = 0
-    # execute_on = 'nonlinear'
+    execute_on = 'nonlinear'
   [../]
   [./velocity_grad_zy_recovered]
     type = RankTwoAux
@@ -560,7 +626,7 @@
     patch_polynomial_order = FIRST
     index_i = 1
     index_j = 2
-    # execute_on = 'nonlinear'
+    execute_on = 'nonlinear'
   [../]
   [./velocity_grad_zz_recovered]
     type = RankTwoAux
@@ -569,28 +635,28 @@
     patch_polynomial_order = FIRST
     index_i = 2
     index_j = 2
-    # execute_on = 'nonlinear'
+    execute_on = 'nonlinear'
   [../]
   [./euler_angle1]
     type = MaterialRealVectorValueAux
     variable = euler_angle1
     property = Euler_angles
     component = 0
-    execute_on = initial
+    execute_on = 'initial'
   [../]
   [./euler_angle2]
     type = MaterialRealVectorValueAux
     variable = euler_angle2
     property = Euler_angles
     component = 1
-    execute_on = initial
+    execute_on = 'initial'
   [../]
   [./euler_angle3]
     type = MaterialRealVectorValueAux
     variable = euler_angle3
     property = Euler_angles
     component = 2
-    execute_on = initial
+    execute_on = 'initial'
   [../]
   [./nyes_tensor_00]
     type = RankTwoAux
@@ -689,6 +755,13 @@
     index = 0
     execute_on = timestep_end
   [../]
+  [./slip_increment_0]
+    type = MaterialStdVectorAux
+    variable = slip_increment_0
+    property = plastic_glide_slip_increment
+    index = 0
+    execute_on = timestep_end
+  [../]
   [./immobile_disl_0]
     type = MaterialStdVectorAux
     variable = immobile_disl_0
@@ -714,6 +787,13 @@
     type = MaterialStdVectorAux
     variable = mobile_disl_1
     property = mobile_dislocations
+    index = 1
+    execute_on = timestep_end
+  [../]
+  [./slip_increment_1]
+    type = MaterialStdVectorAux
+    variable = slip_increment_1
+    property = plastic_glide_slip_increment
     index = 1
     execute_on = timestep_end
   [../]
@@ -745,6 +825,13 @@
     index = 2
     execute_on = timestep_end
   [../]
+  [./slip_increment_2]
+    type = MaterialStdVectorAux
+    variable = slip_increment_2
+    property = plastic_glide_slip_increment
+    index = 2
+    execute_on = timestep_end
+  [../]
   [./immobile_disl_2]
     type = MaterialStdVectorAux
     variable = immobile_disl_2
@@ -770,6 +857,13 @@
     type = MaterialStdVectorAux
     variable = mobile_disl_3
     property = mobile_dislocations
+    index = 3
+    execute_on = timestep_end
+  [../]
+  [./slip_increment_3]
+    type = MaterialStdVectorAux
+    variable = slip_increment_3
+    property = plastic_glide_slip_increment
     index = 3
     execute_on = timestep_end
   [../]
@@ -801,6 +895,13 @@
     index = 4
     execute_on = timestep_end
   [../]
+  [./slip_increment_4]
+    type = MaterialStdVectorAux
+    variable = slip_increment_4
+    property = plastic_glide_slip_increment
+    index = 4
+    execute_on = timestep_end
+  [../]
   [./immobile_disl_4]
     type = MaterialStdVectorAux
     variable = immobile_disl_4
@@ -826,6 +927,13 @@
     type = MaterialStdVectorAux
     variable = mobile_disl_5
     property = mobile_dislocations
+    index = 5
+    execute_on = timestep_end
+  [../]
+  [./slip_increment_5]
+    type = MaterialStdVectorAux
+    variable = slip_increment_5
+    property = plastic_glide_slip_increment
     index = 5
     execute_on = timestep_end
   [../]
@@ -857,6 +965,13 @@
     index = 6
     execute_on = timestep_end
   [../]
+  [./slip_increment_6]
+    type = MaterialStdVectorAux
+    variable = slip_increment_6
+    property = plastic_glide_slip_increment
+    index = 6
+    execute_on = timestep_end
+  [../]
   [./immobile_disl_6]
     type = MaterialStdVectorAux
     variable = immobile_disl_6
@@ -882,6 +997,13 @@
     type = MaterialStdVectorAux
     variable = mobile_disl_7
     property = mobile_dislocations
+    index = 7
+    execute_on = timestep_end
+  [../]
+  [./slip_increment_7]
+    type = MaterialStdVectorAux
+    variable = slip_increment_7
+    property = plastic_glide_slip_increment
     index = 7
     execute_on = timestep_end
   [../]
@@ -913,6 +1035,13 @@
     index = 8
     execute_on = timestep_end
   [../]
+  [./slip_increment_8]
+    type = MaterialStdVectorAux
+    variable = slip_increment_8
+    property = plastic_glide_slip_increment
+    index = 8
+    execute_on = timestep_end
+  [../]
   [./immobile_disl_8]
     type = MaterialStdVectorAux
     variable = immobile_disl_8
@@ -938,6 +1067,13 @@
     type = MaterialStdVectorAux
     variable = mobile_disl_9
     property = mobile_dislocations
+    index = 9
+    execute_on = timestep_end
+  [../]
+  [./slip_increment_9]
+    type = MaterialStdVectorAux
+    variable = slip_increment_9
+    property = plastic_glide_slip_increment
     index = 9
     execute_on = timestep_end
   [../]
@@ -969,6 +1105,13 @@
     index = 10
     execute_on = timestep_end
   [../]
+  [./slip_increment_10]
+    type = MaterialStdVectorAux
+    variable = slip_increment_10
+    property = plastic_glide_slip_increment
+    index = 10
+    execute_on = timestep_end
+  [../]
   [./immobile_disl_10]
     type = MaterialStdVectorAux
     variable = immobile_disl_10
@@ -997,6 +1140,13 @@
     index = 11
     execute_on = timestep_end
   [../]
+  [./slip_increment_11]
+    type = MaterialStdVectorAux
+    variable = slip_increment_11
+    property = plastic_glide_slip_increment
+    index = 11
+    execute_on = timestep_end
+  [../]
   [./immobile_disl_11]
     type = MaterialStdVectorAux
     variable = immobile_disl_11
@@ -1014,39 +1164,48 @@
 []
 
 [BCs]
-  [./roller_z]
-    type = PresetBC
-    variable = disp_z
-    boundary = bottom
-    value = 0
-  [../]
-  [./fixed_pt_y]
+  [./symmy]
     type = PresetBC
     variable = disp_y
-    boundary = center
+    boundary = back
     value = 0
   [../]
-  [./fixed_pt_x]
+  [./symmx]
     type = PresetBC
     variable = disp_x
-    boundary = center
+    boundary = back
     value = 0
   [../]
-  [./tension_displacement]
+  [./symmz]
+    type = PresetBC
+    variable = disp_z
+    boundary = back
+    value = 0
+  [../]
+  [./bending_displacement]
     type = FunctionPresetBC
     variable = disp_z
-    boundary = top
-    function = '1.0e-3*t'
+    boundary = front
+    function = bending_displacement
   [../]
 []
 
 [Materials]
-  [./crystal_plasticity_stress]
+  [./elasticity_tensor]
+    type = ComputeElasticityTensorConstantRotationCP
+    C_ijkl = '246.5e3 147.3e3 147.3e3 246.5e3 147.3e3 246.5e3 124.7e3 124.7e3 124.7e3' #Hirth and Lothe for Ni, 2nd ed, pg 835
+    fill_method = symmetric9
+    euler_angle_1 = 60
+    euler_angle_2 = 125.3
+    euler_angle_3 = 45
+  [../]
+  [./stress]
     type = ComputeCrystalPlasticityStress
     crystal_plasticity_update_model = 'trial_xtalpl'
   [../]
   [./trial_xtalpl]
     type = CrystalPlasticityCDDNiAlloyUpdate
+    # use_displaced_mesh = true
     number_slip_systems = 12
     slip_sys_file_name = 'fcc_input_slip_sys.txt'
     number_twin_systems = 0
@@ -1054,22 +1213,22 @@
     number_cross_slip_directions = 0
     number_cross_slip_planes = 0
     temperature = 298.0
-    initial_immobile_dislocation_density = 0.5e3 #half initial dislocation density in Kondou et.al. 2008;
-    initial_mobile_dislocation_density = 0.5e3 #half initial dislocation density in Kondou et.al. 2008;
-    alpha_1 = 0.035 #from initial [111] fitting for much larger dislocation density
-    alpha_2 = 0.5
+    initial_immobile_dislocation_density = 1.44e6 #half initial dislocation density in Reuber et.al. 2014;
+    initial_mobile_dislocation_density = 1.44e6 #half initial dislocation density in Reuber et.al. 2016;
+    alpha_1 = 0.04
+    alpha_2 = 4
     alpha_3 = 0.002
     alpha_4 = 0.002
     alpha_5 = 0.001
-    alpha_6 = 0.1
+    alpha_6 = 4
     include_GND_contribution = true
     plastic_velocity_gradient_components = 'velocity_gradient_xx velocity_gradient_xy velocity_gradient_xz velocity_gradient_yx velocity_gradient_yy velocity_gradient_yz velocity_gradient_zx velocity_gradient_zy velocity_gradient_zz'
     tertiary_precipitate_mean_diameter = 0.0 # No additional hardening
     tertiary_precipitate_volume_fraction = 0.0 #No additional hardening
-    Peierls_stress = 5.46 #1.0e-4 times shear modulus
-    shear_modulus = 54.6e3 #Hirth and Lothe for Cu, pg 837
-    burgers_vector = 2.556e-07 #Simon, Drexler, and Reed NIST MN 177
-    stol = 0.01 #Was using 1.0e-3 before
+    Peierls_stress = 9.47 #1.0e-4 times shear modulus
+    shear_modulus = 94.7e3 #Hirth and Lothe for Ni, pg 835
+    burgers_vector = 2.48e-07
+    stol = 1.0e-3
     maximum_substep_iteration = 10
     maxiter = 30
     maxiter_state_variable = 30
@@ -1077,62 +1236,6 @@
     use_line_search = true
     tan_mod_type = exact
   [../]
-  [./elasticity_tensor_right]
-    type = ComputeElasticityTensorConstantRotationCP
-    block = 2
-    C_ijkl = '168.4e3 121.4e3 121.4e3 168.4e3 121.4e3 168.4e3 75.4e3 75.4e3 75.4e3' #Hirth and Lothe for Cu, 2nd ed, pg 837
-    fill_method = symmetric9
-    euler_angle_1 = 315.5
-    euler_angle_2 = 280.5
-    euler_angle_3 = 248.2
-  [../]
-  [./elasticity_tensor_left]
-    type = ComputeElasticityTensorConstantRotationCP
-    block = 1
-    C_ijkl = '168.4e3 121.4e3 121.4e3 168.4e3 121.4e3 168.4e3 75.4e3 75.4e3 75.4e3' #Hirth and Lothe for Cu, 2nd ed, pg 837
-    fill_method = symmetric9
-    euler_angle_1 = 44.46
-    euler_angle_2 = 79.48
-    euler_angle_3 = 111.8
-  [../]
-  # [./stress_52bar1]
-  #   type = ComputeCrystalPlasticityStress
-  #   block = 1
-  #   crystal_plasticity_update_model = 'trial_xtalpl_52bar1'
-  # [../]
-  # [./trial_xtalpl_52bar1]
-  #   type = CrystalPlasticityCDDNiAlloyUpdate
-  #  block = 1
-  #   number_slip_systems = 12
-  #   slip_sys_file_name = 'fcc_input_slip_sys.txt'
-  #   number_twin_systems = 0
-  #   twin_system_file_name = 'fcc_input_slip_sys.txt'
-  #   number_cross_slip_directions = 0
-  #   number_cross_slip_planes = 0
-  #   temperature = 298.0
-  #   initial_immobile_dislocation_density = 0.5e3 #half initial dislocation density in Kondou et.al. 2008;
-  #   initial_mobile_dislocation_density = 0.5e3 #half initial dislocation density in Kondou et.al. 2008;
-  #   alpha_1 = 0.035 #from initial [111] fitting for much larger dislocation density
-  #   alpha_2 = 0.5
-  #   alpha_3 = 0.002
-  #   alpha_4 = 0.002
-  #   alpha_5 = 0.001
-  #   alpha_6 = 0.1
-  #   include_GND_contribution = true
-  #   plastic_velocity_gradient_components = 'velocity_gradient_xx velocity_gradient_xy velocity_gradient_xz velocity_gradient_yx velocity_gradient_yy velocity_gradient_yz velocity_gradient_zx velocity_gradient_zy velocity_gradient_zz'
-  #   tertiary_precipitate_mean_diameter = 0.0 # No additional hardening
-  #   tertiary_precipitate_volume_fraction = 0.0 #No additional hardening
-  #   Peierls_stress = 5.46 #1.0e-4 times shear modulus
-  #   shear_modulus = 54.6e3 #Hirth and Lothe for Cu, pg 837
-  #   burgers_vector = 2.556e-07 #Simon, Drexler, and Reed NIST MN 177
-  #   stol = 1.0e-3
-  #   maximum_substep_iteration = 10
-  #   maxiter = 30
-  #   maxiter_state_variable = 30
-  #   line_search_method = CUT_HALF
-  #   use_line_search = true
-  #   tan_mod_type = exact
-  # [../]
 []
 
 [Postprocessors]
@@ -1148,6 +1251,10 @@
     type = ElementAverageValue
     variable = fp_zz
   [../]
+  #[./rot_out_001]
+  #  type = ElementAverageValue
+  #  variable = rot_out_001
+  #[../]
   [./e_zz]
     type = ElementAverageValue
     variable = e_zz
@@ -1239,17 +1346,14 @@
   [./euler_angle1]
     type = ElementAverageValue
     variable = euler_angle1
-    execute_on = initial
   [../]
   [./euler_angle2]
     type = ElementAverageValue
     variable = euler_angle2
-    execute_on = initial
   [../]
   [./euler_angle3]
     type = ElementAverageValue
     variable = euler_angle3
-    execute_on = initial
   [../]
   [./nyes_tensor_00]
     type = ElementAverageValue
@@ -1291,16 +1395,6 @@
     type = ElementAverageValue
     variable = gnd_density
   [../]
-  [./gnd_density_left]
-    type = ElementAverageValue
-    variable = gnd_density
-    block = 1
-  [../]
-  [./gnd_density_right]
-    type = ElementAverageValue
-    variable = gnd_density
-    block = 2
-  [../]
   [./gss_0]
     type = ElementAverageValue
     variable = gss_0
@@ -1308,6 +1402,10 @@
   [./mobile_disl_0]
     type = ElementAverageValue
     variable = mobile_disl_0
+  [../]
+  [./slip_increment_0]
+    type = ElementAverageValue
+    variable = slip_increment_0
   [../]
   [./immobile_disl_0]
     type = ElementAverageValue
@@ -1317,16 +1415,6 @@
     type = ElementAverageValue
     variable = tau_0
   [../]
-  [./tau_0_left]
-    type = ElementAverageValue
-    variable = tau_0
-    block = 1
-  [../]
-  [./tau_0_right]
-    type = ElementAverageValue
-    variable = tau_0
-    block = 2
-  [../]
   [./gss_1]
     type = ElementAverageValue
     variable = gss_1
@@ -1334,6 +1422,10 @@
   [./mobile_disl_1]
     type = ElementAverageValue
     variable = mobile_disl_1
+  [../]
+  [./slip_increment_1]
+    type = ElementAverageValue
+    variable = slip_increment_1
   [../]
   [./immobile_disl_1]
     type = ElementAverageValue
@@ -1343,16 +1435,6 @@
     type = ElementAverageValue
     variable = tau_1
   [../]
-  [./tau_1_left]
-    type = ElementAverageValue
-    variable = tau_1
-    block = 1
-  [../]
-  [./tau_1_right]
-    type = ElementAverageValue
-    variable = tau_1
-    block = 2
-  [../]
   [./gss_2]
     type = ElementAverageValue
     variable = gss_2
@@ -1360,6 +1442,10 @@
   [./mobile_disl_2]
     type = ElementAverageValue
     variable = mobile_disl_2
+  [../]
+  [./slip_increment_2]
+    type = ElementAverageValue
+    variable = slip_increment_2
   [../]
   [./immobile_disl_2]
     type = ElementAverageValue
@@ -1369,16 +1455,6 @@
     type = ElementAverageValue
     variable = tau_2
   [../]
-  [./tau_2_left]
-    type = ElementAverageValue
-    variable = tau_2
-    block = 1
-  [../]
-  [./tau_2_right]
-    type = ElementAverageValue
-    variable = tau_2
-    block = 2
-  [../]
   [./gss_3]
     type = ElementAverageValue
     variable = gss_3
@@ -1386,6 +1462,10 @@
   [./mobile_disl_3]
     type = ElementAverageValue
     variable = mobile_disl_3
+  [../]
+  [./slip_increment_3]
+    type = ElementAverageValue
+    variable = slip_increment_3
   [../]
   [./immobile_disl_3]
     type = ElementAverageValue
@@ -1395,16 +1475,6 @@
     type = ElementAverageValue
     variable = tau_3
   [../]
-  [./tau_3_left]
-    type = ElementAverageValue
-    variable = tau_3
-    block = 1
-  [../]
-  [./tau_3_right]
-    type = ElementAverageValue
-    variable = tau_3
-    block = 2
-  [../]
   [./gss_4]
     type = ElementAverageValue
     variable = gss_4
@@ -1412,6 +1482,10 @@
   [./mobile_disl_4]
     type = ElementAverageValue
     variable = mobile_disl_4
+  [../]
+  [./slip_increment_4]
+    type = ElementAverageValue
+    variable = slip_increment_4
   [../]
   [./immobile_disl_4]
     type = ElementAverageValue
@@ -1421,16 +1495,6 @@
     type = ElementAverageValue
     variable = tau_4
   [../]
-  [./tau_4_left]
-    type = ElementAverageValue
-    variable = tau_4
-    block = 1
-  [../]
-  [./tau_4_right]
-    type = ElementAverageValue
-    variable = tau_4
-    block = 2
-  [../]
   [./gss_5]
     type = ElementAverageValue
     variable = gss_5
@@ -1438,6 +1502,10 @@
   [./mobile_disl_5]
     type = ElementAverageValue
     variable = mobile_disl_5
+  [../]
+  [./slip_increment_5]
+    type = ElementAverageValue
+    variable = slip_increment_5
   [../]
   [./immobile_disl_5]
     type = ElementAverageValue
@@ -1447,16 +1515,6 @@
     type = ElementAverageValue
     variable = tau_5
   [../]
-  [./tau_5_left]
-    type = ElementAverageValue
-    variable = tau_5
-    block = 1
-  [../]
-  [./tau_5_right]
-    type = ElementAverageValue
-    variable = tau_5
-    block = 2
-  [../]
   [./gss_6]
     type = ElementAverageValue
     variable = gss_6
@@ -1464,6 +1522,10 @@
   [./mobile_disl_6]
     type = ElementAverageValue
     variable = mobile_disl_6
+  [../]
+  [./slip_increment_6]
+    type = ElementAverageValue
+    variable = slip_increment_6
   [../]
   [./immobile_disl_6]
     type = ElementAverageValue
@@ -1473,16 +1535,6 @@
     type = ElementAverageValue
     variable = tau_6
   [../]
-  [./tau_6_left]
-    type = ElementAverageValue
-    variable = tau_6
-    block = 1
-  [../]
-  [./tau_6_right]
-    type = ElementAverageValue
-    variable = tau_6
-    block = 2
-  [../]
   [./gss_7]
     type = ElementAverageValue
     variable = gss_7
@@ -1490,6 +1542,10 @@
   [./mobile_disl_7]
     type = ElementAverageValue
     variable = mobile_disl_7
+  [../]
+  [./slip_increment_7]
+    type = ElementAverageValue
+    variable = slip_increment_7
   [../]
   [./immobile_disl_7]
     type = ElementAverageValue
@@ -1499,16 +1555,6 @@
     type = ElementAverageValue
     variable = tau_7
   [../]
-  [./tau_7_left]
-    type = ElementAverageValue
-    variable = tau_7
-    block = 1
-  [../]
-  [./tau_7_right]
-    type = ElementAverageValue
-    variable = tau_7
-    block = 2
-  [../]
   [./gss_8]
     type = ElementAverageValue
     variable = gss_8
@@ -1516,6 +1562,10 @@
   [./mobile_disl_8]
     type = ElementAverageValue
     variable = mobile_disl_8
+  [../]
+  [./slip_increment_8]
+    type = ElementAverageValue
+    variable = slip_increment_8
   [../]
   [./immobile_disl_8]
     type = ElementAverageValue
@@ -1525,16 +1575,6 @@
     type = ElementAverageValue
     variable = tau_8
   [../]
-  [./tau_8_left]
-    type = ElementAverageValue
-    variable = tau_8
-    block = 1
-  [../]
-  [./tau_8_right]
-    type = ElementAverageValue
-    variable = tau_8
-    block = 2
-  [../]
   [./gss_9]
     type = ElementAverageValue
     variable = gss_9
@@ -1542,6 +1582,10 @@
   [./mobile_disl_9]
     type = ElementAverageValue
     variable = mobile_disl_9
+  [../]
+  [./slip_increment_9]
+    type = ElementAverageValue
+    variable = slip_increment_9
   [../]
   [./immobile_disl_9]
     type = ElementAverageValue
@@ -1551,16 +1595,6 @@
     type = ElementAverageValue
     variable = tau_9
   [../]
-  [./tau_9_left]
-    type = ElementAverageValue
-    variable = tau_9
-    block = 1
-  [../]
-  [./tau_9_right]
-    type = ElementAverageValue
-    variable = tau_9
-    block = 2
-  [../]
   [./gss_10]
     type = ElementAverageValue
     variable = gss_10
@@ -1568,6 +1602,10 @@
   [./mobile_disl_10]
     type = ElementAverageValue
     variable = mobile_disl_10
+  [../]
+  [./slip_increment_10]
+    type = ElementAverageValue
+    variable = slip_increment_10
   [../]
   [./immobile_disl_10]
     type = ElementAverageValue
@@ -1577,16 +1615,6 @@
     type = ElementAverageValue
     variable = tau_10
   [../]
-  [./tau_10_left]
-    type = ElementAverageValue
-    variable = tau_10
-    block = 1
-  [../]
-  [./tau_10_right]
-    type = ElementAverageValue
-    variable = tau_10
-    block = 2
-  [../]
   [./gss_11]
     type = ElementAverageValue
     variable = gss_11
@@ -1595,6 +1623,10 @@
     type = ElementAverageValue
     variable = mobile_disl_11
   [../]
+  [./slip_increment_11]
+    type = ElementAverageValue
+    variable = slip_increment_11
+  [../]
   [./immobile_disl_11]
     type = ElementAverageValue
     variable = immobile_disl_11
@@ -1602,16 +1634,6 @@
   [./tau_11]
     type = ElementAverageValue
     variable = tau_11
-  [../]
-  [./tau_11_left]
-    type = ElementAverageValue
-    variable = tau_11
-    block = 1
-  [../]
-  [./tau_11_right]
-    type = ElementAverageValue
-    variable = tau_11
-    block = 2
   [../]
 []
 
@@ -1627,16 +1649,16 @@
   solve_type = PJFNK
 
   l_tol = 1e-3
-  l_max_its = 50
+  l_max_its = 100
   petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -ksp_type -ksp_gmres_restart'
   petsc_options_value = ' asm      2              lu            gmres     200'
   nl_abs_tol = 1e-6
-  nl_rel_tol = 1e-4
+  nl_rel_tol = 1e-6 #1e-4 #tighten down while using larger timestep for the elastic region
 
-  dtmax = 5.0e-4
-  dtmin = 1.0e-10
-  dt = 5.0e-4
-  end_time = 5 #1.35 #10 #is the final time
+  dtmax = 1.0
+  dtmin = 1.0e-4  #1.0e-4 for elastic only
+  dt = 1.0e-2 #was 1.0e-6
+  end_time = 1.0 #looks like should see plasticity start at 0.42 or so
 
   [./Predictor]
     type = SimplePredictor
@@ -1647,14 +1669,14 @@
 
 [Outputs]
   csv = true
-  # interval = 25
+  interval = 25
   [./out]
     type = Exodus
     elemental_as_nodal = true
   [../]
   [./checkpoint]
     type = Checkpoint
-    # interval = 25
+    interval = 25
     num_files = 3
   [../]
   perf_graph = true

@@ -1426,8 +1426,8 @@ Assembly::reinit(const Elem * elem)
 {
   _current_elem = elem;
   _current_neighbor_elem = nullptr;
-  mooseAssert(_current_subdomain_id == _current_elem->subdomain_id(),
-              "current subdomain has been set incorrectly");
+  // mooseAssert(_current_subdomain_id == _current_elem->subdomain_id(),
+  //             "current subdomain has been set incorrectly");
   _current_elem_volume_computed = false;
 
   unsigned int elem_dimension = elem->dim();

@@ -121,17 +121,17 @@ CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::CrystalPlasticityCDDUpdateBaseIn
     // Geometrically necessary dislocation parameters
     _calculate_gnd_contribution(getParam<bool>("include_GND_contribution")),
     _gnd_coefficient(getParam<Real>("GND_density_coefficient")),
-    _gradient_Lp(9),
+    // _gradient_Lp(9),
 
     _inital_glide_velocity(_gamma_reference / (_burgers_vector * _initial_mobile_dislocation_density))
 {
   if (_number_slip_systems >= 1000)
     mooseError("CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs assumes fewer than 1,000 possible slip systems");
 
-  if (_calculate_gnd_contribution && (coupledComponents("plastic_velocity_gradient_components") != (LIBMESH_DIM * LIBMESH_DIM)))
-  {
-      mooseError("To calculate the geometrially necessary dislocations, all 9 of the auxvariable components of the plastic velocity gradient Rank-2 tensor must be given as inputs to the plastic_velocity_gradient parameter.");
-  }
+  // if (_calculate_gnd_contribution && (coupledComponents("plastic_velocity_gradient_components") != (LIBMESH_DIM * LIBMESH_DIM)))
+  // {
+  //     mooseError("To calculate the geometrially necessary dislocations, all 9 of the auxvariable components of the plastic velocity gradient Rank-2 tensor must be given as inputs to the plastic_velocity_gradient parameter.");
+  // }
 
   setRandomResetFrequency(EXEC_TIMESTEP_BEGIN);
 }
@@ -540,6 +540,33 @@ CrystalPlasticityCDDUpdateBaseInternalFcnsGNDs::calculateGeometricallyNecessaryD
 {
   RankTwoTensor increment_nyes_tensor;
   increment_nyes_tensor.zero();
+  std::vector<std::vector<Real>> gradient_Lp(LIBMESH_DIM * LIBMESH_DIM, std::vector<Real>(LIBMESH_DIM, 0.0));
+
+  for (unsigned int k = 0; k < LIBMESH_DIM; ++k)
+  {
+    for (unsigned int m = 0; m < LIBMESH_DIM; ++m)
+    {
+      for (unsigned int p = 0; p < LIBMESH_DIM; ++p)
+      {
+        for (std::size_t i = 0; i < _gnd_grad_phi.size(); ++i)
+          gradient_Lp[k * LIBMESH_DIM + m][p] += _slip_increment_sum[_qp](k,m) * _gnd_grad_phi[i][_qp](p);
+      }
+    }
+  }
+
+  // Implementation based on the curl3 concept in Das et al. (2018) IJP
+  for (unsigned int i = 0; i < LIBMESH_DIM; ++i)
+  {
+    for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
+    {
+      if (j == 0)
+        increment_nyes_tensor(i,0) = gradient_Lp[i * LIBMESH_DIM + 2][1] - gradient_Lp[i * LIBMESH_DIM + 1][2];
+      else if (j == 1)
+        increment_nyes_tensor(i,1) = gradient_Lp[i * LIBMESH_DIM + 0][2] - gradient_Lp[i * LIBMESH_DIM + 2][0];
+      else if (j == 2)
+        increment_nyes_tensor(i,j) = gradient_Lp[i * LIBMESH_DIM + 1][0] - gradient_Lp[i * LIBMESH_DIM + 0][1];
+    }
+  }
 
   // for (unsigned int i = 0; i < LIBMESH_DIM; ++i)
   // {

@@ -270,7 +270,13 @@ CrystalPlasticityUpdate::solveStress()
   rnorm0 = rnorm;
 
   // Check for stress residual tolerance
-  while (rnorm > _rtol * rnorm0 && rnorm0 > _abs_tol && iteration <  _maxiter)
+  // not sure why I was comparing the absolute tolerance of only the original
+  // rnorm value, but I'm not going to do that now
+  // and hopefully I will not regret that decision...I guess I will find out
+
+  // while (rnorm > _rtol * rnorm0 && rnorm0 > _abs_tol && iteration <  _maxiter)
+  while (rnorm > _rtol * rnorm0 && rnorm > _abs_tol && iteration <  _maxiter)
+
   {
     // Calculate stress increment
     dpk2 = - _jacobian.invSymm() * _residual_tensor;
@@ -307,7 +313,7 @@ CrystalPlasticityUpdate::solveStress()
   if (iteration >= _maxiter)
   {
 #ifdef DEBUG
-    mooseWarning("CrystalPlasticityUpdate: Stress Integration error rmax = ", rnorm, " and the tolerance is " , _rtol * rnorm0, "for element ", _current_elem->id(), " and qp ", _qp);
+    mooseWarning("CrystalPlasticityUpdate: Stress Integration error rmax = ", rnorm, " and the tolerance is " , _rtol * rnorm0, "when the rnorm0 value is ", rnorm0, "for element ", _current_elem->id(), " and qp ", _qp);
 #endif
     _error_tolerance = true;
   }

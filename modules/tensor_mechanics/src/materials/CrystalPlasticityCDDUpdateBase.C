@@ -559,9 +559,6 @@ CrystalPlasticityCDDUpdateBase::calculateGeometricallyNecessaryDislocations()
     }
   }
 
-  std::cout << "The incremental nye's tensor for element " << _current_elem->id() << " and qp point " << _qp << "is: " << increment_nyes_tensor << std::endl;
-
-
   // // implementation that I had which gave me 'top heavy' results in the gnds in
   // // the Ohashi shear beam bending problem
   // for (unsigned int i = 0; i < LIBMESH_DIM; ++i)
