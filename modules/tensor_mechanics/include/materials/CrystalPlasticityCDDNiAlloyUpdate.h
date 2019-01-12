@@ -158,6 +158,8 @@ protected:
   MaterialProperty<Real> & _total_volume_fraction_twins;
   const MaterialProperty<Real> & _total_volume_fraction_twins_old;
   MaterialProperty<std::vector<Real> > & _twin_shear_increment;
+  MaterialProperty<std::vector<Real> > & _twin_volume_fraction;
+  const MaterialProperty<std::vector<Real> > & _twin_volume_fraction_old;
   MaterialProperty<Real> & _previous_iteration_twin_volume_fraction;
   ///@}
 
@@ -167,6 +169,7 @@ protected:
   ///@{ Resistance of the crystal to growth of twins parameters
   MaterialProperty<std::vector<Real> > & _twin_system_resistance;
   const Real _coefficient_twin_resistance;
+  const Real _coefficient_twin_hardening;
   ///@}
 
   /// Resolved applied shear stress on the twinning system

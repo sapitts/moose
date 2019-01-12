@@ -95,7 +95,11 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
-  [./xslip_disl_0]
+  [./twin_shear_increment_0]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_volume_frac_0]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -123,7 +127,11 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
-  [./xslip_disl_1]
+  [./twin_shear_increment_1]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_volume_frac_1]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -151,7 +159,11 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
-  [./xslip_disl_2]
+  [./twin_shear_increment_2]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_volume_frac_2]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -179,7 +191,11 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
-  [./xslip_disl_3]
+  [./twin_shear_increment_3]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_volume_frac_3]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -207,7 +223,11 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
-  [./xslip_disl_4]
+  [./twin_shear_increment_4]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_volume_frac_4]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -235,7 +255,11 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
-  [./xslip_disl_5]
+  [./twin_shear_increment_5]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_volume_frac_5]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -263,7 +287,11 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
-  [./xslip_disl_6]
+  [./twin_shear_increment_6]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_volume_frac_6]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -291,7 +319,11 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
-  [./xslip_disl_7]
+  [./twin_shear_increment_7]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_volume_frac_7]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -319,7 +351,11 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
-  [./xslip_disl_8]
+  [./twin_shear_increment_8]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_volume_frac_8]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -347,7 +383,11 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
-  [./xslip_disl_9]
+  [./twin_shear_increment_9]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_volume_frac_9]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -375,7 +415,11 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
-  [./xslip_disl_10]
+  [./twin_shear_increment_10]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_volume_frac_10]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -403,7 +447,11 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
-  [./xslip_disl_11]
+  [./twin_shear_increment_11]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_volume_frac_11]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -580,10 +628,17 @@
     index = 0
     execute_on = timestep_end
   [../]
-  [./xslip_disl_0]
+  [./twin_shear_increment_0]
    type = MaterialStdVectorAux
-   variable = xslip_disl_0
-   property = cross_slip_dislocations
+   variable = twin_shear_increment_0
+   property = twin_slip_increment
+   index = 0
+   execute_on = timestep_end
+  [../]
+  [./twin_volume_frac_0]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_0
+   property = twin_volume_fraction
    index = 0
    execute_on = timestep_end
   [../]
@@ -629,10 +684,17 @@
     index = 1
     execute_on = timestep_end
   [../]
-  [./xslip_disl_1]
+  [./twin_shear_increment_1]
    type = MaterialStdVectorAux
-   variable = xslip_disl_1
-   property = cross_slip_dislocations
+   variable = twin_shear_increment_1
+   property = twin_slip_increment
+   index = 1
+   execute_on = timestep_end
+  [../]
+  [./twin_volume_frac_1]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_1
+   property = twin_volume_fraction
    index = 1
    execute_on = timestep_end
   [../]
@@ -678,10 +740,17 @@
     index = 2
     execute_on = timestep_end
   [../]
-  [./xslip_disl_2]
+  [./twin_shear_increment_2]
    type = MaterialStdVectorAux
-   variable = xslip_disl_2
-   property = cross_slip_dislocations
+   variable = twin_shear_increment_2
+   property = twin_slip_increment
+   index = 2
+   execute_on = timestep_end
+  [../]
+  [./twin_volume_frac_2]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_2
+   property = twin_volume_fraction
    index = 2
    execute_on = timestep_end
   [../]
@@ -727,10 +796,17 @@
     index = 3
     execute_on = timestep_end
   [../]
-  [./xslip_disl_3]
+  [./twin_shear_increment_3]
    type = MaterialStdVectorAux
-   variable = xslip_disl_3
-   property = cross_slip_dislocations
+   variable = twin_shear_increment_3
+   property = twin_slip_increment
+   index = 3
+   execute_on = timestep_end
+  [../]
+  [./twin_volume_frac_3]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_3
+   property = twin_volume_fraction
    index = 3
    execute_on = timestep_end
   [../]
@@ -776,10 +852,17 @@
     index = 4
     execute_on = timestep_end
   [../]
-  [./xslip_disl_4]
+  [./twin_shear_increment_4]
    type = MaterialStdVectorAux
-   variable = xslip_disl_4
-   property = cross_slip_dislocations
+   variable = twin_shear_increment_4
+   property = twin_slip_increment
+   index = 4
+   execute_on = timestep_end
+  [../]
+  [./twin_volume_frac_4]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_4
+   property = twin_volume_fraction
    index = 4
    execute_on = timestep_end
   [../]
@@ -825,10 +908,17 @@
     index = 5
     execute_on = timestep_end
   [../]
-  [./xslip_disl_5]
+  [./twin_shear_increment_5]
    type = MaterialStdVectorAux
-   variable = xslip_disl_5
-   property = cross_slip_dislocations
+   variable = twin_shear_increment_5
+   property = twin_slip_increment
+   index = 5
+   execute_on = timestep_end
+  [../]
+  [./twin_volume_frac_5]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_5
+   property = twin_volume_fraction
    index = 5
    execute_on = timestep_end
   [../]
@@ -874,10 +964,17 @@
     index = 6
     execute_on = timestep_end
   [../]
-  [./xslip_disl_6]
+  [./twin_shear_increment_6]
    type = MaterialStdVectorAux
-   variable = xslip_disl_6
-   property = cross_slip_dislocations
+   variable = twin_shear_increment_6
+   property = twin_slip_increment
+   index = 6
+   execute_on = timestep_end
+  [../]
+  [./twin_volume_frac_6]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_6
+   property = twin_volume_fraction
    index = 6
    execute_on = timestep_end
   [../]
@@ -923,10 +1020,17 @@
     index = 7
     execute_on = timestep_end
   [../]
-  [./xslip_disl_7]
+  [./twin_shear_increment_7]
    type = MaterialStdVectorAux
-   variable = xslip_disl_7
-   property = cross_slip_dislocations
+   variable = twin_shear_increment_7
+   property = twin_slip_increment
+   index = 7
+   execute_on = timestep_end
+  [../]
+  [./twin_volume_frac_7]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_7
+   property = twin_volume_fraction
    index = 7
    execute_on = timestep_end
   [../]
@@ -972,10 +1076,17 @@
     index = 8
     execute_on = timestep_end
   [../]
-  [./xslip_disl_8]
+  [./twin_shear_increment_8]
    type = MaterialStdVectorAux
-   variable = xslip_disl_8
-   property = cross_slip_dislocations
+   variable = twin_shear_increment_8
+   property = twin_slip_increment
+   index = 8
+   execute_on = timestep_end
+  [../]
+  [./twin_volume_frac_8]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_8
+   property = twin_volume_fraction
    index = 8
    execute_on = timestep_end
   [../]
@@ -1021,10 +1132,17 @@
     index = 9
     execute_on = timestep_end
   [../]
-  [./xslip_disl_9]
+  [./twin_shear_increment_9]
    type = MaterialStdVectorAux
-   variable = xslip_disl_9
-   property = cross_slip_dislocations
+   variable = twin_shear_increment_9
+   property = twin_slip_increment
+   index = 9
+   execute_on = timestep_end
+  [../]
+  [./twin_volume_frac_9]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_9
+   property = twin_volume_fraction
    index = 9
    execute_on = timestep_end
   [../]
@@ -1070,10 +1188,17 @@
     index = 10
     execute_on = timestep_end
   [../]
-  [./xslip_disl_10]
+  [./twin_shear_increment_10]
    type = MaterialStdVectorAux
-   variable = xslip_disl_10
-   property = cross_slip_dislocations
+   variable = twin_shear_increment_10
+   property = twin_slip_increment
+   index = 10
+   execute_on = timestep_end
+  [../]
+  [./twin_volume_frac_10]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_10
+   property = twin_volume_fraction
    index = 10
    execute_on = timestep_end
   [../]
@@ -1119,10 +1244,17 @@
     index = 11
     execute_on = timestep_end
   [../]
-  [./xslip_disl_11]
+  [./twin_shear_increment_11]
    type = MaterialStdVectorAux
-   variable = xslip_disl_11
-   property = cross_slip_dislocations
+   variable = twin_shear_increment_11
+   property = twin_slip_increment
+   index = 11
+   execute_on = timestep_end
+  [../]
+  [./twin_volume_frac_11]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_11
+   property = twin_volume_fraction
    index = 11
    execute_on = timestep_end
   [../]
@@ -1212,15 +1344,16 @@
     Baily_Hirsch_barrier_coefficient = 0.4
     dislocation_self_hardening_parameter = 1
     dislocation_latent_hardening_parameter = 1.0
-    Peierls_stress = 1 #3.639 #0.5e-4 times shear modulus
+    Peierls_stress = 3.639 #0.5e-4 times shear modulus
     coefficient_twin_resistance = 1.0
+    coefficient_twin_hardening = 1.0
     shear_modulus = 72.773e3
     burgers_vector = 2.52e-7
     tertiary_precipitate_mean_diameter = 0.0 #2.50e-6 #Gwalani et al. (2016) Table 2, 8000 hrs aged
     tertiary_precipitate_volume_fraction = 0.0 #0.033 #Gwalani et al. (2016) Table 2, 8000 hrs aged
     orowan_bowing_hardening_coefficient = 0.0 #0.05
     tertiary_apb_shearing_coefficient = 0.0 #0.95
-    stol = 0.1
+    stol = 0.01
     zero_tol = 1e-8
     # slip_increment_tolerance = 1.0e-3 ## Seems to be too restrictive
     maximum_substep_iteration = 2 # is 10 for BCC
@@ -1313,10 +1446,14 @@
     type = ElementAverageValue
     variable = mobile_disl_0
   [../]
-  # [./cross_slip_disl_0]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_0
-  # [../]
+  [./twin_slip_increment_0]
+   type = ElementAverageValue
+   variable = twin_shear_increment_0
+  [../]
+  [./twin_volume_frac_0]
+    type = ElementAverageValue
+    variable = twin_volume_frac_0
+  [../]
   [./immobile_disl_0]
     type = ElementAverageValue
     variable = immobile_disl_0
@@ -1341,10 +1478,14 @@
     type = ElementAverageValue
     variable = mobile_disl_1
   [../]
-  # [./cross_slip_disl_1]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_1
-  # [../]
+  [./twin_slip_increment_1]
+   type = ElementAverageValue
+   variable = twin_shear_increment_1
+  [../]
+  [./twin_volume_frac_1]
+    type = ElementAverageValue
+    variable = twin_volume_frac_1
+  [../]
   [./immobile_disl_1]
     type = ElementAverageValue
     variable = immobile_disl_1
@@ -1369,10 +1510,14 @@
     type = ElementAverageValue
     variable = mobile_disl_2
   [../]
-  # [./cross_slip_disl_2]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_2
-  # [../]
+  [./twin_slip_increment_2]
+   type = ElementAverageValue
+   variable = twin_shear_increment_2
+  [../]
+  [./twin_volume_frac_2]
+    type = ElementAverageValue
+    variable = twin_volume_frac_2
+  [../]
   [./immobile_disl_2]
     type = ElementAverageValue
     variable = immobile_disl_2
@@ -1397,10 +1542,14 @@
     type = ElementAverageValue
     variable = mobile_disl_3
   [../]
-  # [./cross_slip_disl_3]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_3
-  # [../]
+  [./twin_slip_increment_3]
+   type = ElementAverageValue
+   variable = twin_shear_increment_3
+  [../]
+  [./twin_volume_frac_3]
+    type = ElementAverageValue
+    variable = twin_volume_frac_3
+  [../]
   [./immobile_disl_3]
     type = ElementAverageValue
     variable = immobile_disl_3
@@ -1425,10 +1574,14 @@
     type = ElementAverageValue
     variable = mobile_disl_4
   [../]
-  # [./cross_slip_disl_4]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_4
-  # [../]
+  [./twin_slip_increment_4]
+   type = ElementAverageValue
+   variable = twin_shear_increment_4
+  [../]
+  [./twin_volume_frac_4]
+    type = ElementAverageValue
+    variable = twin_volume_frac_4
+  [../]
   [./immobile_disl_4]
     type = ElementAverageValue
     variable = immobile_disl_4
@@ -1453,10 +1606,14 @@
     type = ElementAverageValue
     variable = mobile_disl_5
   [../]
-  # [./cross_slip_disl_5]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_5
-  # [../]
+  [./twin_slip_increment_5]
+   type = ElementAverageValue
+   variable = twin_shear_increment_5
+  [../]
+  [./twin_volume_frac_5]
+    type = ElementAverageValue
+    variable = twin_volume_frac_5
+  [../]
   [./immobile_disl_5]
     type = ElementAverageValue
     variable = immobile_disl_5
@@ -1481,10 +1638,14 @@
     type = ElementAverageValue
     variable = mobile_disl_6
   [../]
-  # [./cross_slip_disl_6]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_6
-  # [../]
+  [./twin_slip_increment_6]
+   type = ElementAverageValue
+   variable = twin_shear_increment_6
+  [../]
+  [./twin_volume_frac_6]
+    type = ElementAverageValue
+    variable = twin_volume_frac_6
+  [../]
   [./immobile_disl_6]
     type = ElementAverageValue
     variable = immobile_disl_6
@@ -1509,10 +1670,14 @@
     type = ElementAverageValue
     variable = mobile_disl_7
   [../]
-  # [./cross_slip_disl_7]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_7
-  # [../]
+  [./twin_slip_increment_7]
+   type = ElementAverageValue
+   variable = twin_shear_increment_7
+  [../]
+  [./twin_volume_frac_7]
+    type = ElementAverageValue
+    variable = twin_volume_frac_7
+  [../]
   [./immobile_disl_7]
     type = ElementAverageValue
     variable = immobile_disl_7
@@ -1537,10 +1702,14 @@
     type = ElementAverageValue
     variable = mobile_disl_8
   [../]
-  # [./cross_slip_disl_8]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_8
-  # [../]
+  [./twin_slip_increment_8]
+   type = ElementAverageValue
+   variable = twin_shear_increment_8
+  [../]
+  [./twin_volume_frac_8]
+    type = ElementAverageValue
+    variable = twin_volume_frac_8
+  [../]
   [./immobile_disl_8]
     type = ElementAverageValue
     variable = immobile_disl_8
@@ -1565,10 +1734,14 @@
     type = ElementAverageValue
     variable = mobile_disl_9
   [../]
-  # [./cross_slip_disl_9]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_9
-  # [../]
+  [./twin_slip_increment_9]
+   type = ElementAverageValue
+   variable = twin_shear_increment_9
+  [../]
+  [./twin_volume_frac_9]
+    type = ElementAverageValue
+    variable = twin_volume_frac_9
+  [../]
   [./immobile_disl_9]
     type = ElementAverageValue
     variable = immobile_disl_9
@@ -1593,10 +1766,14 @@
     type = ElementAverageValue
     variable = mobile_disl_10
   [../]
-  # [./cross_slip_disl_10]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_10
-  # [../]
+  [./twin_slip_increment_10]
+   type = ElementAverageValue
+   variable = twin_shear_increment_10
+  [../]
+  [./twin_volume_frac_10]
+    type = ElementAverageValue
+    variable = twin_volume_frac_10
+  [../]
   [./immobile_disl_10]
     type = ElementAverageValue
     variable = immobile_disl_10
@@ -1621,10 +1798,14 @@
     type = ElementAverageValue
     variable = mobile_disl_11
   [../]
-  # [./cross_slip_disl_11]
-  #  type = ElementAverageValue
-  #  variable = xslip_disl_11
-  # [../]
+  [./twin_slip_increment_11]
+   type = ElementAverageValue
+   variable = twin_shear_increment_11
+  [../]
+  [./twin_volume_frac_11]
+    type = ElementAverageValue
+    variable = twin_volume_frac_11
+  [../]
   [./immobile_disl_11]
     type = ElementAverageValue
     variable = immobile_disl_11
@@ -1674,6 +1855,7 @@
 
 [Outputs]
   csv = true
+  file_base = cdd_100load_tension_ni33cr_with_twins_1e0coeff_magnitude_compare_against_zerostress_out
   interval = 25
   exodus = true
   [pgraph]
