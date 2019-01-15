@@ -168,11 +168,7 @@ Real
 CrystalPlasticityCDDBCCFeUpdate::calculateMeanFreeGlidePath()
 {
   Real forest_only_glide_path_inv = CrystalPlasticityCDDUpdateBase::calculateMeanFreeGlidePath();
-
   Real sia_glide_path_inv = _sia_loop_glide_path_coeff * std::sqrt(_sia_loop_size *_sia_loop_density[_qp]);
-  std::cout << "The value of the forest mean free glide path is " << forest_only_glide_path_inv << std::endl;
-  std::cout << " and the value of the twin glide path contribution is " << sia_glide_path_inv << std::endl;
-
   Real glide_path_inv = forest_only_glide_path_inv + sia_glide_path_inv;
 
   return glide_path_inv;
