@@ -1616,9 +1616,9 @@
     alpha_4 = 0.002
     alpha_5 = 0.044
     alpha_6 = 1.0
-    thermal_slip_system_resistance = 8.8 #Alpha-iron is 11MPa for peierls stress
+    initial_thermal_slip_system_resistance = 8.8 #Alpha-iron is 11MPa for peierls stress
     shear_modulus = 80.0e3
-    apply_anisotropic_strength = false
+    apply_anisotropic_strength = true
     stol = 0.1
     cross_slip_calculation_type = stochastic
     maximum_substep_iteration = 10
@@ -2192,7 +2192,7 @@
   type = Transient
   solve_type = PJFNK
 
-  l_tol = 1e-4
+  l_tol = 1e-5
   petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -ksp_type -ksp_gmres_restart'
   petsc_options_value = ' asm      2              lu            gmres     200'
   nl_abs_tol = 1e-6
@@ -2218,9 +2218,9 @@
   interval = 50
   exodus = false
   perf_graph = true
-  # [./checkpoint]
-  #   type = Checkpoint
-  #   interval = 50
-  #   num_files = 3
-  # [../]
+  [./checkpoint]
+    type = Checkpoint
+    interval = 25
+    num_files = 2
+  [../]
 []
