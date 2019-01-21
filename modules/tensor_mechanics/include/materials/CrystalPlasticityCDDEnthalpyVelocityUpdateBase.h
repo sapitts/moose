@@ -143,6 +143,7 @@ protected:
 
   MaterialProperty<std::vector<Real> > & _athermal_slip_system_resistance;
   const MaterialProperty<std::vector<Real> > & _athermal_slip_system_resistance_old;
+  MaterialProperty<std::vector<Real> > & _thermal_slip_system_resistance;
   MaterialProperty<std::vector<Real> > & _static_resistance_contribution;
 
   MaterialProperty<std::vector<Real> > & _glide_slip_increment;
@@ -169,7 +170,7 @@ protected:
   const Real _burgers_vector;
   const Real _initial_mobile_dislocation_density;
   const Real _initial_immobile_dislocation_density;
-  const Real _thermal_slip_system_resistance;
+  const Real _initial_thermal_slip_system_resistance;
   const Real _shear_modulus;
 
   const Real _p_exp;

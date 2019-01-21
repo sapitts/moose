@@ -189,8 +189,7 @@ CrystalPlasticityCDDEnthalpyVelocityBCCFeUpdate::calculateSlipSystemResistance(b
 
   for (unsigned int i = 0; i < _number_slip_systems; ++i)
     _athermal_slip_system_resistance[_qp][i] = forest_strength[i] +
-                                      _sia_loop_slip_resistance[_qp] +
-                                      _static_resistance_contribution[_qp][i];
+                                      _sia_loop_slip_resistance[_qp];
 
   //Now perform the check to see if the slip system should be updated
   for (unsigned int i = 0; i < _number_slip_systems; ++i)
@@ -211,7 +210,7 @@ void
 CrystalPlasticityCDDEnthalpyVelocityBCCFeUpdate::initSlipSystemResistance()
 {
   for (unsigned int i = 0; i < _number_slip_systems; ++i)
-    _static_resistance_contribution[_qp][i] = 0.0;
+    _static_resistance_contribution[_qp][i] = _initial_thermal_slip_system_resistance;
 
   if (_apply_anisotropic_strength)
     applyAnisotropicStrengthFactor();
@@ -237,9 +236,11 @@ CrystalPlasticityCDDEnthalpyVelocityBCCFeUpdate::initSlipSystemResistance()
 
   // Loop over all the slip systems and add these strength contributions
   for (unsigned int i = 0; i < _number_slip_systems; ++i)
+  {
     _athermal_slip_system_resistance[_qp][i] = forest_strength[i] +
-                                      _sia_loop_slip_resistance[_qp] +
-                                      _static_resistance_contribution[_qp][i];
+                                      _sia_loop_slip_resistance[_qp];
+    _thermal_slip_system_resistance[_qp][i] = _static_resistance_contribution[_qp][i];
+  }
 }
 
 void

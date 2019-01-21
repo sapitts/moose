@@ -25,7 +25,7 @@ InputParameters validParams<CrystalPlasticityCDDEnthalpyVelocityUpdateBase>()
   params.addParam<Real>("initial_mobile_dislocation_density", 1.0e6, "Initial density of mobile dislocation densities, in 1/mm^2");
   params.addParam<Real>("initial_immobile_dislocation_density", 1.0e6, "Initial density of immobile dislocation densities, in 1/mm^2");
 
-  params.addParam<Real>("thermal_slip_system_resistance", 50.0, "Thermal resistance to dislocation motion, due to short range obstacles and related to the Peierl's barrier strenght, in MPa");
+  params.addParam<Real>("initial_thermal_slip_system_resistance", 50.0, "Thermal resistance to dislocation motion, due to short range obstacles and related to the Peierl's barrier strenght, in MPa");
   params.addParam<Real>("shear_modulus", 80.0e3, "The shear modulus of the crystal, in MPa");
 
   params.addParam<Real>("flow_rule_exponent_p", 0.28, "Exponent parameter used to calculate the flow rate, operates on the driving force"),
@@ -71,6 +71,7 @@ CrystalPlasticityCDDEnthalpyVelocityUpdateBase::CrystalPlasticityCDDEnthalpyVelo
 
     _athermal_slip_system_resistance(declareProperty<std::vector<Real> >("athermal_slip_system_resistance")),
     _athermal_slip_system_resistance_old(getMaterialPropertyOld<std::vector<Real> >("athermal_slip_system_resistance")),
+    _thermal_slip_system_resistance(declareProperty<std::vector<Real> >("thermal_slip_system_resistance")),
     _static_resistance_contribution(declareProperty<std::vector<Real> >("static_resistance_contribution")),
     _glide_slip_increment(declareProperty<std::vector<Real> >("plastic_glide_slip_increment")),
 
@@ -95,7 +96,7 @@ CrystalPlasticityCDDEnthalpyVelocityUpdateBase::CrystalPlasticityCDDEnthalpyVelo
     _burgers_vector(getParam<Real>("burgers_vector")),
     _initial_mobile_dislocation_density(getParam<Real>("initial_mobile_dislocation_density")),
     _initial_immobile_dislocation_density(getParam<Real>("initial_immobile_dislocation_density")),
-    _thermal_slip_system_resistance(getParam<Real>("thermal_slip_system_resistance")),
+    _initial_thermal_slip_system_resistance(getParam<Real>("initial_thermal_slip_system_resistance")),
     _shear_modulus(getParam<Real>("shear_modulus")),
 
     // Enthapy Flow Rule parameters
@@ -163,6 +164,7 @@ CrystalPlasticityCDDEnthalpyVelocityUpdateBase::initQpStatefulProperties()
   _cross_slip_dislocations[_qp].resize(_number_slip_systems);
 
   _athermal_slip_system_resistance[_qp].resize(_number_slip_systems);
+  _thermal_slip_system_resistance[_qp].resize(_number_slip_systems);
   _static_resistance_contribution[_qp].resize(_number_slip_systems);
 
   _glide_slip_increment[_qp].resize(_number_slip_systems);
@@ -229,7 +231,7 @@ CrystalPlasticityCDDEnthalpyVelocityUpdateBase::calculateGlideSlipIncrement(bool
   {
     if ( std::abs(_tau[_qp][i]) >= _athermal_slip_system_resistance[_qp][i])
     {
-      const Real driving_force = (std::abs(_tau[_qp][i]) - _athermal_slip_system_resistance[_qp][i]) / _thermal_slip_system_resistance;
+      const Real driving_force = (std::abs(_tau[_qp][i]) - _athermal_slip_system_resistance[_qp][i]) / _athermal_slip_system_resistance[_qp][i];
       const Real exp_driving_force = std::pow(driving_force , _p_exp);
 
       if (exp_driving_force > 1.0)
@@ -290,12 +292,12 @@ CrystalPlasticityCDDEnthalpyVelocityUpdateBase::calculateGlideSlipDerivative(std
       else
       {
       // Expand out the chain rule terms for the calculation of the glide velocity derivative
-        Real d_strength_d_tau = 1.0 / _thermal_slip_system_resistance;
+        Real d_strength_d_tau = 1.0 / _thermal_slip_system_resistance[_qp][i];
         if (_tau[_qp][i] < 0.0)
           d_strength_d_tau *= -1.0;  //only need to change the sign(_tau[_qp]) if _tau[_qp] is negative
 
         // Then apply the product rule to the driving force term with the exponents
-        const Real driving_force = (std::abs(_tau[_qp][i]) - _athermal_slip_system_resistance[_qp][i]) / _thermal_slip_system_resistance;
+        const Real driving_force = (std::abs(_tau[_qp][i]) - _athermal_slip_system_resistance[_qp][i]) / _thermal_slip_system_resistance[_qp][i];
 
         Real d_driving_force_d_strength = 0.0;
       if (driving_force > 0.0) // Need a positive driving force to move the dislocations
@@ -617,7 +619,8 @@ CrystalPlasticityCDDEnthalpyVelocityUpdateBase::calculateSlipSystemResistance(bo
     //                          + Utility::pow<2>(_static_resistance_contribution[_qp][i]);
     // _athermal_athermal_slip_system_resistance[_qp][i] = std::sqrt(sq_resistance);
 
-  _athermal_slip_system_resistance[_qp][i] = forest_strength[i] + _static_resistance_contribution[_qp][i];
+  _athermal_slip_system_resistance[_qp][i] = forest_strength[i];
+  // _thermal_slip_system_resistance[_qp][i] = _static_resistance_contribution[_qp][i];
   }
 
   //Now perform the check to see if the slip system should be updated
@@ -639,7 +642,7 @@ void
 CrystalPlasticityCDDEnthalpyVelocityUpdateBase::initSlipSystemResistance()
 {
   for (unsigned int i = 0; i < _number_slip_systems; ++i)
-    _static_resistance_contribution[_qp][i] = 0.0;
+    _static_resistance_contribution[_qp][i] = _initial_thermal_slip_system_resistance;
 
   std::vector<Real> forest_strength(_number_slip_systems);
   calculateDislocationForestHardening(forest_strength);
@@ -651,7 +654,8 @@ CrystalPlasticityCDDEnthalpyVelocityUpdateBase::initSlipSystemResistance()
     //                          + Utility::pow<2>(_static_resistance_contribution[_qp][i]);
     // _athermal_slip_system_resistance[_qp][i] = std::sqrt(sq_resistance);
 
-  _athermal_slip_system_resistance[_qp][i] = forest_strength[i] + _static_resistance_contribution[_qp][i];
+  _athermal_slip_system_resistance[_qp][i] = forest_strength[i];
+  _thermal_slip_system_resistance[_qp][i] = _static_resistance_contribution[_qp][i];
   }
 }
 
