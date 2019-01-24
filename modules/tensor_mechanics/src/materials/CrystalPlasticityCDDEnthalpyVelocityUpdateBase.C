@@ -231,13 +231,13 @@ CrystalPlasticityCDDEnthalpyVelocityUpdateBase::calculateGlideSlipIncrement(bool
   {
     if ( std::abs(_tau[_qp][i]) >= _athermal_slip_system_resistance[_qp][i])
     {
-      const Real driving_force = (std::abs(_tau[_qp][i]) - _athermal_slip_system_resistance[_qp][i]) / _athermal_slip_system_resistance[_qp][i];
+      const Real driving_force = (std::abs(_tau[_qp][i]) - _athermal_slip_system_resistance[_qp][i]) / _thermal_slip_system_resistance[_qp][i];
       const Real exp_driving_force = std::pow(driving_force , _p_exp);
 
       if (exp_driving_force > 1.0)
       {
 #ifdef DEBUG
-        mooseWarning("CrystalPlasticityEnthalpyFlowRuleUpdate: Flow rule upper limit exceeded ", exp_driving_force);
+        mooseWarning("CrystalPlasticityCDDEnthalpyVelocityUpdateBase: Flow rule upper limit exceeded ", exp_driving_force);
 #endif
         error_tolerance = true;
         return;
@@ -247,7 +247,7 @@ CrystalPlasticityCDDEnthalpyVelocityUpdateBase::calculateGlideSlipIncrement(bool
       _glide_velocity[_qp][i] = _avg_dislocation_glide_distance * _jump_frequency * std::exp(activation_term * driving_force_term);
 
       if (_tau[_qp][i] < 0.0)
-        _glide_velocity[_qp][i] *= -1.0;  //only need to change the sign(_tau[_qp]) if _tau[_qp] is negative
+        _glide_velocity[_qp][i] *= -1.0;
     }
     else // Not enough shear force from tau to move dislocations
       _glide_velocity[_qp][i] = 0.0;
@@ -294,7 +294,7 @@ CrystalPlasticityCDDEnthalpyVelocityUpdateBase::calculateGlideSlipDerivative(std
       // Expand out the chain rule terms for the calculation of the glide velocity derivative
         Real d_strength_d_tau = 1.0 / _thermal_slip_system_resistance[_qp][i];
         if (_tau[_qp][i] < 0.0)
-          d_strength_d_tau *= -1.0;  //only need to change the sign(_tau[_qp]) if _tau[_qp] is negative
+          d_strength_d_tau *= -1.0;
 
         // Then apply the product rule to the driving force term with the exponents
         const Real driving_force = (std::abs(_tau[_qp][i]) - _athermal_slip_system_resistance[_qp][i]) / _thermal_slip_system_resistance[_qp][i];
