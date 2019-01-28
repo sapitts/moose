@@ -6,6 +6,10 @@
   file = ma_bixtal_finermesh.e
 []
 
+[Problem]
+  restart_file_base = bixtal_ma2006_midangle_31elem_checkpoint_cp/LATEST
+[]
+
 [AuxVariables]
   [./stress_zz]
     order = CONSTANT
@@ -119,82 +123,82 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
-  [./velocity_gradient_xx]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./velocity_gradient_xy]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./velocity_gradient_xz]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./velocity_gradient_yx]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./velocity_gradient_yy]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./velocity_gradient_yz]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./velocity_gradient_zx]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./velocity_gradient_zy]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./velocity_gradient_zz]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./nyes_tensor_00]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [./nyes_tensor_01]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [./nyes_tensor_02]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [./nyes_tensor_10]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [./nyes_tensor_11]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [./nyes_tensor_12]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [./nyes_tensor_20]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [./nyes_tensor_21]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [./nyes_tensor_22]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [./gnd_density]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
+  # [./velocity_gradient_xx]
+  #   order = FIRST
+  #   family = LAGRANGE
+  # [../]
+  # [./velocity_gradient_xy]
+  #   order = FIRST
+  #   family = LAGRANGE
+  # [../]
+  # [./velocity_gradient_xz]
+  #   order = FIRST
+  #   family = LAGRANGE
+  # [../]
+  # [./velocity_gradient_yx]
+  #   order = FIRST
+  #   family = LAGRANGE
+  # [../]
+  # [./velocity_gradient_yy]
+  #   order = FIRST
+  #   family = LAGRANGE
+  # [../]
+  # [./velocity_gradient_yz]
+  #   order = FIRST
+  #   family = LAGRANGE
+  # [../]
+  # [./velocity_gradient_zx]
+  #   order = FIRST
+  #   family = LAGRANGE
+  # [../]
+  # [./velocity_gradient_zy]
+  #   order = FIRST
+  #   family = LAGRANGE
+  # [../]
+  # [./velocity_gradient_zz]
+  #   order = FIRST
+  #   family = LAGRANGE
+  # [../]
+  # [./nyes_tensor_00]
+  #   order = CONSTANT
+  #   family = MONOMIAL
+  # [../]
+  # [./nyes_tensor_01]
+  #   order = CONSTANT
+  #   family = MONOMIAL
+  # [../]
+  # [./nyes_tensor_02]
+  #   order = CONSTANT
+  #   family = MONOMIAL
+  # [../]
+  # [./nyes_tensor_10]
+  #   order = CONSTANT
+  #   family = MONOMIAL
+  # [../]
+  # [./nyes_tensor_11]
+  #   order = CONSTANT
+  #   family = MONOMIAL
+  # [../]
+  # [./nyes_tensor_12]
+  #   order = CONSTANT
+  #   family = MONOMIAL
+  # [../]
+  # [./nyes_tensor_20]
+  #   order = CONSTANT
+  #   family = MONOMIAL
+  # [../]
+  # [./nyes_tensor_21]
+  #   order = CONSTANT
+  #   family = MONOMIAL
+  # [../]
+  # [./nyes_tensor_22]
+  #   order = CONSTANT
+  #   family = MONOMIAL
+  # [../]
+  # [./gnd_density]
+  #   order = CONSTANT
+  #   family = MONOMIAL
+  # [../]
   [./gss_0]
     order = CONSTANT
     family = MONOMIAL
@@ -622,165 +626,165 @@
     scalar_type = EffectiveStrain
     execute_on = timestep_end
   [../]
-  [./velocity_grad_xx_recovered]
-    type = RankTwoAux
-    rank_two_tensor = plastic_velocity_gradient
-    variable = velocity_gradient_xx
-    patch_polynomial_order = FIRST
-    index_i = 0
-    index_j = 0
-    execute_on = 'nonlinear'
-  [../]
-  [./velocity_grad_xy_recovered]
-    type = RankTwoAux
-    rank_two_tensor = plastic_velocity_gradient
-    variable = velocity_gradient_xy
-    patch_polynomial_order = FIRST
-    index_i = 0
-    index_j = 1
-    execute_on = 'nonlinear'
-  [../]
-  [./velocity_grad_xz_recovered]
-    type = RankTwoAux
-    rank_two_tensor = plastic_velocity_gradient
-    variable = velocity_gradient_xz
-    patch_polynomial_order = FIRST
-    index_i = 0
-    index_j = 2
-    execute_on = 'nonlinear'
-  [../]
-  [./velocity_grad_yx_recovered]
-    type = RankTwoAux
-    rank_two_tensor = plastic_velocity_gradient
-    variable = velocity_gradient_yx
-    patch_polynomial_order = FIRST
-    index_i = 1
-    index_j = 0
-    execute_on = 'nonlinear'
-  [../]
-  [./velocity_grad_yy_recovered]
-    type = RankTwoAux
-    rank_two_tensor = plastic_velocity_gradient
-    variable = velocity_gradient_yy
-    patch_polynomial_order = FIRST
-    index_i = 1
-    index_j = 1
-    execute_on = 'nonlinear'
-  [../]
-  [./velocity_grad_yz_recovered]
-    type = RankTwoAux
-    rank_two_tensor = plastic_velocity_gradient
-    variable = velocity_gradient_yz
-    patch_polynomial_order = FIRST
-    index_i = 1
-    index_j = 2
-    execute_on = 'nonlinear'
-  [../]
-  [./velocity_grad_zx_recovered]
-    type = RankTwoAux
-    rank_two_tensor = plastic_velocity_gradient
-    variable = velocity_gradient_zx
-    patch_polynomial_order = FIRST
-    index_i = 2
-    index_j = 0
-    execute_on = 'nonlinear'
-  [../]
-  [./velocity_grad_zy_recovered]
-    type = RankTwoAux
-    rank_two_tensor = plastic_velocity_gradient
-    variable = velocity_gradient_zy
-    patch_polynomial_order = FIRST
-    index_i = 1
-    index_j = 2
-    execute_on = 'nonlinear'
-  [../]
-  [./velocity_grad_zz_recovered]
-    type = RankTwoAux
-    rank_two_tensor = plastic_velocity_gradient
-    variable = velocity_gradient_zz
-    patch_polynomial_order = FIRST
-    index_i = 2
-    index_j = 2
-    execute_on = 'nonlinear'
-  [../]
-  [./nyes_tensor_00]
-    type = RankTwoAux
-    variable = nyes_tensor_00
-    rank_two_tensor = Nyes_dislocation_tensor
-    index_i = 0
-    index_j = 0
-    execute_on = timestep_end
-  [../]
-  [./nyes_tensor_01]
-    type = RankTwoAux
-    variable = nyes_tensor_01
-    rank_two_tensor = Nyes_dislocation_tensor
-    index_i = 0
-    index_j = 1
-    execute_on = timestep_end
-  [../]
-  [./nyes_tensor_02]
-    type = RankTwoAux
-    variable = nyes_tensor_02
-    rank_two_tensor = Nyes_dislocation_tensor
-    index_i = 0
-    index_j = 2
-    execute_on = timestep_end
-  [../]
-  [./nyes_tensor_10]
-    type = RankTwoAux
-    variable = nyes_tensor_10
-    rank_two_tensor = Nyes_dislocation_tensor
-    index_i = 1
-    index_j = 0
-    execute_on = timestep_end
-  [../]
-  [./nyes_tensor_11]
-    type = RankTwoAux
-    variable = nyes_tensor_11
-    rank_two_tensor = Nyes_dislocation_tensor
-    index_i = 1
-    index_j = 1
-    execute_on = timestep_end
-  [../]
-  [./nyes_tensor_12]
-    type = RankTwoAux
-    variable = nyes_tensor_12
-    rank_two_tensor = Nyes_dislocation_tensor
-    index_i = 1
-    index_j = 2
-    execute_on = timestep_end
-  [../]
-  [./nyes_tensor_20]
-    type = RankTwoAux
-    variable = nyes_tensor_20
-    rank_two_tensor = Nyes_dislocation_tensor
-    index_i = 2
-    index_j = 0
-    execute_on = timestep_end
-  [../]
-  [./nyes_tensor_21]
-    type = RankTwoAux
-    variable = nyes_tensor_21
-    rank_two_tensor = Nyes_dislocation_tensor
-    index_i = 2
-    index_j = 1
-    execute_on = timestep_end
-  [../]
-  [./nyes_tensor_22]
-    type = RankTwoAux
-    variable = nyes_tensor_22
-    rank_two_tensor = Nyes_dislocation_tensor
-    index_i = 2
-    index_j = 2
-    execute_on = timestep_end
-  [../]
-  [./gnd_density]
-    type = MaterialRealAux
-    variable = gnd_density
-    property = density_norm_geometric_necessary_dislocations
-    execute_on = timestep_end
-  [../]
+  # [./velocity_grad_xx_recovered]
+  #   type = RankTwoAux
+  #   rank_two_tensor = plastic_velocity_gradient
+  #   variable = velocity_gradient_xx
+  #   patch_polynomial_order = FIRST
+  #   index_i = 0
+  #   index_j = 0
+  #   execute_on = 'nonlinear'
+  # [../]
+  # [./velocity_grad_xy_recovered]
+  #   type = RankTwoAux
+  #   rank_two_tensor = plastic_velocity_gradient
+  #   variable = velocity_gradient_xy
+  #   patch_polynomial_order = FIRST
+  #   index_i = 0
+  #   index_j = 1
+  #   execute_on = 'nonlinear'
+  # [../]
+  # [./velocity_grad_xz_recovered]
+  #   type = RankTwoAux
+  #   rank_two_tensor = plastic_velocity_gradient
+  #   variable = velocity_gradient_xz
+  #   patch_polynomial_order = FIRST
+  #   index_i = 0
+  #   index_j = 2
+  #   execute_on = 'nonlinear'
+  # [../]
+  # [./velocity_grad_yx_recovered]
+  #   type = RankTwoAux
+  #   rank_two_tensor = plastic_velocity_gradient
+  #   variable = velocity_gradient_yx
+  #   patch_polynomial_order = FIRST
+  #   index_i = 1
+  #   index_j = 0
+  #   execute_on = 'nonlinear'
+  # [../]
+  # [./velocity_grad_yy_recovered]
+  #   type = RankTwoAux
+  #   rank_two_tensor = plastic_velocity_gradient
+  #   variable = velocity_gradient_yy
+  #   patch_polynomial_order = FIRST
+  #   index_i = 1
+  #   index_j = 1
+  #   execute_on = 'nonlinear'
+  # [../]
+  # [./velocity_grad_yz_recovered]
+  #   type = RankTwoAux
+  #   rank_two_tensor = plastic_velocity_gradient
+  #   variable = velocity_gradient_yz
+  #   patch_polynomial_order = FIRST
+  #   index_i = 1
+  #   index_j = 2
+  #   execute_on = 'nonlinear'
+  # [../]
+  # [./velocity_grad_zx_recovered]
+  #   type = RankTwoAux
+  #   rank_two_tensor = plastic_velocity_gradient
+  #   variable = velocity_gradient_zx
+  #   patch_polynomial_order = FIRST
+  #   index_i = 2
+  #   index_j = 0
+  #   execute_on = 'nonlinear'
+  # [../]
+  # [./velocity_grad_zy_recovered]
+  #   type = RankTwoAux
+  #   rank_two_tensor = plastic_velocity_gradient
+  #   variable = velocity_gradient_zy
+  #   patch_polynomial_order = FIRST
+  #   index_i = 1
+  #   index_j = 2
+  #   execute_on = 'nonlinear'
+  # [../]
+  # [./velocity_grad_zz_recovered]
+  #   type = RankTwoAux
+  #   rank_two_tensor = plastic_velocity_gradient
+  #   variable = velocity_gradient_zz
+  #   patch_polynomial_order = FIRST
+  #   index_i = 2
+  #   index_j = 2
+  #   execute_on = 'nonlinear'
+  # [../]
+  # [./nyes_tensor_00]
+  #   type = RankTwoAux
+  #   variable = nyes_tensor_00
+  #   rank_two_tensor = Nyes_dislocation_tensor
+  #   index_i = 0
+  #   index_j = 0
+  #   execute_on = timestep_end
+  # [../]
+  # [./nyes_tensor_01]
+  #   type = RankTwoAux
+  #   variable = nyes_tensor_01
+  #   rank_two_tensor = Nyes_dislocation_tensor
+  #   index_i = 0
+  #   index_j = 1
+  #   execute_on = timestep_end
+  # [../]
+  # [./nyes_tensor_02]
+  #   type = RankTwoAux
+  #   variable = nyes_tensor_02
+  #   rank_two_tensor = Nyes_dislocation_tensor
+  #   index_i = 0
+  #   index_j = 2
+  #   execute_on = timestep_end
+  # [../]
+  # [./nyes_tensor_10]
+  #   type = RankTwoAux
+  #   variable = nyes_tensor_10
+  #   rank_two_tensor = Nyes_dislocation_tensor
+  #   index_i = 1
+  #   index_j = 0
+  #   execute_on = timestep_end
+  # [../]
+  # [./nyes_tensor_11]
+  #   type = RankTwoAux
+  #   variable = nyes_tensor_11
+  #   rank_two_tensor = Nyes_dislocation_tensor
+  #   index_i = 1
+  #   index_j = 1
+  #   execute_on = timestep_end
+  # [../]
+  # [./nyes_tensor_12]
+  #   type = RankTwoAux
+  #   variable = nyes_tensor_12
+  #   rank_two_tensor = Nyes_dislocation_tensor
+  #   index_i = 1
+  #   index_j = 2
+  #   execute_on = timestep_end
+  # [../]
+  # [./nyes_tensor_20]
+  #   type = RankTwoAux
+  #   variable = nyes_tensor_20
+  #   rank_two_tensor = Nyes_dislocation_tensor
+  #   index_i = 2
+  #   index_j = 0
+  #   execute_on = timestep_end
+  # [../]
+  # [./nyes_tensor_21]
+  #   type = RankTwoAux
+  #   variable = nyes_tensor_21
+  #   rank_two_tensor = Nyes_dislocation_tensor
+  #   index_i = 2
+  #   index_j = 1
+  #   execute_on = timestep_end
+  # [../]
+  # [./nyes_tensor_22]
+  #   type = RankTwoAux
+  #   variable = nyes_tensor_22
+  #   rank_two_tensor = Nyes_dislocation_tensor
+  #   index_i = 2
+  #   index_j = 2
+  #   execute_on = timestep_end
+  # [../]
+  # [./gnd_density]
+  #   type = MaterialRealAux
+  #   variable = gnd_density
+  #   property = density_norm_geometric_necessary_dislocations
+  #   execute_on = timestep_end
+  # [../]
   [./gss_0]
     type = MaterialStdVectorAux
     variable = gss_0
@@ -1149,12 +1153,21 @@
 [Materials]
   [./elasticity_tensor_grain1]
     type = ComputeElasticityTensorConstantRotationCP
-    block = 'bottom_xtal top_xtal' #looks like grain1 has a lower z value
+    block = bottom_xtal #looks like grain1 has a lower z value
     C_ijkl = '108.2e3 61.3e3 61.3e3 108.2e3 61.3e3 108.2e3 28.5e3 28.5e3 28.5e3' #Hirth and Lothe for Al, 2nd ed, pg 837
     fill_method = symmetric9
-    euler_angle_1 = 3.4 ## Ma et al. 2006 single xtal
-    euler_angle_2 = 37.6
-    euler_angle_3 = 36.5
+    euler_angle_1 = 74.3 ## Ma et al. 2006 grain 1, mid angle
+    euler_angle_2 = 37.1
+    euler_angle_3 = 50.1
+  [../]
+  [./elasticity_tensor_grain2]
+    type = ComputeElasticityTensorConstantRotationCP
+    block = top_xtal #looks like grain2 has a higher z value
+    C_ijkl = '108.2e3 61.3e3 61.3e3 108.2e3 61.3e3 108.2e3 28.5e3 28.5e3 28.5e3' #Hirth and Lothe for Al, 2nd ed, pg 837
+    fill_method = symmetric9
+    euler_angle_1 = 87.9 ## Ma et al. 2006 grain 2, mid angle
+    euler_angle_2 = 36.7
+    euler_angle_3 = 52.9
   [../]
   [./stress_521]
     type = ComputeCrystalPlasticityStress
@@ -1178,8 +1191,8 @@
     alpha_4 = 0.002
     alpha_5 = 0.001
     alpha_6 = 0.1
-    include_GND_contribution = true
-    plastic_velocity_gradient_components = 'velocity_gradient_xx velocity_gradient_xy velocity_gradient_xz velocity_gradient_yx velocity_gradient_yy velocity_gradient_yz velocity_gradient_zx velocity_gradient_zy velocity_gradient_zz'
+    include_GND_contribution = false
+    # plastic_velocity_gradient_components = 'velocity_gradient_xx velocity_gradient_xy velocity_gradient_xz velocity_gradient_yx velocity_gradient_yy velocity_gradient_yz velocity_gradient_zx velocity_gradient_zy velocity_gradient_zz'
     tertiary_precipitate_mean_diameter = 0.0 # No additional hardening
     tertiary_precipitate_volume_fraction = 0.0 #No additional hardening
     Peierls_stress = 2.65 #1.0e-4 times shear modulus
@@ -1308,92 +1321,92 @@
     type = ElementAverageValue
     variable = eff_strain_lag
   [../]
-  [./velocity_gradient_xx]
-    type = AverageNodalVariableValue
-    variable = velocity_gradient_xx
-  [../]
-  [./velocity_gradient_xy]
-    type = AverageNodalVariableValue
-    variable = velocity_gradient_xy
-  [../]
-  [./velocity_gradient_xz]
-    type = AverageNodalVariableValue
-    variable = velocity_gradient_xz
-  [../]
-  [./velocity_gradient_yx]
-    type = AverageNodalVariableValue
-    variable = velocity_gradient_yx
-  [../]
-  [./velocity_gradient_yy]
-    type = AverageNodalVariableValue
-    variable = velocity_gradient_yy
-  [../]
-  [./velocity_gradient_yz]
-    type = AverageNodalVariableValue
-    variable = velocity_gradient_yz
-  [../]
-  [./velocity_gradient_zx]
-    type = AverageNodalVariableValue
-    variable = velocity_gradient_zx
-  [../]
-  [./velocity_gradient_zy]
-    type = AverageNodalVariableValue
-    variable = velocity_gradient_zy
-  [../]
-  [./velocity_gradient_zz]
-    type = AverageNodalVariableValue
-    variable = velocity_gradient_zz
-  [../]
-  [./nyes_tensor_00]
-    type = ElementAverageValue
-    variable = nyes_tensor_00
-  [../]
-  [./nyes_tensor_01]
-    type = ElementAverageValue
-    variable = nyes_tensor_01
-  [../]
-  [./nyes_tensor_02]
-    type = ElementAverageValue
-    variable = nyes_tensor_02
-  [../]
-  [./nyes_tensor_10]
-    type = ElementAverageValue
-    variable = nyes_tensor_10
-  [../]
-  [./nyes_tensor_11]
-    type = ElementAverageValue
-    variable = nyes_tensor_11
-  [../]
-  [./nyes_tensor_12]
-    type = ElementAverageValue
-    variable = nyes_tensor_12
-  [../]
-  [./nyes_tensor_20]
-    type = ElementAverageValue
-    variable = nyes_tensor_20
-  [../]
-  [./nyes_tensor_21]
-    type = ElementAverageValue
-    variable = nyes_tensor_21
-  [../]
-  [./nyes_tensor_22]
-    type = ElementAverageValue
-    variable = nyes_tensor_22
-  [../]
-  [./gnd_density]
-    type = ElementAverageValue
-    variable = gnd_density
-  [../]
-  [./gnd_density_top]
-    type = ElementAverageValue
-    variable = gnd_density
-    block = top_xtal
-  [../]
-  [./gnd_density_bottom]
-    type = ElementAverageValue
-    variable = gnd_density
-    block = bottom_xtal
-  [../]
+  # [./velocity_gradient_xx]
+  #   type = AverageNodalVariableValue
+  #   variable = velocity_gradient_xx
+  # [../]
+  # [./velocity_gradient_xy]
+  #   type = AverageNodalVariableValue
+  #   variable = velocity_gradient_xy
+  # [../]
+  # [./velocity_gradient_xz]
+  #   type = AverageNodalVariableValue
+  #   variable = velocity_gradient_xz
+  # [../]
+  # [./velocity_gradient_yx]
+  #   type = AverageNodalVariableValue
+  #   variable = velocity_gradient_yx
+  # [../]
+  # [./velocity_gradient_yy]
+  #   type = AverageNodalVariableValue
+  #   variable = velocity_gradient_yy
+  # [../]
+  # [./velocity_gradient_yz]
+  #   type = AverageNodalVariableValue
+  #   variable = velocity_gradient_yz
+  # [../]
+  # [./velocity_gradient_zx]
+  #   type = AverageNodalVariableValue
+  #   variable = velocity_gradient_zx
+  # [../]
+  # [./velocity_gradient_zy]
+  #   type = AverageNodalVariableValue
+  #   variable = velocity_gradient_zy
+  # [../]
+  # [./velocity_gradient_zz]
+  #   type = AverageNodalVariableValue
+  #   variable = velocity_gradient_zz
+  # [../]
+  # [./nyes_tensor_00]
+  #   type = ElementAverageValue
+  #   variable = nyes_tensor_00
+  # [../]
+  # [./nyes_tensor_01]
+  #   type = ElementAverageValue
+  #   variable = nyes_tensor_01
+  # [../]
+  # [./nyes_tensor_02]
+  #   type = ElementAverageValue
+  #   variable = nyes_tensor_02
+  # [../]
+  # [./nyes_tensor_10]
+  #   type = ElementAverageValue
+  #   variable = nyes_tensor_10
+  # [../]
+  # [./nyes_tensor_11]
+  #   type = ElementAverageValue
+  #   variable = nyes_tensor_11
+  # [../]
+  # [./nyes_tensor_12]
+  #   type = ElementAverageValue
+  #   variable = nyes_tensor_12
+  # [../]
+  # [./nyes_tensor_20]
+  #   type = ElementAverageValue
+  #   variable = nyes_tensor_20
+  # [../]
+  # [./nyes_tensor_21]
+  #   type = ElementAverageValue
+  #   variable = nyes_tensor_21
+  # [../]
+  # [./nyes_tensor_22]
+  #   type = ElementAverageValue
+  #   variable = nyes_tensor_22
+  # [../]
+  # [./gnd_density]
+  #   type = ElementAverageValue
+  #   variable = gnd_density
+  # [../]
+  # [./gnd_density_top]
+  #   type = ElementAverageValue
+  #   variable = gnd_density
+  #   block = bottom_xtal
+  # [../]
+  # [./gnd_density_bottom]
+  #   type = ElementAverageValue
+  #   variable = gnd_density
+  #   block = top_xtal
+  # [../]
   [./gss_0]
     type = ElementAverageValue
     variable = gss_0
@@ -1727,9 +1740,9 @@
   nl_rel_tol = 1e-6 #changed from 1e-4 for elastic portion
   nl_max_its = 5
 
-  dtmax = 1.0e-2
-  dtmin = 1.0e-4
-  dt = 1.0e-2
+  dtmax = 1.0e-3
+  dtmin = 1.0e-6
+  dt = 1.0e-3
   end_time = 385 #for 10percent strain
   [./Predictor]
     type = SimplePredictor
@@ -1740,14 +1753,14 @@
 
 [Outputs]
   csv = true
-  interval = 20
+  interval = 1# 20
   [./out]
     type = Exodus
     elemental_as_nodal = true
   [../]
   [./checkpoint]
     type = Checkpoint
-    interval = 20
+    interval = 1# 20
     num_files = 2
   [../]
   perf_graph = true

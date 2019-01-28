@@ -3,35 +3,7 @@
 []
 
 [Mesh]
-  type = GeneratedMesh
-  dim = 3
-  elem_type = HEX8
-  nx = 10 #31
-  xmin = 0
-  xmax = 3.1
-  ny = 8 #22
-  ymin = 0
-  ymax = 2.2
-  nz = 8 #20
-  zmin = 0
-  zmax = 2.0
-[]
-
-[MeshModifiers]
-  [./bottom_block]
-    type = SubdomainBoundingBox
-    block_id = 2
-    block_name = bottom_block
-    bottom_left = '0 0 0'
-    top_right = '3.1 1.1 2.0'
-  [../]
-  [./top_block]
-    type = SubdomainBoundingBox
-    block_id = 1
-    block_name = top_block
-    bottom_left = '0 1.1 0'
-    top_right = '3.1 2.2 2.0'
-  [../]
+  file = ma_bixtal_coarsemesh.e
 []
 
 [AuxVariables]
@@ -1177,7 +1149,7 @@
 [Materials]
   [./elasticity_tensor_grain1]
     type = ComputeElasticityTensorConstantRotationCP
-    block = 1
+    block = bottom_xtal #looks like grain1 has a lower z value
     C_ijkl = '108.2e3 61.3e3 61.3e3 108.2e3 61.3e3 108.2e3 28.5e3 28.5e3 28.5e3' #Hirth and Lothe for Al, 2nd ed, pg 837
     fill_method = symmetric9
     euler_angle_1 = 74.3 ## Ma et al. 2006 grain 1, mid angle
@@ -1186,7 +1158,7 @@
   [../]
   [./elasticity_tensor_grain2]
     type = ComputeElasticityTensorConstantRotationCP
-    block = 2
+    block = top_xtal #looks like grain2 has a higher z value
     C_ijkl = '108.2e3 61.3e3 61.3e3 108.2e3 61.3e3 108.2e3 28.5e3 28.5e3 28.5e3' #Hirth and Lothe for Al, 2nd ed, pg 837
     fill_method = symmetric9
     euler_angle_1 = 87.9 ## Ma et al. 2006 grain 2, mid angle
@@ -1424,12 +1396,12 @@
   [./gnd_density_top]
     type = ElementAverageValue
     variable = gnd_density
-    block = 1
+    block = top_xtal
   [../]
   [./gnd_density_bottom]
     type = ElementAverageValue
     variable = gnd_density
-    block = 2
+    block = bottom_xtal
   [../]
   [./gss_0]
     type = ElementAverageValue
@@ -1447,15 +1419,15 @@
     type = ElementAverageValue
     variable = tau_0
   [../]
-  [./tau_0_left]
+  [./tau_0_bottom]
     type = ElementAverageValue
     variable = tau_0
-    block = 1
+    block = bottom_xtal
   [../]
-  [./tau_0_right]
+  [./tau_0_top]
     type = ElementAverageValue
     variable = tau_0
-    block = 2
+    block = top_xtal
   [../]
   [./gss_1]
     type = ElementAverageValue
@@ -1473,15 +1445,15 @@
     type = ElementAverageValue
     variable = tau_1
   [../]
-  [./tau_1_left]
+  [./tau_1_bottom]
     type = ElementAverageValue
     variable = tau_1
-    block = 1
+    block = bottom_xtal
   [../]
-  [./tau_1_right]
+  [./tau_1_top]
     type = ElementAverageValue
     variable = tau_1
-    block = 2
+    block = top_xtal
   [../]
   [./gss_2]
     type = ElementAverageValue
@@ -1499,15 +1471,15 @@
     type = ElementAverageValue
     variable = tau_2
   [../]
-  [./tau_2_left]
+  [./tau_2_bottom]
     type = ElementAverageValue
     variable = tau_2
-    block = 1
+    block = bottom_xtal
   [../]
-  [./tau_2_right]
+  [./tau_2_top]
     type = ElementAverageValue
     variable = tau_2
-    block = 2
+    block = top_xtal
   [../]
   [./gss_3]
     type = ElementAverageValue
@@ -1525,15 +1497,15 @@
     type = ElementAverageValue
     variable = tau_3
   [../]
-  [./tau_3_left]
+  [./tau_3_bottom]
     type = ElementAverageValue
     variable = tau_3
-    block = 1
+    block = bottom_xtal
   [../]
-  [./tau_3_right]
+  [./tau_3_top]
     type = ElementAverageValue
     variable = tau_3
-    block = 2
+    block = top_xtal
   [../]
   [./gss_4]
     type = ElementAverageValue
@@ -1551,15 +1523,15 @@
     type = ElementAverageValue
     variable = tau_4
   [../]
-  [./tau_4_left]
+  [./tau_4_bottom]
     type = ElementAverageValue
     variable = tau_4
-    block = 1
+    block = bottom_xtal
   [../]
-  [./tau_4_right]
+  [./tau_4_top]
     type = ElementAverageValue
     variable = tau_4
-    block = 2
+    block = top_xtal
   [../]
   [./gss_5]
     type = ElementAverageValue
@@ -1577,15 +1549,15 @@
     type = ElementAverageValue
     variable = tau_5
   [../]
-  [./tau_5_left]
+  [./tau_5_bottom]
     type = ElementAverageValue
     variable = tau_5
-    block = 1
+    block = bottom_xtal
   [../]
-  [./tau_5_right]
+  [./tau_5_top]
     type = ElementAverageValue
     variable = tau_5
-    block = 2
+    block = top_xtal
   [../]
   [./gss_6]
     type = ElementAverageValue
@@ -1603,15 +1575,15 @@
     type = ElementAverageValue
     variable = tau_6
   [../]
-  [./tau_6_left]
+  [./tau_6_bottom]
     type = ElementAverageValue
     variable = tau_6
-    block = 1
+    block = bottom_xtal
   [../]
-  [./tau_6_right]
+  [./tau_6_top]
     type = ElementAverageValue
     variable = tau_6
-    block = 2
+    block = top_xtal
   [../]
   [./gss_7]
     type = ElementAverageValue
@@ -1629,15 +1601,15 @@
     type = ElementAverageValue
     variable = tau_7
   [../]
-  [./tau_7_left]
+  [./tau_7_bottom]
     type = ElementAverageValue
     variable = tau_7
-    block = 1
+    block = bottom_xtal
   [../]
-  [./tau_7_right]
+  [./tau_7_top]
     type = ElementAverageValue
     variable = tau_7
-    block = 2
+    block = top_xtal
   [../]
   [./gss_8]
     type = ElementAverageValue
@@ -1655,15 +1627,15 @@
     type = ElementAverageValue
     variable = tau_8
   [../]
-  [./tau_8_left]
+  [./tau_8_bottom]
     type = ElementAverageValue
     variable = tau_8
-    block = 1
+    block = bottom_xtal
   [../]
-  [./tau_8_right]
+  [./tau_8_top]
     type = ElementAverageValue
     variable = tau_8
-    block = 2
+    block = top_xtal
   [../]
   [./gss_9]
     type = ElementAverageValue
@@ -1681,15 +1653,15 @@
     type = ElementAverageValue
     variable = tau_9
   [../]
-  [./tau_9_left]
+  [./tau_9_bottom]
     type = ElementAverageValue
     variable = tau_9
-    block = 1
+    block = bottom_xtal
   [../]
-  [./tau_9_right]
+  [./tau_9_top]
     type = ElementAverageValue
     variable = tau_9
-    block = 2
+    block = top_xtal
   [../]
   [./gss_10]
     type = ElementAverageValue
@@ -1707,15 +1679,15 @@
     type = ElementAverageValue
     variable = tau_10
   [../]
-  [./tau_10_left]
+  [./tau_10_bottom]
     type = ElementAverageValue
     variable = tau_10
-    block = 1
+    block = bottom_xtal
   [../]
-  [./tau_10_right]
+  [./tau_10_top]
     type = ElementAverageValue
     variable = tau_10
-    block = 2
+    block = top_xtal
   [../]
   [./gss_11]
     type = ElementAverageValue
@@ -1733,15 +1705,15 @@
     type = ElementAverageValue
     variable = tau_11
   [../]
-  [./tau_11_left]
+  [./tau_11_bottom]
     type = ElementAverageValue
     variable = tau_11
-    block = 1
+    block = bottom_xtal
   [../]
-  [./tau_11_right]
+  [./tau_11_top]
     type = ElementAverageValue
     variable = tau_11
-    block = 2
+    block = top_xtal
   [../]
 []
 
@@ -1757,27 +1729,34 @@
   solve_type = PJFNK
 
   l_tol = 1e-5
+  l_max_its = 50
   petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -ksp_type -ksp_gmres_restart'
   petsc_options_value = ' asm      1              lu            gmres     200'
-  nl_abs_tol = 1e-6
-  nl_rel_tol = 1e-6 #changed from 1e-4 for the elastic region
+  nl_abs_tol = 1e-8 #clamp down on the pass throughs without any linear iterations
+  nl_rel_tol = 1e-6 #changed from 1e-4 for elastic portion
+  nl_max_its = 5
 
   dtmax = 1.0e-2
   dtmin = 1.0e-4
   dt = 1.0e-2
   end_time = 385 #for 10percent strain
+  [./Predictor]
+    type = SimplePredictor
+    scale = 1.0
+    skip_times_old = '0.0'
+  [../]
 []
 
 [Outputs]
   csv = true
-  interval = 1
+  interval = 20
   [./out]
     type = Exodus
     elemental_as_nodal = true
   [../]
   [./checkpoint]
     type = Checkpoint
-    interval = 1
+    interval = 20
     num_files = 2
   [../]
   perf_graph = true
