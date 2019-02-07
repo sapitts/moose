@@ -7,13 +7,13 @@
   type = GeneratedMesh
   dim = 3
   elem_type = HEX8
-  nx = 2
+  nx = 6
   xmin = 0
   xmax = 1
-  ny = 2
+  ny = 6
   ymin = 0
   ymax = 1
-  nz = 2
+  nz = 6
   zmin = 0
   zmax = 1
 []
@@ -99,6 +99,10 @@
    order = CONSTANT
    family = MONOMIAL
   [../]
+  [./twin_volume_frac_0]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
   [./immobile_disl_0]
     order = CONSTANT
     family = MONOMIAL
@@ -124,6 +128,10 @@
     family = MONOMIAL
   [../]
   [./twin_shear_increment_1]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_volume_frac_1]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -155,6 +163,10 @@
    order = CONSTANT
    family = MONOMIAL
   [../]
+  [./twin_volume_frac_2]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
   [./immobile_disl_2]
     order = CONSTANT
     family = MONOMIAL
@@ -180,6 +192,10 @@
     family = MONOMIAL
   [../]
   [./twin_shear_increment_3]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_volume_frac_3]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -211,6 +227,10 @@
    order = CONSTANT
    family = MONOMIAL
   [../]
+  [./twin_volume_frac_4]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
   [./immobile_disl_4]
     order = CONSTANT
     family = MONOMIAL
@@ -236,6 +256,10 @@
     family = MONOMIAL
   [../]
   [./twin_shear_increment_5]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_volume_frac_5]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -267,6 +291,10 @@
    order = CONSTANT
    family = MONOMIAL
   [../]
+  [./twin_volume_frac_6]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
   [./immobile_disl_6]
     order = CONSTANT
     family = MONOMIAL
@@ -292,6 +320,10 @@
     family = MONOMIAL
   [../]
   [./twin_shear_increment_7]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_volume_frac_7]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -323,6 +355,10 @@
    order = CONSTANT
    family = MONOMIAL
   [../]
+  [./twin_volume_frac_8]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
   [./immobile_disl_8]
     order = CONSTANT
     family = MONOMIAL
@@ -348,6 +384,10 @@
     family = MONOMIAL
   [../]
   [./twin_shear_increment_9]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_volume_frac_9]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -379,6 +419,10 @@
    order = CONSTANT
    family = MONOMIAL
   [../]
+  [./twin_volume_frac_10]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
   [./immobile_disl_10]
     order = CONSTANT
     family = MONOMIAL
@@ -404,6 +448,10 @@
     family = MONOMIAL
   [../]
   [./twin_shear_increment_11]
+   order = CONSTANT
+   family = MONOMIAL
+  [../]
+  [./twin_volume_frac_11]
    order = CONSTANT
    family = MONOMIAL
   [../]
@@ -587,6 +635,13 @@
    index = 0
    execute_on = timestep_end
   [../]
+  [./twin_volume_frac_0]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_0
+   property = twin_volume_fraction
+   index = 0
+   execute_on = timestep_end
+  [../]
   [./immobile_disl_0]
     type = MaterialStdVectorAux
     variable = immobile_disl_0
@@ -633,6 +688,13 @@
    type = MaterialStdVectorAux
    variable = twin_shear_increment_1
    property = twin_slip_increment
+   index = 1
+   execute_on = timestep_end
+  [../]
+  [./twin_volume_frac_1]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_1
+   property = twin_volume_fraction
    index = 1
    execute_on = timestep_end
   [../]
@@ -685,6 +747,13 @@
    index = 2
    execute_on = timestep_end
   [../]
+  [./twin_volume_frac_2]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_2
+   property = twin_volume_fraction
+   index = 2
+   execute_on = timestep_end
+  [../]
   [./immobile_disl_2]
     type = MaterialStdVectorAux
     variable = immobile_disl_2
@@ -731,6 +800,13 @@
    type = MaterialStdVectorAux
    variable = twin_shear_increment_3
    property = twin_slip_increment
+   index = 3
+   execute_on = timestep_end
+  [../]
+  [./twin_volume_frac_3]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_3
+   property = twin_volume_fraction
    index = 3
    execute_on = timestep_end
   [../]
@@ -783,6 +859,13 @@
    index = 4
    execute_on = timestep_end
   [../]
+  [./twin_volume_frac_4]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_4
+   property = twin_volume_fraction
+   index = 4
+   execute_on = timestep_end
+  [../]
   [./immobile_disl_4]
     type = MaterialStdVectorAux
     variable = immobile_disl_4
@@ -829,6 +912,13 @@
    type = MaterialStdVectorAux
    variable = twin_shear_increment_5
    property = twin_slip_increment
+   index = 5
+   execute_on = timestep_end
+  [../]
+  [./twin_volume_frac_5]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_5
+   property = twin_volume_fraction
    index = 5
    execute_on = timestep_end
   [../]
@@ -881,6 +971,13 @@
    index = 6
    execute_on = timestep_end
   [../]
+  [./twin_volume_frac_6]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_6
+   property = twin_volume_fraction
+   index = 6
+   execute_on = timestep_end
+  [../]
   [./immobile_disl_6]
     type = MaterialStdVectorAux
     variable = immobile_disl_6
@@ -927,6 +1024,13 @@
    type = MaterialStdVectorAux
    variable = twin_shear_increment_7
    property = twin_slip_increment
+   index = 7
+   execute_on = timestep_end
+  [../]
+  [./twin_volume_frac_7]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_7
+   property = twin_volume_fraction
    index = 7
    execute_on = timestep_end
   [../]
@@ -979,6 +1083,13 @@
    index = 8
    execute_on = timestep_end
   [../]
+  [./twin_volume_frac_8]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_8
+   property = twin_volume_fraction
+   index = 8
+   execute_on = timestep_end
+  [../]
   [./immobile_disl_8]
     type = MaterialStdVectorAux
     variable = immobile_disl_8
@@ -1025,6 +1136,13 @@
    type = MaterialStdVectorAux
    variable = twin_shear_increment_9
    property = twin_slip_increment
+   index = 9
+   execute_on = timestep_end
+  [../]
+  [./twin_volume_frac_9]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_9
+   property = twin_volume_fraction
    index = 9
    execute_on = timestep_end
   [../]
@@ -1077,6 +1195,13 @@
    index = 10
    execute_on = timestep_end
   [../]
+  [./twin_volume_frac_10]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_10
+   property = twin_volume_fraction
+   index = 10
+   execute_on = timestep_end
+  [../]
   [./immobile_disl_10]
     type = MaterialStdVectorAux
     variable = immobile_disl_10
@@ -1123,6 +1248,13 @@
    type = MaterialStdVectorAux
    variable = twin_shear_increment_11
    property = twin_slip_increment
+   index = 11
+   execute_on = timestep_end
+  [../]
+  [./twin_volume_frac_11]
+   type = MaterialStdVectorAux
+   variable = twin_volume_frac_11
+   property = twin_volume_fraction
    index = 11
    execute_on = timestep_end
   [../]
@@ -1179,7 +1311,7 @@
     type = FunctionPresetBC
     variable = disp_x
     boundary = right
-    function = '-1.0e-3*t'
+    function = '1.0e-3*t'
   [../]
 []
 
@@ -1207,14 +1339,14 @@
     number_cross_slip_planes = 0 #2
     cross_slip_calculation_type = stochastic
     temperature = 298.0
-    initial_immobile_dislocation_density = 7.5e7 #1.5e7 initial dislocation density in Blaizot et.al. 2016;
-    initial_mobile_dislocation_density = 7.5e7 #1.5e7 initial dislocation density in Blaizot et.al. 2016;
+    initial_immobile_dislocation_density = 0.5e6 #1.0e6total from Arsenlis, Parks, 2002 but 1.5e7 initial dislocation density in Blaizot et.al. 2016;
+    initial_mobile_dislocation_density = 0.5e6 #1.0e6total from Arsenlis, Parks, 2002 but 1.5e7 initial dislocation density in Blaizot et.al. 2016;
     Baily_Hirsch_barrier_coefficient = 0.4
     dislocation_self_hardening_parameter = 1
     dislocation_latent_hardening_parameter = 1.0
     Peierls_stress = 3.639 #0.5e-4 times shear modulus
-    coefficient_twin_resistance = 1.0
-    coefficient_twin_hardening = 1.0
+    coefficient_twin_resistance = 1.0 ## Kalidindi 1998 varied around unity
+    coefficient_twin_hardening = 1.0e3 ## Kalidindi 2001 varied 800 - 8000 for noncoplanar and coplanar
     shear_modulus = 72.773e3
     burgers_vector = 2.52e-7
     tertiary_precipitate_mean_diameter = 0.0 #2.50e-6 #Gwalani et al. (2016) Table 2, 8000 hrs aged
@@ -1222,7 +1354,7 @@
     orowan_bowing_hardening_coefficient = 0.0 #0.05
     tertiary_apb_shearing_coefficient = 0.0 #0.95
     stol = 0.01
-    zero_tol = 1e-8
+    #zero_tol = 1e-8 # use default of 1e-12
     # slip_increment_tolerance = 1.0e-3 ## Seems to be too restrictive
     maximum_substep_iteration = 2 # is 10 for BCC
     maxiter = 30
@@ -1318,6 +1450,10 @@
    type = ElementAverageValue
    variable = twin_shear_increment_0
   [../]
+  [./twin_volume_frac_0]
+    type = ElementAverageValue
+    variable = twin_volume_frac_0
+  [../]
   [./immobile_disl_0]
     type = ElementAverageValue
     variable = immobile_disl_0
@@ -1345,6 +1481,10 @@
   [./twin_slip_increment_1]
    type = ElementAverageValue
    variable = twin_shear_increment_1
+  [../]
+  [./twin_volume_frac_1]
+    type = ElementAverageValue
+    variable = twin_volume_frac_1
   [../]
   [./immobile_disl_1]
     type = ElementAverageValue
@@ -1374,6 +1514,10 @@
    type = ElementAverageValue
    variable = twin_shear_increment_2
   [../]
+  [./twin_volume_frac_2]
+    type = ElementAverageValue
+    variable = twin_volume_frac_2
+  [../]
   [./immobile_disl_2]
     type = ElementAverageValue
     variable = immobile_disl_2
@@ -1401,6 +1545,10 @@
   [./twin_slip_increment_3]
    type = ElementAverageValue
    variable = twin_shear_increment_3
+  [../]
+  [./twin_volume_frac_3]
+    type = ElementAverageValue
+    variable = twin_volume_frac_3
   [../]
   [./immobile_disl_3]
     type = ElementAverageValue
@@ -1430,6 +1578,10 @@
    type = ElementAverageValue
    variable = twin_shear_increment_4
   [../]
+  [./twin_volume_frac_4]
+    type = ElementAverageValue
+    variable = twin_volume_frac_4
+  [../]
   [./immobile_disl_4]
     type = ElementAverageValue
     variable = immobile_disl_4
@@ -1457,6 +1609,10 @@
   [./twin_slip_increment_5]
    type = ElementAverageValue
    variable = twin_shear_increment_5
+  [../]
+  [./twin_volume_frac_5]
+    type = ElementAverageValue
+    variable = twin_volume_frac_5
   [../]
   [./immobile_disl_5]
     type = ElementAverageValue
@@ -1486,6 +1642,10 @@
    type = ElementAverageValue
    variable = twin_shear_increment_6
   [../]
+  [./twin_volume_frac_6]
+    type = ElementAverageValue
+    variable = twin_volume_frac_6
+  [../]
   [./immobile_disl_6]
     type = ElementAverageValue
     variable = immobile_disl_6
@@ -1513,6 +1673,10 @@
   [./twin_slip_increment_7]
    type = ElementAverageValue
    variable = twin_shear_increment_7
+  [../]
+  [./twin_volume_frac_7]
+    type = ElementAverageValue
+    variable = twin_volume_frac_7
   [../]
   [./immobile_disl_7]
     type = ElementAverageValue
@@ -1542,6 +1706,10 @@
    type = ElementAverageValue
    variable = twin_shear_increment_8
   [../]
+  [./twin_volume_frac_8]
+    type = ElementAverageValue
+    variable = twin_volume_frac_8
+  [../]
   [./immobile_disl_8]
     type = ElementAverageValue
     variable = immobile_disl_8
@@ -1569,6 +1737,10 @@
   [./twin_slip_increment_9]
    type = ElementAverageValue
    variable = twin_shear_increment_9
+  [../]
+  [./twin_volume_frac_9]
+    type = ElementAverageValue
+    variable = twin_volume_frac_9
   [../]
   [./immobile_disl_9]
     type = ElementAverageValue
@@ -1598,6 +1770,10 @@
    type = ElementAverageValue
    variable = twin_shear_increment_10
   [../]
+  [./twin_volume_frac_10]
+    type = ElementAverageValue
+    variable = twin_volume_frac_10
+  [../]
   [./immobile_disl_10]
     type = ElementAverageValue
     variable = immobile_disl_10
@@ -1625,6 +1801,10 @@
   [./twin_slip_increment_11]
    type = ElementAverageValue
    variable = twin_shear_increment_11
+  [../]
+  [./twin_volume_frac_11]
+    type = ElementAverageValue
+    variable = twin_volume_frac_11
   [../]
   [./immobile_disl_11]
     type = ElementAverageValue
@@ -1655,14 +1835,16 @@
   type = Transient
   solve_type = PJFNK
 
-  l_tol = 1e-3
+  l_tol = 1e-5
+  l_max_its = 50
   petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -ksp_type -ksp_gmres_restart'
-  petsc_options_value = ' asm      1              lu            gmres     200'
-  nl_abs_tol = 1e-6
-  nl_rel_tol = 1e-4
+  petsc_options_value = ' asm      2              lu            gmres     200'
+  nl_abs_tol = 1e-8 #1e-6 was letting many timesteps pass immediately on abs tol
+  nl_rel_tol = 1e-6 #1e-4 #tighten down while using larger timestep for the elastic region
+  nl_max_its = 5
 
   dtmax = 1.0e-3
-  dtmin = 1.0e-12
+  dtmin = 1.0e-6
   dt = 1.0e-3
   end_time = 100
 
@@ -1674,13 +1856,13 @@
 []
 
 [Outputs]
-  file_base = cdd_111load_compression_ni33cr_with_twins_1e0coeff_magnitude_compare_against_zerostress_out
   csv = true
   interval = 25
   exodus = true
-  [pgraph]
-    type = PerfGraphOutput
-    execute_on = 'initial final'  # Default is "final"
-    level = 3                     # Default is 1
-  []
+  perf_graph = true
+  [./checkpoint]
+    type = Checkpoint
+    interval = 25
+    num_files = 3
+  [../]
 []

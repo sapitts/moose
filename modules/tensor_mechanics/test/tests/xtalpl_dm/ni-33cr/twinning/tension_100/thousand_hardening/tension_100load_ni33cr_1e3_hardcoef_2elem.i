@@ -1311,7 +1311,7 @@
     type = FunctionPresetBC
     variable = disp_x
     boundary = right
-    function = '-1.0e-3*t'
+    function = '1.0e-3*t'
   [../]
 []
 
@@ -1339,14 +1339,14 @@
     number_cross_slip_planes = 0 #2
     cross_slip_calculation_type = stochastic
     temperature = 298.0
-    initial_immobile_dislocation_density = 7.5e7 #1.5e7 initial dislocation density in Blaizot et.al. 2016;
-    initial_mobile_dislocation_density = 7.5e7 #1.5e7 initial dislocation density in Blaizot et.al. 2016;
+    initial_immobile_dislocation_density = 0.5e6 #1.0e6total from Arsenlis, Parks, 2002 but 1.5e7 initial dislocation density in Blaizot et.al. 2016;
+    initial_mobile_dislocation_density = 0.5e6 #1.0e6total from Arsenlis, Parks, 2002 but 1.5e7 initial dislocation density in Blaizot et.al. 2016;
     Baily_Hirsch_barrier_coefficient = 0.4
     dislocation_self_hardening_parameter = 1
     dislocation_latent_hardening_parameter = 1.0
     Peierls_stress = 3.639 #0.5e-4 times shear modulus
-    coefficient_twin_resistance = 1.0
-    coefficient_twin_hardening = 1.0
+    coefficient_twin_resistance = 1.0 ## Kalidindi 1998 varied around unity
+    coefficient_twin_hardening = 1.0e3 ## Kalidindi 2001 varied 800 - 8000 for noncoplanar and coplanar
     shear_modulus = 72.773e3
     burgers_vector = 2.52e-7
     tertiary_precipitate_mean_diameter = 0.0 #2.50e-6 #Gwalani et al. (2016) Table 2, 8000 hrs aged
@@ -1354,7 +1354,7 @@
     orowan_bowing_hardening_coefficient = 0.0 #0.05
     tertiary_apb_shearing_coefficient = 0.0 #0.95
     stol = 0.01
-    zero_tol = 1e-8
+    #zero_tol = 1e-8 # use default of 1e-12
     # slip_increment_tolerance = 1.0e-3 ## Seems to be too restrictive
     maximum_substep_iteration = 2 # is 10 for BCC
     maxiter = 30
@@ -1835,14 +1835,16 @@
   type = Transient
   solve_type = PJFNK
 
-  l_tol = 1e-3
+  l_tol = 1e-5
+  l_max_its = 50
   petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -ksp_type -ksp_gmres_restart'
-  petsc_options_value = ' asm      1              lu            gmres     200'
-  nl_abs_tol = 1e-6
-  nl_rel_tol = 1e-4
+  petsc_options_value = ' asm      2              lu            gmres     200'
+  nl_abs_tol = 1e-8 #1e-6 was letting many timesteps pass immediately on abs tol
+  nl_rel_tol = 1e-6 #1e-4 #tighten down while using larger timestep for the elastic region
+  nl_max_its = 5
 
   dtmax = 1.0e-3
-  dtmin = 1.0e-12
+  dtmin = 1.0e-6
   dt = 1.0e-3
   end_time = 100
 
@@ -1855,12 +1857,12 @@
 
 [Outputs]
   csv = true
-  file_base = cdd_100load_compression_ni33cr_with_twins_1e0coeff_magnitude_compare_against_zerostress_out
-  interval = 1
+  interval = 25
   exodus = true
-  [pgraph]
-    type = PerfGraphOutput
-    execute_on = 'initial final'  # Default is "final"
-    level = 3                     # Default is 1
-  []
+  perf_graph = true
+  [./checkpoint]
+    type = Checkpoint
+    interval = 25
+    num_files = 3
+  [../]
 []

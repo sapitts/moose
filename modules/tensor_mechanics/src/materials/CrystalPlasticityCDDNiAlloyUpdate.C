@@ -190,21 +190,36 @@ CrystalPlasticityCDDNiAlloyUpdate::calculateConstitutiveEquivalentSlipIncrement(
     for (unsigned int i = 0; i < _number_twin_systems; ++i)
     {
       _tau_twin_sytem[_qp][i] = _pk2[_qp].doubleContraction(_twin_schmid_tensor[_qp][i]);
-      // std::cout << "What do I get for a tau here? " << _tau_twin_sytem[_qp][i] << std::endl;
+/*      if (_qp == 0)
+        std::cout << "What do I get for a tau on slip system " << i << ": " << _tau_twin_sytem[_qp][i] << std::endl; */
     }
   }
+
+  // Now here is where I need to call the methods to calculate the twin slip increment
+  // (and volume fraction problably) to be consistent with when the glide slip increment is calculated
+  if (_include_twinning_slip_contribution)
+  {
+    calculateTwinSlipIncrement(error_tolerance);
+    calculateTwinVolumeFraction(error_tolerance);
+    if (error_tolerance)
+      return;
+
+    for (unsigned int i = 0; i < _number_twin_systems; ++i)
+      equivalent_twin_shear_increment += _twin_schmid_tensor[_qp][i] * _twin_shear_increment[_qp][i];
+
+/*    if (_qp == 0)
+    {
+      std::cout << "The total equivalent twin shear incremement for slip is: " << equivalent_twin_shear_increment << "\n";
+      std::cout << "------------------------------------------------------------------------------------------ \n \n";
+    }*/
+  }
+  // std::cout << "The equivalent twin shear increment is " << equivalent_twin_shear_increment << std::endl;
+
+
 
   // Sum up the slip increments to find the equivalent plastic strain due to glide
   for (unsigned int i = 0; i < _number_slip_systems; ++i)
     equivalent_glide_slip_increment += _flow_direction[_qp][i] * _glide_slip_increment[_qp][i];
-
-  if (_include_twinning_slip_contribution)
-  {
-    calculateTwinSlipIncrement(error_tolerance);
-    for (unsigned int i = 0; i < _number_twin_systems; ++i)
-      equivalent_twin_shear_increment += _twin_schmid_tensor[_qp][i] * _twin_shear_increment[_qp][i];
-  }
-  // std::cout << "The equivalent twin shear increment is " << equivalent_twin_shear_increment << std::endl;
 
   // Sum the total equivalent slip increment for glide and twin
   equivalent_slip_increment = (1.0 - _total_volume_fraction_twins[_qp]) * equivalent_glide_slip_increment;
@@ -229,14 +244,27 @@ CrystalPlasticityCDDNiAlloyUpdate::calculateTwinSlipIncrement(bool & error_toler
   {
     for (unsigned int i = 0; i < _number_twin_systems; ++i)
     {
-      if ( _tau_twin_sytem[_qp][i] >= 0.0 ) // changed from requiring greater than the strength
+/*      if (_qp == 0 )
+      {
+        std::cout << "Before comparing the value of tau twin on slip system " << i << " in calculateTwinSlipIncrement tau twin is:" << _tau_twin_sytem[_qp][i] << " \n";
+      }*/
+      if ( _tau_twin_sytem[_qp][i] > 0.0 ) // changed from requiring greater than the strength, and then changed >= to just >
       {
         const Real driving_force = (_tau_twin_sytem[_qp][i] / _twin_system_resistance[_qp][i]);
-        _twin_shear_increment[_qp][i] = std::pow(driving_force, (1.0 / _m_exp))
-                                       * _gamma_reference * _substep_dt;
+        _twin_shear_increment[_qp][i] = std::pow(driving_force, (1.0 / _m_exp)) * _gamma_reference * _substep_dt;
+
+/*        if (_qp == 0 )
+        {
+          std::cout << "  The resistance is: " << _twin_system_resistance[_qp][i] << "\n";
+          std::cout << "    and the driving force is: " << driving_force << "\n";
+          std::cout << "    with a gamma_reference value " << _gamma_reference << " and a substep dt value " << _substep_dt << "\n";
+        } */
       }
       else  // Constitutive law: less than zero applied stress, no twinning
         _twin_shear_increment[_qp][i] = 0.0;
+
+/*      if (_qp == 0)
+        std::cout << "    such that the twin increment is:" << _twin_shear_increment[_qp][i] << "\n"; */
 
       // std::cout << "  on twin system " << i << "  the calculated twin shear increment is " << _twin_shear_increment[_qp][i]  << std::endl;
     }
@@ -266,17 +294,33 @@ void
 CrystalPlasticityCDDNiAlloyUpdate::calculateTwinVolumeFraction(bool & error_tolerance)
 {
   // std::cout << "Inside calculateTwinVolumeFraction at element " << _current_elem->id() << " and qp " << _qp << std::endl;
+/*  if (_qp == 0)
+    std::cout << "Inside the calculation of the twin volume fraction \n"; */
   Real total_volume_fraction_increment = 0.0;
   for (unsigned int i = 0; i < _number_twin_systems; ++i)
   {
     _twin_volume_fraction[_qp][i] = _twin_shear_increment[_qp][i] / _characteristic_twin_shear + _twin_volume_fraction_old[_qp][i];
     total_volume_fraction_increment += _twin_shear_increment[_qp][i] / _characteristic_twin_shear;
+
+/*    if (_qp == 0)
+      std::cout << "  the twin volume fraction increment on twin system " << i << " is: " << _twin_shear_increment[_qp][i] / _characteristic_twin_shear << "\n"; */
   }
 
+/*  if (_qp == 0 )
+    std::cout << "  and the total volume fraction increment is: " << total_volume_fraction_increment << "\n"; */
+
+
+  // maybe this is part of the problem right here since I generally have lots tiny volume fractions?
   if (_total_volume_fraction_twins_old[_qp] < _zero_tol && total_volume_fraction_increment < 0.0)
     _total_volume_fraction_twins[_qp] = _total_volume_fraction_twins_old[_qp];
   else
     _total_volume_fraction_twins[_qp] = total_volume_fraction_increment + _total_volume_fraction_twins_old[_qp];
+
+/*  if (_qp == 0)
+  {
+    std::cout << "  with an old total twin volume fraction value of: " << _total_volume_fraction_twins_old[_qp] << "\n";
+    std::cout << "  the current total twin volume fraction value is: " << _total_volume_fraction_twins[_qp] << "\n";
+  }*/
 
   if (_total_volume_fraction_twins[_qp] < 0.0)
   {
@@ -344,10 +388,6 @@ CrystalPlasticityCDDNiAlloyUpdate::updateConstitutiveSlipSystemResistanceAndVari
   {
     _previous_iteration_twin_volume_fraction[_qp] = _total_volume_fraction_twins[_qp];
 
-    calculateTwinVolumeFraction(error_tolerance);
-    if (error_tolerance)
-      return;
-
     calculateTwinSystemResistance(error_tolerance);
   }
 }
@@ -357,8 +397,7 @@ CrystalPlasticityCDDNiAlloyUpdate::areConstitutiveStateVariablesConverged()
 {
   bool not_converged_flag = false;
 
-  const Real twin_diff = std::abs(_previous_iteration_twin_volume_fraction[_qp]
-                        - _total_volume_fraction_twins[_qp]);
+  const Real twin_diff = std::abs(_previous_iteration_twin_volume_fraction[_qp] - _total_volume_fraction_twins[_qp]);
 
   if (_total_volume_fraction_twins_old[_qp] < _zero_tol)
   {
@@ -420,7 +459,7 @@ CrystalPlasticityCDDNiAlloyUpdate::calculateTwinSystemResistance(bool & error_to
 
   //Now perform the check to see if the slip system should be updated
   // But I don't need this right now because these values are set by glide dislcoations
-  // and are checked there
+  // and are checked there--now I do need it actually
   error_tolerance = false;
 }
 
