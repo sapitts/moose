@@ -16,10 +16,10 @@
 
 [AuxVariables]
   [./vel_x]
-    initial_condition = 3
+    initial_condition = 0.01
   [../]
   [./vel_y]
-    initial_condition = 3
+    initial_condition = 0
   [../]
 []
 
@@ -32,20 +32,42 @@
 []
 
 [Functions]
+  # [./phi_exact]
+  #   type = LevelSetOlssonBubble
+  #   epsilon = 0.05
+  #   center = '0.5 0.5 0'
+  #   radius = 0.15
+  # [../]
+  # [./sweep_function]
+  #   type = ParsedFunction
+  #   value = 'if(x<0.5,1,0)'
+  # [../]
   [./phi_exact]
-    type = LevelSetOlssonBubble
-    epsilon = 0.05
-    center = '0.5 0.5 0'
-    radius = 0.15
+    type = ParsedFunction
+    value = 'a*sin(pi*x/b)*cos(pi*x)'
+    vars = 'a b'
+    vals = '1 1'
   [../]
 []
 
 [BCs]
-  [./Periodic]
-    [./all]
-      variable = phi
-      auto_direction = 'x y'
-    [../]
+  # [./Periodic]
+  #   [./all]
+  #     variable = phi
+  #     auto_direction = 'y'
+  #   [../]
+  # [../]
+  [./left_phi]
+    type = DirichletBC
+    variable = phi
+    boundary = left
+    value = 0.5
+  [../]
+  [./right_phi]
+    type = DirichletBC
+    variable = phi
+    boundary = right
+    value = 0
   [../]
 []
 
@@ -54,11 +76,9 @@
     type = TimeDerivative
     variable = phi
   [../]
-
   [./advection]
     type = LevelSetAdvection
     velocity_x = vel_x
-    velocity_y = vel_y
     variable = phi
   [../]
 []
@@ -76,7 +96,8 @@
   type = Transient
   solve_type = PJFNK
   start_time = 0
-  end_time = 1
+  dtmax = 0.01
+  end_time = 2
   scheme = crank-nicolson
   petsc_options_iname = '-pc_type -pc_sub_type'
   petsc_options_value = 'asm      ilu'
