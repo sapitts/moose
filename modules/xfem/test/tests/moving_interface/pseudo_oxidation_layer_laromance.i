@@ -408,16 +408,16 @@
     eigenstrain_names = 'no_pbr_eigenstrain'
   [../]
   [./stress_metal]
-    # type = ADComputeMultipleInelasticStress
-    type = ADComputeFiniteStrainElasticStress
+    type = ADComputeMultipleInelasticStress
+    # type = ADComputeFiniteStrainElasticStress
     base_name = metal
-    # inelastic_models = inelastic_stress_metal
+    inelastic_models = inelastic_stress_metal
   [../]
-  # [./inelastic_stress_metal]
-  #   type = SS316HLAROMANCEStressUpdateTest
-  #   base_name = metal
-  #   temperature = temperature
-  # [../]
+  [./inelastic_stress_metal]
+    type = SS316HLAROMANCEStressUpdateTest
+    base_name = metal
+    temperature = temperature
+  [../]
   [./eigenstrain_metal]
     type = ADComputeThermalExpansionEigenstrain
     stress_free_temperature = 800.0
@@ -438,16 +438,16 @@
     eigenstrain_names = 'pbr_eigenstrain'
   [../]
   [./stress_oxide]
-    # type = ADComputeMultipleInelasticStress
-    type = ADComputeFiniteStrainElasticStress
+    type = ADComputeMultipleInelasticStress
+    # type = ADComputeFiniteStrainElasticStress
     base_name = oxide
-    # inelastic_models = inelastic_stress_oxide
+    inelastic_models = inelastic_stress_oxide
   [../]
-  # [./inelastic_stress_oxide]
-  #   type = SS316HLAROMANCEStressUpdateTest
-  #   base_name = oxide
-  #   temperature = temperature
-  # [../]
+  [./inelastic_stress_oxide]
+    type = SS316HLAROMANCEStressUpdateTest
+    base_name = oxide
+    temperature = temperature
+  [../]
   [./eigenstrain_oxide]
     type = ADComputeThermalExpansionEigenstrain
     stress_free_temperature = 500.0

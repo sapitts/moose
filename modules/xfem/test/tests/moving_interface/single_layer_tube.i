@@ -271,16 +271,16 @@
     # eigenstrain_names = 'no_pbr_eigenstrain'
   [../]
   [./stress_metal]
-    # type = ADComputeMultipleInelasticStress
-    type = ADComputeFiniteStrainElasticStress
+    type = ADComputeMultipleInelasticStress
+    # type = ADComputeFiniteStrainElasticStress
     base_name = metal
-    # inelastic_models = inelastic_stress_metal
+    inelastic_models = inelastic_stress_metal
   [../]
-  # [./inelastic_stress_metal]
-  #   type = SS316HLAROMANCEStressUpdateTest
-  #   base_name = metal
-  #   temperature = temperature
-  # [../]
+  [./inelastic_stress_metal]
+    type = SS316HLAROMANCEStressUpdateTest
+    base_name = metal
+    temperature = temperature
+  [../]
   # [./eigenstrain_metal]
   #   type = ADComputeThermalExpansionEigenstrain
   #   stress_free_temperature = 800.0
@@ -328,8 +328,8 @@
 
 # controls for nonlinear iterations
   nl_max_its = 30
-  nl_rel_tol = 1e-4
-  nl_abs_tol = 5e-5
+  nl_rel_tol = 1e-8
+  nl_abs_tol = 5e-8
 
 # time control
   start_time = 0.0

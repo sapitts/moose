@@ -9,7 +9,7 @@
 
 #include "SS316HLAROMANCEStressUpdateTest.h"
 
-registerADMooseObject("TensorMechanicsTestApp", SS316HLAROMANCEStressUpdateTest);
+registerADMooseObject("TensorMechanicsApp", SS316HLAROMANCEStressUpdateTest);
 
 defineADLegacyParams(SS316HLAROMANCEStressUpdateTest);
 
