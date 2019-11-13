@@ -12,18 +12,23 @@
 
 [Problem]
   coord_type = RZ
+  type = ReferenceResidualProblem
+  extra_tag_vectors = 'refs'
+  reference_vector = 'refs'
+  solution_variables = 'disp_x disp_y'
+  group_variables = 'disp_x disp_y'
 []
 
 [Mesh]
   [generated_mesh]
     type = GeneratedMeshGenerator
     dim = 2
-    nx = 8
+    nx = 16
     ny = 80
     xmin = 3.0
     xmax = 4.0
     ymin = 0.0
-    ymax = 10.
+    ymax = 5.0
     elem_type = QUAD4
   []
   [./left_bottom]
@@ -35,7 +40,7 @@
   [./left_top]
     type = ExtraNodesetGenerator
     new_boundary = 'left_top'
-    coord = '3.0 10.'
+    coord = '3.0 5.0'
     input = left_bottom
   [../]
 []
@@ -50,7 +55,7 @@
 [Functions]
   [./ls_func]
     type = ParsedFunction
-    value = '-1*x + 3.2 + 0.1*t'
+    value = '-1*x + 3.0 + 1.0e-2*t'
   [../]
 []
 
@@ -154,6 +159,7 @@
     component = 0
     variable = disp_x
     use_displaced_mesh = true
+    extra_vector_tags = 'refs'
     # base_name = metal
   [../]
   [./stress_y]
@@ -161,6 +167,7 @@
     component = 1
     variable = disp_y
     use_displaced_mesh = true
+    extra_vector_tags = 'refs'
     # base_name = metal
   [../]
 []
@@ -429,7 +436,7 @@
   [./elasticity_tensor_oxide]
     type = ComputeIsotropicElasticityTensor
     base_name = oxide
-    youngs_modulus = 1e11
+    youngs_modulus = 1e10
     poissons_ratio = 0.3
   [../]
   [./strain_oxide]
@@ -452,7 +459,7 @@
     type = ADComputeThermalExpansionEigenstrain
     stress_free_temperature = 500.0
     temperature = temperature
-    thermal_expansion_coeff = 10.0e-8
+    thermal_expansion_coeff = 10.0e-6
     base_name = oxide
     eigenstrain_name = 'pbr_eigenstrain'
   [../]
@@ -501,13 +508,13 @@
   l_tol = 1e-3
 
 # controls for nonlinear iterations
-  nl_max_its = 30
+  nl_max_its = 100
   nl_rel_tol = 1e-6
   nl_abs_tol = 1e-6
 
 # time control
   start_time = 0.0
-  dt = 0.25
+  dt = 0.1
   # dtmin = 1.0e-6
   dtmax = 0.25
   end_time = 10.0

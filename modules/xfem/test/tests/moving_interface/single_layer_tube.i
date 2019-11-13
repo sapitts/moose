@@ -7,18 +7,23 @@
 
 [Problem]
   coord_type = RZ
+  type = ReferenceResidualProblem
+  extra_tag_vectors = 'refs'
+  reference_vector = 'refs'
+  solution_variables = 'disp_x disp_y'
+  group_variables = 'disp_x disp_y'
 []
 
 [Mesh]
   [generated_mesh]
     type = GeneratedMeshGenerator
     dim = 2
-    nx = 8
+    nx = 16
     ny = 80
     xmin = 3.0
     xmax = 4.0
     ymin = 0.0
-    ymax = 10.
+    ymax = 5.0
     elem_type = QUAD4
   []
   # [./left_bottom]
@@ -42,12 +47,12 @@
   [../]
 []
 
-[Functions]
-  [./ls_func]
-    type = ParsedFunction
-    value = '-1*x + 3.2 + 0.1*t'
-  [../]
-[]
+# [Functions]
+#   [./ls_func]
+#     type = ParsedFunction
+#     value = '-1*x + 3.2 + 0.1*t'
+#   [../]
+# []
 
 [AuxVariables]
   [./ls]
@@ -102,6 +107,7 @@
     variable = disp_x
     use_displaced_mesh = true
     base_name = metal
+    extra_vector_tags = 'refs'
   [../]
   [./stress_y]
     type = ADStressDivergenceRZTensors
@@ -109,15 +115,16 @@
     variable = disp_y
     use_displaced_mesh = true
     base_name = metal
+    extra_vector_tags = 'refs'
   [../]
 []
 
 [AuxKernels]
-  [./ls_function]
-    type = FunctionAux
-    variable = ls
-    function = ls_func
-  [../]
+  # [./ls_function]
+  #   type = FunctionAux
+  #   variable = ls
+  #   function = ls_func
+  # [../]
   [./temperature]
     type = ConstantAux
     variable = temperature
@@ -189,21 +196,21 @@
   [../]
 []
 
-[Constraints]
-  [./dispx_constraint]
-    type = XFEMSingleVariableConstraint
-    use_displaced_mesh = false
-    variable = disp_x
-    alpha = 1e8
-    geometric_cut_userobject = 'level_set_cut_uo'
-  [../]
-  [./dispy_constraint]
-    type = XFEMSingleVariableConstraint
-    use_displaced_mesh = false
-    variable = disp_y
-    alpha = 1e8
-    geometric_cut_userobject = 'level_set_cut_uo'
-  [../]
+# [Constraints]
+#   [./dispx_constraint]
+#     type = XFEMSingleVariableConstraint
+#     use_displaced_mesh = false
+#     variable = disp_x
+#     alpha = 1e8
+#     geometric_cut_userobject = 'level_set_cut_uo'
+#   [../]
+#   [./dispy_constraint]
+#     type = XFEMSingleVariableConstraint
+#     use_displaced_mesh = false
+#     variable = disp_y
+#     alpha = 1e8
+#     geometric_cut_userobject = 'level_set_cut_uo'
+#   [../]
   # [./bottom_section_plane]
   #   type = EqualValueBoundaryConstraint
   #   variable = disp_y
@@ -218,7 +225,7 @@
   #   penalty = 1e+14
   #   formulation = kinematic
   # [../]
-[]
+# []
 
 [BCs]
   [./roller_y]
@@ -271,38 +278,38 @@
     # eigenstrain_names = 'no_pbr_eigenstrain'
   [../]
   [./stress_metal]
-    type = ADComputeMultipleInelasticStress
-    # type = ADComputeFiniteStrainElasticStress
+    # type = ADComputeMultipleInelasticStress
+    type = ADComputeFiniteStrainElasticStress
     base_name = metal
-    inelastic_models = inelastic_stress_metal
+    # inelastic_models = inelastic_stress_metal
   [../]
-  [./inelastic_stress_metal]
-    type = SS316HLAROMANCEStressUpdateTest
-    base_name = metal
-    temperature = temperature
-  [../]
+  # [./inelastic_stress_metal]
+  #   type = SS316HLAROMANCEStressUpdateTest
+  #   base_name = metal
+  #   temperature = temperature
+  # [../]
   # [./eigenstrain_metal]
   #   type = ADComputeThermalExpansionEigenstrain
   #   stress_free_temperature = 800.0
   #   temperature = temperature
-  #   thermal_expansion_coeff = 10.0e-8
+  #   thermal_expansion_coeff = 10.0e-4
   #   base_name = metal
   #   eigenstrain_name = 'no_pbr_eigenstrain'
   # [../]
 []
 
-[XFEM]
-  qrule = volfrac
-  output_cut_plane = true
-[]
-
-[UserObjects]
-  [./level_set_cut_uo]
-    type = LevelSetCutUserObject
-    level_set_var = ls
-    heal_always = true
-  [../]
-[]
+# [XFEM]
+#   qrule = volfrac
+#   output_cut_plane = true
+# []
+#
+# [UserObjects]
+#   [./level_set_cut_uo]
+#     type = LevelSetCutUserObject
+#     level_set_var = ls
+#     heal_always = true
+#   [../]
+# []
 
 [Preconditioning]
   [./smp]
@@ -327,23 +334,23 @@
   l_tol = 1e-3
 
 # controls for nonlinear iterations
-  nl_max_its = 30
+  nl_max_its = 100
   nl_rel_tol = 1e-8
-  nl_abs_tol = 5e-8
+  nl_abs_tol = 1e-8
 
 # time control
   start_time = 0.0
-  dt = 0.25
-  dtmin = 1.0e-6
-  dtmax = 1.1
-  end_time = 10.0
+  dt = 1.0e-9
+  dtmin = 1.0e-9
+  dtmax = 1.0
+  end_time = 1.0
 
   max_xfem_update = 1
 []
 
 [Outputs]
   exodus = true
-  execute_on = timestep_end
+  # execute_on = timestep_end
   csv = true
   perf_graph = true
   [./console]
