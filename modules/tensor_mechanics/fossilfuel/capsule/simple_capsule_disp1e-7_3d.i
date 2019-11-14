@@ -57,18 +57,18 @@
   #     function = pv_temp_ramp
   # [../]
   [./hoop_inelastic_strain]
-    type = RankTwoScalarAux
-    rank_two_tensor = creep_strain
-    variable = hoop_inelastic_strain
-    scalar_type = HoopStress
-    execute_on = timestep_end
+      type = RankTwoScalarAux
+      rank_two_tensor = creep_strain
+      variable = hoop_inelastic_strain
+      scalar_type = HoopStress
+      execute_on = timestep_end
   [../]
   [./hoop_stress]
-    type = RankTwoScalarAux
-    rank_two_tensor = stress
-    variable = hoop_stress
-    scalar_type = HoopStress
-    execute_on = timestep_end
+      type = RankTwoScalarAux
+      rank_two_tensor = stress
+      variable = hoop_stress
+      scalar_type = HoopStress
+      execute_on = timestep_end
   [../]
   [./mobile_dislocations]
     type = MaterialRealAux
@@ -88,7 +88,7 @@
   # [./inner_press_ramp]
   #   type = PiecewiseLinear
   #   x = '0 3600' # 86400'
-  #   y = '4.75e6 10.0e6' # 15.0'
+  #   y = '1.0e5 1.0e5' # 15.0'
   # [../]
   # [./pv_temp_ramp]
   #   type = PiecewiseLinear
@@ -119,8 +119,14 @@
   [./Pressure]
     [./innerPressure]
       boundary = 4 #inside
-      function = 4.5e6 #inner_press_ramp
+      function = 1.0e6 #inner_press_ramp
     [../]
+  [../]
+  [./displacement_rate]
+    type = ADFunctionDirichletBC
+    variable = disp_y
+    boundary = 5 #outer_cap
+    function = 1.0e-7*t
   [../]
 []
 
@@ -172,9 +178,9 @@
   nl_abs_tol = 1e-20
   l_max_its = 30
   nl_max_its = 30
-  end_time = 500.0 #86400.0
+  end_time = 40.0
   l_tol = 1e-3
-  dtmax = 1e2
+  dtmax = 1.0e1
   dt = 1.0
 
   [./Predictor]

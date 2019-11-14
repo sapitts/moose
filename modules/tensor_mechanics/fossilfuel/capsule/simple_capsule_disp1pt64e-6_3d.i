@@ -21,10 +21,10 @@
   [./temperature]
     initial_condition = 801.0
   [../]
-  # [./hoop_inelastic_strain]
-  #   order = CONSTANT
-  #   family = MONOMIAL
-  # [../]
+  [./hoop_inelastic_strain]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
   [./hoop_stress]
     order = CONSTANT
     family = MONOMIAL
@@ -56,13 +56,13 @@
   #     variable = temp
   #     function = pv_temp_ramp
   # [../]
-  # [./hoop_inelastic_strain]
-  #     type = RankTwoScalarAux
-  #     rank_two_tensor = inelastic_strain
-  #     variable = hoop_inelastic_strain
-  #     scalar_type = HoopStress
-  #     execute_on = timestep_end
-  # [../]
+  [./hoop_inelastic_strain]
+      type = RankTwoScalarAux
+      rank_two_tensor = creep_strain
+      variable = hoop_inelastic_strain
+      scalar_type = HoopStress
+      execute_on = timestep_end
+  [../]
   [./hoop_stress]
       type = RankTwoScalarAux
       rank_two_tensor = stress
@@ -123,10 +123,10 @@
     [../]
   [../]
   [./displacement_rate]
-    type = FunctionDirichletBC
+    type = ADFunctionDirichletBC
     variable = disp_y
     boundary = 5 #outer_cap
-    function = 1.64e-5*t
+    function = 1.64e-6*t
   [../]
 []
 
@@ -175,7 +175,7 @@
   automatic_scaling = true
 
   nl_rel_tol = 1e-8
-  nl_abs_tol = 1e-18
+  nl_abs_tol = 1e-20
   l_max_its = 30
   nl_max_its = 30
   end_time = 3.72
@@ -183,21 +183,10 @@
   dtmax = 1.0
   dt = 1.0e-1
 
-  # [./TimeStepper]
-  #   type = IterationAdaptiveDT
-  #   dt = 100
-  #   time_t = '3600 86400'
-  #   time_dt = '100  100'
-  #   optimal_iterations = 15
-  #   iteration_window = 5
-  #   growth_factor = 1.4
-  #   cutback_factor = 0.7
-  # [../]
-
-  # [./Predictor]
-  #   type = SimplePredictor
-  #   scale = 1.0
-  # [../]
+  [./Predictor]
+    type = SimplePredictor
+    scale = 1.0
+  [../]
 []
 
 [Postprocessors]
@@ -252,10 +241,10 @@
     type = ElementAverageValue
     variable = strain_zz
   [../]
-  # [./hoop_inelastic_strain]
-  #   type = ElementAverageValue
-  #   variable = hoop_inelastic_strain
-  # [../]
+  [./hoop_inelastic_strain]
+    type = ElementAverageValue
+    variable = hoop_inelastic_strain
+  [../]
   [./hoop_stress]
     type = ElementAverageValue
     variable = hoop_stress
