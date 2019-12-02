@@ -1,0 +1,65 @@
+reset
+title 'Simple Pressure Vessel Geometry'
+
+# Setup relative dimensions of problem
+#{L=0.05}     Length of straight section
+#{R=0.02}     Radius of cap
+#{T=0.002}     Thickness of vessel
+#{ne_L=40}   Number of elements in length direction
+#{ne_R=30}   Number of elements in radial direction
+#{ne_T=5}    Number of elements through the thickness
+#{ne_C=20}    Number of elements in circumferential direction
+
+# Create cap section of pressure vessel
+create vertex 0 {L + R}
+create vertex 0 {L + R + T}
+create vertex {R + T} {L}
+create vertex {R} {L}
+create vertex 0 {L}
+create curve arc center vertex 5 1 4
+create curve arc center vertex 5 2 3
+create curve 1 2
+create curve 3 4
+create surface curve 3 2 4 1
+
+# Create straight section of pressure vessel
+create vertex {R} 0
+create vertex {R + T} 0
+create curve 4 10
+create curve 10 11
+create curve 11 3
+create surface curve 4 7 6 5
+
+sweep surface 1 2 Yaxis angle 90
+merge all
+
+sideset 1 surface 1 2
+sideset 2 surface 6 11
+sideset 3 surface 9
+sideset 4 surface 5 8
+sideset 5 surface 4
+
+sideset 1 name left_vertical
+sideset 2 name front_vertical
+sideset 3 name bottom_surface
+sideset 4 name inside
+sideset 5 name outer_cap
+
+
+block 1 volume 1 2
+block 1 elem brick8
+
+Specify meshing and biasing
+curve 3 4 6 9 19 interval {ne_T}
+curve 5 7 17 21 interval {ne_L}
+curve 10 11 18 20 interval {ne_C}
+curve 1 2 12 13 interval {ne_R}
+
+surface 4 5 scheme triprimitive
+mesh volume all
+
+export mesh 'simple_capsule_3d.e' overwrite
+
+
+
+
