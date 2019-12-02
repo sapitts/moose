@@ -8,19 +8,21 @@
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
 #include "ADComputeOxidationEigenstrain.h"
-#include "RankTwoTensor.h"
+// #include "RankTwoTensor.h"
 
 registerADMooseObject("TensorMechanicsApp", ADComputeOxidationEigenstrain);
+
+defineADLegacyParams(ADComputeOxidationEigenstrain);
 
 template <ComputeStage compute_stage>
 InputParameters
 ADComputeOxidationEigenstrain<compute_stage>::validParams()
 {
   InputParameters params = ADComputeEigenstrainBase<compute_stage>::validParams();
-  params.addRequiredParam<std::string>("pillings_bedworth_ratio", "The value of the PBR ratio of the oxide volume to the alloy volume");
+  params.addRequiredParam<Real>("pillings_bedworth_ratio", "The value of the PBR ratio of the oxide volume to the alloy volume");
   params.addRequiredParam<FunctionName>("oxide_thickness_growth_rate", "The rate of the oxide thickness growth as given by the prescribed function, in m/s");
-  params.addParam<std::string>("omega_pbr_constant", 0.1, "The Bernstein oxide eigenstrain reduction factor prescribed to prevent unrealistically high oxide growth-induced strains");
-  params.addParam<std::string>("oxide_growth_proportionality_constant", 0.5, "The Sabau-Wright constant introduced to include lateral oxide growth-induced strains, in 1/m");
+  params.addParam<Real>("omega_pbr_constant", 0.1, "The Bernstein oxide eigenstrain reduction factor prescribed to prevent unrealistically high oxide growth-induced strains");
+  params.addParam<Real>("oxide_growth_proportionality_constant", 0.5, "The Sabau-Wright constant introduced to include lateral oxide growth-induced strains, in 1/m");
 
   return params;
 }
@@ -40,25 +42,25 @@ template <ComputeStage compute_stage>
 void
 ADComputeOxidationEigenstrain<compute_stage>::computeQpEigenstrain()
 {
-  RankTwoTensor oxide_growth_strain;
-  oxide_growth_strain.zero();
-  computeOxideGrowthStrain(/*oxide_growth_strain*/);
+  // RankTwoTensor oxide_growth_strain;
+  // oxide_growth_strain.zero();
+  // computeOxideGrowthStrain(/*oxide_growth_strain*/);
 
   // add the oxide growth strain to the total stress free strain
-  // _eigenstrain[_qp].zero();
+  _eigenstrain[_qp].zero();
   // _eigenstrain[_qp] = oxide_growth_strain;
-}
-
-template <ComputeStage compute_stage>
-void
-ADComputeOxidationEigenstrain<compute_stage>::computeOxideGrowthStrain(/*RankTwoTensor & oxide_growth_strain*/)
-{
+// }
+//
+// template <ComputeStage compute_stage>
+// void
+// ADComputeOxidationEigenstrain<compute_stage>::computeOxideGrowthStrain(/*RankTwoTensor & oxide_growth_strain*/)
+// {
   ADReal hoop_eigenstrain = 0.0;
   ADReal radial_eigenstrain = 0.0;
 
   hoop_eigenstrain = _growth_rate->value(_t, _q_point[_qp]);
   hoop_eigenstrain /= _B_constant;
-  
+
   radial_eigenstrain = _omega * (_pbr - 1.0) - 2.0 * hoop_eigenstrain;
 
   _eigenstrain[_qp](0,0) = radial_eigenstrain;

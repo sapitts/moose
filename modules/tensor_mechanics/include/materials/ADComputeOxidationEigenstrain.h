@@ -11,12 +11,8 @@
 
 #include "ADComputeEigenstrainBase.h"
 
-template <ComputeStage>
+template <ComputeStage compute_stage>
 class ADComputeOxidationEigenstrain;
-
-// template <typename>
-// class RankTwoTensorTempl;
-// typedef RankTwoTensorTempl<Real> RankTwoTensor;
 
 declareADValidParams(ADComputeOxidationEigenstrain);
 
@@ -27,9 +23,9 @@ template <ComputeStage compute_stage>
 class ADComputeOxidationEigenstrain : public ADComputeEigenstrainBase<compute_stage>
 {
 public:
-  static InputParameters validParams();
+  ADComputeOxidationEigenstrain<compute_stage>(const InputParameters & parameters);
 
-  ADComputeOxidationEigenstrain(const InputParameters & parameters);
+  static InputParameters validParams();
 
 protected:
   virtual void computeQpEigenstrain();
@@ -38,7 +34,7 @@ protected:
    * Compute the lateral and radial oxide growth-induced strains, following the
    * approach of Sabau and Wright Oxid Met (2010) 73:467-492, Table 9
    */
-  void computeOxideGrowthStrain(/*RankTwoTensor & oxide_growth_strain*/);
+  // void computeOxideGrowthStrain(/*RankTwoTensor & oxide_growth_strain*/);
 
   const Real & _pbr;
 

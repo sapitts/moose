@@ -15,7 +15,6 @@
   type = ReferenceResidualProblem
   extra_tag_vectors = 'refs'
   reference_vector = 'refs'
-  solution_variables = 'disp_x disp_y'
   group_variables = 'disp_x disp_y'
 []
 
@@ -23,12 +22,12 @@
   [generated_mesh]
     type = GeneratedMeshGenerator
     dim = 2
-    nx = 16
-    ny = 80
+    nx = 500
+    ny = 250
     xmin = 0.02
     xmax = 0.022
     ymin = 0.0
-    ymax = 0.05
+    ymax = 0.002
     elem_type = QUAD4
   []
   [./left_bottom]
@@ -40,7 +39,7 @@
   [./left_top]
     type = ExtraNodesetGenerator
     new_boundary = 'left_top'
-    coord = '0.02 0.05'
+    coord = '0.02 0.002'
     input = left_bottom
   [../]
 []
@@ -55,11 +54,11 @@
 [Functions]
   [./estimated_oxide_growth]
     type = ParsedFunction
-    value = '0.288997*sqrt(t*5.2775e-12)'
+    value = '0.288997e-2*sqrt(t*5.2775e-12)'
   [../]
   [./ls_func]
     type = ParsedFunction
-    value = '-1*x + 3.0 + 1.0e-2*t'
+    value = 'if(x<(0.288997e-2*sqrt(t*5.2775e-12)+0.02),1,-1)'
   [../]
 []
 
@@ -411,6 +410,7 @@
     type = ComputeIsotropicElasticityTensor
     youngs_modulus = 1.93e11 ## 193 GPa
     poissons_ratio = 0.3
+    base_name = metal
   [../]
   [./strain_metal]
     type = ADComputeAxisymmetricRZFiniteStrain
@@ -418,16 +418,16 @@
     eigenstrain_names = 'no_eigenstrain'
   [../]
   [./stress_metal]
-    type = ADComputeMultipleInelasticStress
-    # type = ADComputeFiniteStrainElasticStress
+    # type = ADComputeMultipleInelasticStress
+    type = ADComputeFiniteStrainElasticStress
     base_name = metal
-    inelastic_models = inelastic_stress_metal
+    # inelastic_models = inelastic_stress_metal
   [../]
-  [./inelastic_stress_metal]
-    type = SS316HLAROMANCEStressUpdateTest
-    base_name = metal
-    temperature = temperature
-  [../]
+  # [./inelastic_stress_metal]
+  #   type = SS316HLAROMANCEStressUpdateTest
+  #   base_name = metal
+  #   temperature = temperature
+  # [../]
   [./eigenstrain_metal]
     type = ADComputeThermalExpansionEigenstrain
     stress_free_temperature = 800.0
@@ -448,16 +448,16 @@
     eigenstrain_names = 'oxidation_eigenstrain'
   [../]
   [./stress_oxide]
-    type = ADComputeMultipleInelasticStress
-    # type = ADComputeFiniteStrainElasticStress
+    # type = ADComputeMultipleInelasticStress
+    type = ADComputeFiniteStrainElasticStress
     base_name = oxide
-    inelastic_models = inelastic_stress_oxide
+    # inelastic_models = inelastic_stress_oxide
   [../]
-  [./inelastic_stress_oxide]
-    type = SS316HLAROMANCEStressUpdateTest
-    base_name = oxide
-    temperature = temperature
-  [../]
+  # [./inelastic_stress_oxide]
+  #   type = SS316HLAROMANCEStressUpdateTest
+  #   base_name = oxide
+  #   temperature = temperature
+  # [../]
   [./eigenstrain_oxide]
     type = ADComputeOxidationEigenstrain
     pillings_bedworth_ratio = 2.01 ## from pure Cr
@@ -512,14 +512,22 @@
 # controls for nonlinear iterations
   nl_max_its = 100
   nl_rel_tol = 1e-6
-  nl_abs_tol = 1e-6
+  nl_abs_tol = 1e-20
 
 # time control
   start_time = 0.0
-  dt = 0.1
-  # dtmin = 1.0e-6
-  dtmax = 0.25
-  end_time = 10.0
+  dt = 100
+  dtmin = 1.0e-4
+  dtmax = 10000.0
+  end_time = 604800.0
+
+  [./TimeStepper]
+    type = IterationAdaptiveDT
+    dt = 100
+    optimal_iterations = 12
+    iteration_window = 2
+    linear_iteration_ratio = 100
+  [../]
 
   max_xfem_update = 1
 []
