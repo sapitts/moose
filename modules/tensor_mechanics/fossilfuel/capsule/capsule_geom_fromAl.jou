@@ -1,5 +1,5 @@
 reset
-title 'Simple Pressure Vessel Geometry'
+#title 'Simple Pressure Vessel Geometry'
 
 # Setup relative dimensions of problem
 #{L=0.05}     Length of straight section
@@ -59,6 +59,7 @@ surface 4 5 scheme triprimitive
 mesh volume all
 
 export mesh 'simple_capsule_3d.e' overwrite
+
 
 
 

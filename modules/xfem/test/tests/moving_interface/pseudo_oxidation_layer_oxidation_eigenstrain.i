@@ -22,27 +22,27 @@
   [./generated_mesh]
     type = GeneratedMeshGenerator
     dim = 2
-    nx = 1000
-    ny = 50
+    nx = 2000
+    ny = 4
     xmin = 0.02
     xmax = 0.022
     ymin = 0.0
-    ymax = 0.0001
+    ymax = 4.0e-6
     elem_type = QUAD4
     # bias_x = 0.001
   [../]
-  [./left_bottom]
-    type = ExtraNodesetGenerator
-    new_boundary = 'left_bottom'
-    coord = '0.02 0.0'
-    input = generated_mesh
-  [../]
-  [./left_top]
-    type = ExtraNodesetGenerator
-    new_boundary = 'left_top'
-    coord = '0.02 0.0001'
-    input = left_bottom
-  [../]
+  # [./left_bottom]
+  #   type = ExtraNodesetGenerator
+  #   new_boundary = 'left_bottom'
+  #   coord = '0.02 0.0'
+  #   input = generated_mesh
+  # [../]
+  # [./left_top]
+  #   type = ExtraNodesetGenerator
+  #   new_boundary = 'left_top'
+  #   coord = '0.02 0.0001'
+  #   input = left_bottom
+  # [../]
 []
 
 [Variables]
@@ -59,7 +59,7 @@
   [../]
   [./ls_func]
     type = ParsedFunction
-    value = 'if(x<(0.288997e-2*sqrt(t*5.2775e-12)+0.02),1,-1)'
+    value = 'if((x-0.02)<(0.288997e-2*sqrt(t*5.2775e-12)),1,-1)'
   [../]
 []
 
@@ -417,7 +417,7 @@
   [./strain_metal]
     type = ADComputeAxisymmetricRZFiniteStrain
     base_name = metal
-    eigenstrain_names = 'no_eigenstrain'
+    # eigenstrain_names = 'no_eigenstrain'
   [../]
   [./stress_metal]
     # type = ADComputeMultipleInelasticStress
@@ -430,14 +430,14 @@
   #   base_name = metal
   #   temperature = temperature
   # [../]
-  [./eigenstrain_metal]
-    type = ADComputeThermalExpansionEigenstrain
-    stress_free_temperature = 800.0
-    temperature = temperature
-    thermal_expansion_coeff = 0.0 ## faking it out so that I can see the switch in the eigenstrains
-    base_name = metal
-    eigenstrain_name = 'no_eigenstrain'
-  [../]
+  # [./eigenstrain_metal]
+  #   type = ADComputeThermalExpansionEigenstrain
+  #   stress_free_temperature = 800.0
+  #   temperature = temperature
+  #   thermal_expansion_coeff = 10.0e-6 ## faking it out so that I can see the switch in the eigenstrains
+  #   base_name = metal
+  #   eigenstrain_name = 'no_eigenstrain'
+  # [../]
   [./elasticity_tensor_oxide]
     type = ComputeIsotropicElasticityTensor
     base_name = oxide
@@ -518,7 +518,7 @@
 
 # time control
   start_time = 0.0
-  dt = 1200.0
+  dt = 3600.0
   dtmin = 1.0e-4
   dtmax = 10000.0
   end_time = 604800.0

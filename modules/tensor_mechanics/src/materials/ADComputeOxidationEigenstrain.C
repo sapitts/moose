@@ -64,6 +64,8 @@ ADComputeOxidationEigenstrain<compute_stage>::computeQpEigenstrain()
   radial_eigenstrain = _omega * (_pbr - 1.0) - 2.0 * hoop_eigenstrain;
 
   _eigenstrain[_qp](0,0) = radial_eigenstrain;
-  for (unsigned int i = 1; i < 3; ++i)
-    _eigenstrain[_qp](i,i) = hoop_eigenstrain;
+  // for (unsigned int i = 1; i < 3; ++i)
+
+  _eigenstrain[_qp](1,1) = hoop_eigenstrain;
+  _eigenstrain[_qp](2,2) = hoop_eigenstrain;
 }
