@@ -1,0 +1,46 @@
+title 'Model SPS Die Geometry'
+
+reset
+
+{#big_spacer_radius = 4.0}
+{#big_spacer_height = 4.0}
+{#smspacer_radius = 3.0/2.0}
+{#small_spacer_height = 3.0}
+{#plunger_radius = 1.45/2.0}
+{#plunger_height = 2.0}
+
+{#mesh_size = 0.0025}
+
+##### Make the volumes
+create brick x {big_spacer_radius} y {big_spacer_height} z 1
+move vertex 4 x {big_spacer_radius / 2.0} y {big_spacer_height / 2.0}
+
+create brick x {smspacer_radius} y {small_spacer_height} z 1
+move vertex 12 x {smspacer_radius / 2.0} y {small_spacer_height / 2.0 + big_spacer_height}
+
+create brick x {plunger_radius} y {plunger_height} z 1
+move vertex 20 x {plunger_radius / 2.0} y {plunger_height / 2.0 + big_spacer_height + small_spacer_height}
+
+volume 1 2 copy reflect y nomesh 
+move vertex 28 36  y {2.0 * big_spacer_height + 2.0 * small_spacer_height + plunger_height}
+
+volume all scale 0.01
+
+## Start meshing
+imprint volume all
+merge volume all
+surface 1 7 13 19 25 size {mesh_size}
+surface 1 7 13 19 25 scheme auto
+mesh surface 1 7 13 19 25
+
+block 1 surface 1 7 13 19 25
+block 1 element type QUAD4
+
+## Assign sidesets
+sideset 100 add curve 4
+sideset 100 name "bottom_die"
+sideset 200 add curve 40
+sideset 200 name "top_die"
+sideset 400 add curve 1 13 25 37 49
+sideset 400 name "right_die"
+
