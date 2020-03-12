@@ -1,3 +1,8 @@
+[GlobalParams]
+  family = LAGRANGE
+  order = SECOND
+  []
+
 [Mesh]
   file = spsdie_table1model3_2d.e
 []
@@ -11,6 +16,12 @@
     initial_condition = 300.0
   [../]
   [./elec]
+  [../]
+[]
+
+[AuxVariables]
+  [./T_infinity]
+    initial_condition = 300.0
   [../]
 []
 
@@ -37,14 +48,21 @@
 
 [BCs]
   [./external_surface]
-    type = InfiniteCylinderRadiativeBC
+    type = CoupledRadiativeHeatFluxBC
     boundary = right_die
     variable = temperature
-    Tinfinity = 300
-    boundary_radius = 0.04
-    cylinder_radius = 1
-    boundary_emissivity = 0.85
+    T_infinity = T_infinity
+    emissivity = 0.85
   [../]
+  # [./external_surface]
+  #   type = InfiniteCylinderRadiativeBC
+  #   boundary = right_die
+  #   variable = temperature
+  #   Tinfinity = 300
+  #   boundary_radius = 0.04
+  #   cylinder_radius = 1
+  #   boundary_emissivity = 0.85
+  # [../]
   # [./top_surface]
   #   type = CoupledConvectiveHeatFluxBC
   #   boundary = right
