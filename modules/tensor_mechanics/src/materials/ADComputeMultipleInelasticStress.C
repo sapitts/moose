@@ -318,11 +318,36 @@ ADComputeMultipleInelasticStress::computeAdmissibleState(
     ADRankTwoTensor & elastic_strain_increment,
     ADRankTwoTensor & inelastic_strain_increment)
 {
-  _models[model_number]->updateState(elastic_strain_increment,
-                                     inelastic_strain_increment,
-                                     _rotation_increment[_qp],
-                                     _stress[_qp],
-                                     _stress_old[_qp],
-                                     _elasticity_tensor[_qp],
-                                     _elastic_strain_old[_qp]);
+  if (_models[model_number]->substeppingCapabilityEnabled() && (_is_elasticity_tensor_guaranteed_isotropic || !_perform_finite_strain_rotations))
+  {
+    const int total_substeps = _models[model_number]->calculateNumberSubsteps(elastic_strain_increment);
+
+    Moose::out << "The number of substeps calculated is: " << total_substeps << "\n";
+    // run the calculation with substepping
+
+    for (int step = 0; step < total_substeps; ++step)
+    {
+      Moose::out << "within substepping on step " << step << "\n";
+      //this would be the call to set up the inputs locally
+      _models[model_number]->updateState(elastic_strain_increment,
+                                       inelastic_strain_increment,
+                                       _rotation_increment[_qp],
+                                       _stress[_qp],
+                                       _stress_old[_qp],
+                                       _elasticity_tensor[_qp],
+                                       _elastic_strain_old[_qp]);
+      _models[model_number]->storeIncrementalMaterialProperties();
+    }
+    //this would be the call to store the material properties
+
+  }
+  else
+    _models[model_number]->updateState(elastic_strain_increment,
+                                       inelastic_strain_increment,
+                                       _rotation_increment[_qp],
+                                       _stress[_qp],
+                                       _stress_old[_qp],
+                                       _elasticity_tensor[_qp],
+                                       _elastic_strain_old[_qp]);
+  std::cout << "Checking that the computeAdmissibleState is actually run \n";
 }

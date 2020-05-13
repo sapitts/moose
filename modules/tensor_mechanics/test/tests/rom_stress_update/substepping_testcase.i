@@ -1,8 +1,8 @@
 [Mesh]
   type = GeneratedMesh
   dim = 2
-  nx = 2
-  ny = 2
+  nx = 1
+  ny = 1
 []
 
 [Problem]
@@ -71,6 +71,8 @@
     temperature = temperature
     initial_mobile_dislocation_density = 6.0e12
     initial_immobile_dislocation_density = 4.4e11
+    substep_strain_tolerance = 0.0005
+    max_inelastic_increment = 1.0e-9
     outputs = all
   [../]
 []
@@ -84,7 +86,7 @@
   automatic_scaling = true
   compute_scaling_once = false
 
-  num_steps = 5
+  num_steps = 1
 []
 
 [Postprocessors]

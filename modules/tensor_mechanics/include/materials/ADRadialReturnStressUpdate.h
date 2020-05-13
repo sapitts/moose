@@ -72,6 +72,21 @@ public:
    */
   bool requiresIsotropicTensor() override { return true; }
 
+  /**
+   * If substepping is enabled, calculated the number of substeps as a function
+   * of the elastic strain increment guess and the maximum inelastic strain increment
+   * ratio based on a user-specified tolerance.
+   * @param strain_increment    When called, this is the elastic strain guess
+   * @return                    The number of substeps required
+   */
+  virtual int calculateNumberSubsteps(const ADRankTwoTensor & strain_increment) override;
+
+  /**
+   * When using the incremental substepping approach, save the stateful
+   * _effective_inelastic_strain to an intermediate incremental variable
+   */
+  virtual void storeIncrementalMaterialProperties() override;
+
 protected:
   virtual void initQpStatefulProperties() override;
 
@@ -107,8 +122,27 @@ protected:
   /// 3 * shear modulus
   ADReal _three_shear_modulus;
 
+  ///@{Scalar inelastic strain calculated with the radial return algorithm
   ADMaterialProperty<Real> & _effective_inelastic_strain;
   const MaterialProperty<Real> & _effective_inelastic_strain_old;
+  ///@}
+
+  ///Stores incremental value when substepping is used
+  ADReal _incremental_effective_inelastic_strain;
+
+  /**
+   * Maximum allowable scalar inelastic strain increment, used to control the
+   * timestep size in conjunction with a user object
+   */
   Real _max_inelastic_increment;
+
+  /**
+   * Used to calculate the number of substeps taken in the radial return algorithm,
+   * when substepping is enabled, based on the elastic strain increment ratio
+   * to the maximum inelastic increment
+   */
+  const Real _substep_tolerance;
+
+  /// Debugging option to enable specifying instead of calculating strain
   const bool _apply_strain;
 };

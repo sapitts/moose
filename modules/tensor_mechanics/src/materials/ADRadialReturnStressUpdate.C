@@ -27,8 +27,9 @@ ADRadialReturnStressUpdate::validParams()
   params.addRequiredParam<std::string>(
       "effective_inelastic_strain_name",
       "Name of the material property that stores the effective inelastic strain");
+  params.addParam<Real>("substep_strain_tolerance", 0.1, "Maximum ratio of the initial elastic strain increment at start of the return mapping solve to the maximum inelastic strain allowable in a single substep. Reduce this value to increase the number of substeps");
   params.addParam<bool>("apply_strain", true, "Flag to apply strain. Used for testing.");
-  params.addParamNamesToGroup("effective_inelastic_strain_name apply_strain", "Advanced");
+  params.addParamNamesToGroup("effective_inelastic_strain_name substep_strain_tolerance apply_strain", "Advanced");
   return params;
 }
 
@@ -39,7 +40,9 @@ ADRadialReturnStressUpdate::ADRadialReturnStressUpdate(const InputParameters & p
         _base_name + getParam<std::string>("effective_inelastic_strain_name"))),
     _effective_inelastic_strain_old(getMaterialPropertyOld<Real>(
         _base_name + getParam<std::string>("effective_inelastic_strain_name"))),
+    _incremental_effective_inelastic_strain(0.0),
     _max_inelastic_increment(getParam<Real>("max_inelastic_increment")),
+    _substep_tolerance(getParam<Real>("substep_strain_tolerance")),
     _apply_strain(getParam<bool>("apply_strain"))
 {
 }
@@ -54,6 +57,25 @@ void
 ADRadialReturnStressUpdate::propagateQpStatefulPropertiesRadialReturn()
 {
   _effective_inelastic_strain[_qp] = _effective_inelastic_strain_old[_qp];
+}
+
+int
+ADRadialReturnStressUpdate::calculateNumberSubsteps(const ADRankTwoTensor & strain_increment)
+{
+  int substep_number = 1;
+  // compute an effective elastic strain measure
+  ADReal contracted_elastic_strain = strain_increment.doubleContraction(strain_increment);
+  ADReal effective_elastic_strain =
+      contracted_elastic_strain == 0.0 ? 0.0 : std::sqrt(3.0 / 2.0 * contracted_elastic_strain);
+
+  if (!MooseUtils::absoluteFuzzyEqual(contracted_elastic_strain, 0.0))
+  {
+    Real ratio = MetaPhysicL::raw_value(contracted_elastic_strain) / _max_inelastic_increment;
+    if (ratio > _substep_tolerance)
+      substep_number = std::ceil(ratio / _substep_tolerance);
+  }
+
+  return substep_number;
 }
 
 void
@@ -95,11 +117,14 @@ ADRadialReturnStressUpdate::updateState(ADRankTwoTensor & strain_increment,
   else
     inelastic_strain_increment.zero();
 
+  // remove this commment: this happens most of the time
   if (_apply_strain)
   {
     strain_increment -= inelastic_strain_increment;
     _effective_inelastic_strain[_qp] =
         _effective_inelastic_strain_old[_qp] + scalar_effective_inelastic_strain;
+
+    std::cout << "Inside ADRadialReturnStressUpdate::updateState the effective_inelastic_strain value is " << _effective_inelastic_strain[_qp] << "\n";
 
     // Use the old elastic strain here because we require tensors used by this class
     // to be isotropic and this method natively allows for changing in time
@@ -108,6 +133,16 @@ ADRadialReturnStressUpdate::updateState(ADRankTwoTensor & strain_increment,
   }
 
   computeStressFinalize(inelastic_strain_increment);
+}
+
+void
+ADRadialReturnStressUpdate::storeIncrementalMaterialProperties()
+{
+  std::cout << "made it into this incremental material properties set method \n";
+  // Need to make sure to store off just the new increment (which for debugging should be zero)
+  ADReal old_incremental_value = _incremental_effective_inelastic_strain;
+  _incremental_effective_inelastic_strain = (_effective_inelastic_strain[_qp] - _effective_inelastic_strain_old[_qp]) - old_incremental_value;
+  std::cout << "Inside storeIncrementalMaterialProperties and the effective inelastic strain increment value is: " << _incremental_effective_inelastic_strain << "\n";
 }
 
 Real

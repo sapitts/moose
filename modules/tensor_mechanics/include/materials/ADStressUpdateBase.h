@@ -83,6 +83,28 @@ public:
   void resetProperties() final {}
   ///@}
 
+
+  /**
+   * Does the model include the infrastructure for substep decomposition of the
+   * elastic strain initially used to calculate the trial stress guess
+   * Inheriting classes which wish to use the substepping capability should
+   * overwrite this method and set it to return true.
+   */
+  virtual bool substeppingCapabilityEnabled() { return false; }
+
+  /**
+   * Given the elastic strain increment compute the number of substeps required
+   * to bring a substepped trial stress guess distance from the yield surface
+   * into the tolerance specified in the individual child class.
+   */
+  virtual int calculateNumberSubsteps(const ADRankTwoTensor & /*strain_increment*/) {return 1;}
+
+  /**
+   * Properly set up the incremental calculation storage of the stateful material
+   * properties in the inheriting classes
+   */
+  virtual void storeIncrementalMaterialProperties() {};
+
 protected:
   /// Name used as a prefix for all material properties related to the stress update model.
   const std::string _base_name;

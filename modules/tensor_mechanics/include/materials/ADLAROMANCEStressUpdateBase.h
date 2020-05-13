@@ -25,6 +25,14 @@ public:
 
   ADLAROMANCEStressUpdateBase(const InputParameters & parameters);
 
+  virtual bool substeppingCapabilityEnabled() override { return true; }
+
+  /**
+   * When using the substepping approach, save the stateful mobile and immobile
+   * dislocation density properties in an incremental fashion
+   */
+  // virtual void setupSubsteppingMaterialProperties(const unsigned substep_number) override;
+
 protected:
   virtual void initialSetup() override;
 
@@ -299,4 +307,7 @@ protected:
 
   /// Container for derivative of creep rate with respect to strain
   ADReal _derivative;
+
+  /// flag set when substepping algorithm is invoked
+  bool _substepping_enabled;
 };

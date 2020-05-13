@@ -115,7 +115,8 @@ ADLAROMANCEStressUpdateBase::ADLAROMANCEStressUpdateBase(const InputParameters &
     _creep_rate(declareADProperty<Real>(_base_name + "creep_rate")),
     _failed(declareProperty<Real>("ROM_failure")),
 
-    _derivative(0.0)
+    _derivative(0.0),
+    _substepping_enabled(false)
 {
 }
 
@@ -168,19 +169,37 @@ ADLAROMANCEStressUpdateBase::initQpStatefulProperties()
   ADRadialReturnCreepStressUpdateBase::initQpStatefulProperties();
 }
 
+// void
+// ADLAROMANCEStressUpdateBase::setupSubsteppingMaterialProperties(const unsigned substep_number)
+// {
+//   Moose::out << "The substep is " << substep_number << "\n";
+//   _substepping_enabled = true;
+//   Moose::out << "the increment of the mobile dislocations " << _mobile_dislocation_increment << "\n";
+//   Moose::out << "  and the increment of the immobile dislocations " << _immobile_dislocation_increment << "\n";
+//   _mobile_old = MetaPhysicL::raw_value(_mobile_dislocation_increment) + _mobile_dislocations_old[_qp];
+//   _immobile_old = MetaPhysicL::raw_value(_immobile_dislocation_increment) + _immobile_dislocations_old[_qp];
+// }
+
 ADReal
 ADLAROMANCEStressUpdateBase::computeResidual(const ADReal & effective_trial_stress,
                                              const ADReal & scalar)
 {
-  if (_immobile_function)
-    _immobile_old = _immobile_function->value(_t, _q_point[_qp]);
-  else
-    _immobile_old = _immobile_dislocations_old[_qp];
 
-  if (_mobile_function)
-    _mobile_old = _mobile_function->value(_t, _q_point[_qp]);
-  else
-    _mobile_old = _mobile_dislocations_old[_qp];
+  ///will have to find a way to handle this calculation of the rom input in terms of the dislocations
+  /// likely kick this information out into another method
+  /// and maybe have a flag set in the setupSubsteppingMaterialProperties method if that calculation should be used instead
+  if (!_substepping_enabled)
+  {
+    if (_immobile_function)
+      _immobile_old = _immobile_function->value(_t, _q_point[_qp]);
+    else
+      _immobile_old = _immobile_dislocations_old[_qp];
+
+    if (_mobile_function)
+      _mobile_old = _mobile_function->value(_t, _q_point[_qp]);
+    else
+      _mobile_old = _mobile_dislocations_old[_qp];
+  }
 
   const ADReal trial_stress_mpa = (effective_trial_stress - _three_shear_modulus * scalar) * 1.0e-6;
 
