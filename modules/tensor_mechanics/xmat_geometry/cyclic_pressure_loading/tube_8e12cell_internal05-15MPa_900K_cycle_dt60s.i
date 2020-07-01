@@ -86,6 +86,25 @@
   [../]
 []
 
+[Functions]
+  [./cyclic_pressure]
+    type = ParsedFunction
+    value = 'if(t<1800,  5.0e6,
+             if(t<7800, (5.0+0.1*(t-1800)/60.0)*1e6,
+             if(t<9600,  15.0e6,
+             if(t<15600, (15.0-2.5e6*(t-9600)/60.0)*1e6,
+             if(t<17400,  5.0e6,
+             if(t<23400, (5.0+0.1*(t-17400)/60.0)*1e6,
+             if(t<25200,  15.0e6,
+             if(t<31200, (15.0-2.5e6*(t-25200)/60.0)*1e6,
+             if(t<33000,  5.0e6,
+             if(t<39000, (5.0+0.1*(t-33000)/60.0)*1e6,
+             if(t<40800,  15.0e6,
+             if(t<46800, (15.0-2.5e6*(t-40800)/60.0)*1e6, 5.0e6
+             ))))))))))))'
+  [../]
+[]
+
 [BCs]
   [./symmx]
     type = ADDirichletBC
@@ -104,14 +123,14 @@
     variable = disp_x
     component = 0
     boundary = interior
-    constant = 1.5e7
+    function = cyclic_pressure
   [../]
   [./pressure_y]
     type = ADPressure
     variable = disp_y
     component = 1
     boundary = interior
-    constant = 1.5e7
+    function = cyclic_pressure
   [../]
 []
 
@@ -128,33 +147,41 @@
   [./rom_stress_prediction]
     type = SS316HLAROMANCEStressUpdateTest
     temperature = temperature
-    initial_mobile_dislocation_density = 9.0e12
-    initial_immobile_dislocation_density = 8.6e11
+    initial_mobile_dislocation_density = 8.0e12
+    initial_immobile_dislocation_density = 7.2e11
     #outputs = all #'effective_creep_strain mobile_dislocations immobile_dislocations'
+  [../]
+[]
+
+[Preconditioning]
+  [./SMP]
+    type = SMP
+    full = true
   [../]
 []
 
 [Executioner]
   type = Transient
   solve_type = 'NEWTON'
+  petsc_options_iname = '-ksp_type  -pc_type  -pc_factor_mat_solver_package'
+  petsc_options_value = ' preonly    lu        superlu_dist'
   automatic_scaling = true
-  compute_scaling_once = false
+  line_search = 'none'
 
-  l_max_its = 200
-  l_tol = 5e-3
-  nl_max_its = 40
+  l_max_its = 20
+  l_tol = 1e-4
+  nl_max_its = 10
   nl_abs_tol = 1e-12
   nl_rel_tol = 1e-4
-  dt = 10.0
-  end_time = 900 #15 minutes (1/4 hour)
-
-  [./Predictor]
-    type = SimplePredictor
-    scale = 1.0
-  [../]
+  dt = 60.0 #1 minute
+  end_time = 48600 #13.5 hours
 []
 
 [Postprocessors]
+  [./cyclic_pressure]
+    type = FunctionValuePostprocessor
+    function = cyclic_pressure
+  [../]
   [./effective_strain_avg]
     type = ElementAverageValue
     variable = effective_inelastic_strain
@@ -279,4 +306,9 @@
   csv = true
   exodus = true
   perf_graph = true
+  [./ckpt]
+    type = Checkpoint
+    interval = 2
+    num_files = 2
+  [../]
 []

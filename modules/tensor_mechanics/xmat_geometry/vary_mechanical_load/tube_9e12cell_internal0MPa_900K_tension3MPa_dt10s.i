@@ -53,29 +53,29 @@
 
 [AuxKernels]
   [./triaxiality_stress]
-    type =RankTwoScalarAux
+    type = ADRankTwoScalarAux
     variable = triaxiality_stress
     rank_two_tensor = stress
     scalar_type = TriaxialityStress
   [../]
   [./vonmises_stress]
-    type = RankTwoScalarAux
+    type = ADRankTwoScalarAux
     variable = vonmises_stress
     rank_two_tensor = stress
     scalar_type = VonMisesStress
   [../]
   [./effective_inelastic_strain]
-    type = MaterialRealAux
+    type = ADMaterialRealAux
     variable = effective_inelastic_strain
     property = effective_creep_strain
   [../]
   [./mobile_dislocations]
-    type = MaterialRealAux
+    type = ADMaterialRealAux
     variable = mobile_dislocations
     property = mobile_dislocations
   [../]
   [./immobile_dislocations]
-    type = MaterialRealAux
+    type = ADMaterialRealAux
     variable = immobile_dislocations
     property = immobile_dislocations
   [../]
@@ -87,13 +87,6 @@
 []
 
 [BCs]
-  # [./tensile_loading]
-  #   type = ADFunctionDirichletBC
-  #   variable = disp_y
-  #   boundary = top_clamp
-  #   function = '2.8321e-07*t'
-  # [../]
-
   [./symmx]
     type = ADDirichletBC
     variable = disp_x
@@ -106,25 +99,32 @@
     boundary = bottom_clamp
     value = 0
   [../]
-  [./pressure_x]
-    type = ADPressure
-    variable = disp_x
-    component = 0
-    boundary = interior
-    constant = 1.5e7
-  [../]
-  [./pressure_y]
+  [./top_pressure]
     type = ADPressure
     variable = disp_y
     component = 1
-    boundary = interior
-    constant = 1.5e7
+    boundary = top_clamp
+    function = -3.0e6 # positive points towards the surface, negative away
   [../]
+  # [./pressure_x]
+  #   type = ADPressure
+  #   variable = disp_x
+  #   component = 0
+  #   boundary = interior
+  #   constant = 1.5e7
+  # [../]
+  # [./pressure_y]
+  #   type = ADPressure
+  #   variable = disp_y
+  #   component = 1
+  #   boundary = interior
+  #   constant = 1.5e7
+  # [../]
 []
 
 [Materials]
   [./elasticity_tensor]
-    type = ComputeIsotropicElasticityTensor
+    type = ADComputeIsotropicElasticityTensor
     youngs_modulus = 3.30e11
     poissons_ratio = 0.3
   [../]
@@ -135,30 +135,34 @@
   [./rom_stress_prediction]
     type = SS316HLAROMANCEStressUpdateTest
     temperature = temperature
-    initial_mobile_dislocation_density = 6.0e12
-    initial_immobile_dislocation_density = 4.4e11
+    initial_mobile_dislocation_density = 9.0e12
+    initial_immobile_dislocation_density = 8.6e11
     #outputs = all #'effective_creep_strain mobile_dislocations immobile_dislocations'
+  [../]
+[]
+
+[Preconditioning]
+  [./SMP]
+    type = SMP
+    full = true
   [../]
 []
 
 [Executioner]
   type = Transient
   solve_type = 'NEWTON'
+  petsc_options_iname = '-ksp_type  -pc_type  -pc_factor_mat_solver_package'
+  petsc_options_value = ' preonly    lu        superlu_dist'
   automatic_scaling = true
-  compute_scaling_once = false
+  line_search = 'none'
 
-  l_max_its = 200
-  l_tol = 5e-3
-  nl_max_its = 40
-  nl_abs_tol = 1e-12
+  l_max_its = 20
+  l_tol = 1e-4
+  nl_max_its = 10
+  nl_abs_tol = 1e-12 #1e-14
   nl_rel_tol = 1e-4
-  dt = 10.0
-  end_time = 900 #15 minutes (1/4 hour)
-
-  [./Predictor]
-    type = SimplePredictor
-    scale = 1.0
-  [../]
+  dt = 10.0 #1/6 minute
+  end_time = 86400.0 #1 day
 []
 
 [Postprocessors]
@@ -286,4 +290,9 @@
   csv = true
   exodus = true
   perf_graph = true
+  [./ckpt]
+    type = Checkpoint
+    interval = 2
+    num_files = 2
+  [../]
 []

@@ -87,6 +87,13 @@
 []
 
 [BCs]
+  # [./tensile_loading]
+  #   type = ADFunctionDirichletBC
+  #   variable = disp_y
+  #   boundary = top_clamp
+  #   function = '2.8321e-07*t'
+  # [../]
+
   [./symmx]
     type = ADDirichletBC
     variable = disp_x
@@ -134,24 +141,28 @@
   [../]
 []
 
+[Preconditioning]
+  [./SMP]
+    type = SMP
+    full = true
+  [../]
+[]
+
 [Executioner]
   type = Transient
   solve_type = 'NEWTON'
+  petsc_options_iname = '-ksp_type  -pc_type  -pc_factor_mat_solver_package'
+  petsc_options_value = ' preonly    lu        superlu_dist'
   automatic_scaling = true
-  compute_scaling_once = false
+  line_search = 'none'
 
-  l_max_its = 200
-  l_tol = 5e-3
-  nl_max_its = 40
-  nl_abs_tol = 1e-12
+  l_max_its = 20
+  l_tol = 1e-4
+  nl_max_its = 10
+  nl_abs_tol = 1e-12 #had 1e-14
   nl_rel_tol = 1e-4
-  dt = 10.0
-  end_time = 900 #15 minutes (1/4 hour)
-
-  [./Predictor]
-    type = SimplePredictor
-    scale = 1.0
-  [../]
+  dt = 300.0 #5 minutes
+  end_time = 86400.0 #1 day
 []
 
 [Postprocessors]
@@ -279,4 +290,9 @@
   csv = true
   exodus = true
   perf_graph = true
+  [./ckpt]
+    type = Checkpoint
+    interval = 2
+    num_files = 2
+  [../]
 []

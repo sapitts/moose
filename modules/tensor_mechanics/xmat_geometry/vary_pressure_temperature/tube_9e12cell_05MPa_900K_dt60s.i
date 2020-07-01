@@ -53,29 +53,29 @@
 
 [AuxKernels]
   [./triaxiality_stress]
-    type = ADRankTwoScalarAux
+    type =RankTwoScalarAux
     variable = triaxiality_stress
     rank_two_tensor = stress
     scalar_type = TriaxialityStress
   [../]
   [./vonmises_stress]
-    type = ADRankTwoScalarAux
+    type = RankTwoScalarAux
     variable = vonmises_stress
     rank_two_tensor = stress
     scalar_type = VonMisesStress
   [../]
   [./effective_inelastic_strain]
-    type = ADMaterialRealAux
+    type = MaterialRealAux
     variable = effective_inelastic_strain
     property = effective_creep_strain
   [../]
   [./mobile_dislocations]
-    type = ADMaterialRealAux
+    type = MaterialRealAux
     variable = mobile_dislocations
     property = mobile_dislocations
   [../]
   [./immobile_dislocations]
-    type = ADMaterialRealAux
+    type = MaterialRealAux
     variable = immobile_dislocations
     property = immobile_dislocations
   [../]
@@ -104,20 +104,20 @@
     variable = disp_x
     component = 0
     boundary = interior
-    constant = 1.5e7
+    constant = 0.5e7
   [../]
   [./pressure_y]
     type = ADPressure
     variable = disp_y
     component = 1
     boundary = interior
-    constant = 1.5e7
+    constant = 0.5e7
   [../]
 []
 
 [Materials]
   [./elasticity_tensor]
-    type = ADComputeIsotropicElasticityTensor
+    type = ComputeIsotropicElasticityTensor
     youngs_modulus = 3.30e11
     poissons_ratio = 0.3
   [../]
@@ -134,24 +134,28 @@
   [../]
 []
 
+[Preconditioning]
+  [./SMP]
+    type = SMP
+    full = true
+  [../]
+[]
+
 [Executioner]
   type = Transient
   solve_type = 'NEWTON'
+  petsc_options_iname = '-ksp_type  -pc_type  -pc_factor_mat_solver_package'
+  petsc_options_value = ' preonly    lu        superlu_dist'
   automatic_scaling = true
-  compute_scaling_once = false
+  line_search = 'none'
 
-  l_max_its = 200
-  l_tol = 5e-3
+  l_max_its = 20
+  l_tol = 1e-4
   nl_max_its = 40
-  nl_abs_tol = 1e-12
+  nl_abs_tol = 1e-12 #1e-14
   nl_rel_tol = 1e-4
-  dt = 10.0
-  end_time = 900 #15 minutes (1/4 hour)
-
-  [./Predictor]
-    type = SimplePredictor
-    scale = 1.0
-  [../]
+  dt = 60.0 #1 minute
+  end_time = 86400.0 #1 day
 []
 
 [Postprocessors]
@@ -279,4 +283,9 @@
   csv = true
   exodus = true
   perf_graph = true
+  [./ckpt]
+    type = Checkpoint
+    interval = 2
+    num_files = 2
+  [../]
 []
