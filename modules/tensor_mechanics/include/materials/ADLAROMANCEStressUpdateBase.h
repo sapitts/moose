@@ -14,6 +14,7 @@
 enum class ROMInputTransform
 {
   LINEAR,
+  INVERSE,
   LOG,
   EXP
 };

@@ -11,6 +11,7 @@
 
 #include "Function.h"
 #include "MathUtils.h"
+#include "libmesh/utility.h"
 
 InputParameters
 ADLAROMANCEStressUpdateBase::validParams()
@@ -424,6 +425,11 @@ ADLAROMANCEStressUpdateBase::convertInput(const std::vector<ADReal> & input,
       {
         dx = 1.0 / (x + _transform_coefs[i][j]);
         x = std::log(x + _transform_coefs[i][j]);
+      }
+      else if (_transform[i][j] == ROMInputTransform::INVERSE)
+      {
+        dx = -1.0 / Utility::pow<2>(x + _transform_coefs[i][j]);
+        x = 1.0 / (x + _transform_coefs[i][j]);
       }
 
       converted[i][j] = 2.0 * (x - _transformed_limits[i][j][0]) /
