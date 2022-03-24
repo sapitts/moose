@@ -9,6 +9,7 @@
 
 #include "CrystalPlasticityContinuumDislocationDynamicsUpdate.h"
 #include "libmesh/int_range.h"
+#include "MooseRandom.h"
 
 registerMooseObject("TensorMechanicsApp", CrystalPlasticityContinuumDislocationDynamicsUpdate);
 
@@ -90,6 +91,11 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::validParams()
   //     "total_twin_volume_fraction",
   //     "Total twin volume fraction, if twinning is considered in the simulation");
 
+  // params.addParam<UserObjectName>(
+  //     "noise",
+  //     "ConservedNoise userobject that produces the random numbers used in the stochastic cross "
+  //     "slip functionality");
+
   return params;
 }
 
@@ -111,8 +117,9 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::
     _immobile_dislocations_increment(
         declareProperty<std::vector<Real>>(_base_name + "immobile_dislocations_increment")),
     _initial_immobile_dislocation_density(getParam<Real>("initial_immobile_dislocation_density")),
-    _cross_slip_dislocations(
-        declareProperty<std::vector<Real>>(_base_name + "cross_slip_dislocations")),
+    _stochastic_sum_cross_slip_dislocations(_number_slip_systems, 0.0),
+    _cross_slip_dislocations_increment(
+        declareProperty<std::vector<Real>>(_base_name + "cross_slip_dislocations_increment")),
 
     // Mobile dislocation glide velocity parameters
     _burgers_vector(getParam<Real>("burgers_vector")),
@@ -164,8 +171,16 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::
     _mobile_dislocations_before_update(_number_slip_systems, 0.0),
     _immobile_dislocations_before_update(_number_slip_systems, 0.0),
     _slip_resistance_before_update(_number_slip_systems, 0.0)
+
+    // _noise(getUserObject<ConservedNoiseInterface>("noise"))
+
 {
-  setRandomResetFrequency(EXEC_TIMESTEP_END);
+  setRandomResetFrequency(EXEC_LINEAR);
+  // if ((_calculate_cross_slip) && (!parameters.isParamSetByUser("noise")))
+  //   paramError(
+  //       "noise",
+  //       "The name of the user object used to generate the random noise values for the stochastic "
+  //       "cross slip functionality must be supplied if cross slip in selected in this simulation");
 }
 
 void
@@ -177,7 +192,7 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::initQpStatefulProperties()
   _mobile_dislocations_increment[_qp].resize(_number_slip_systems);
   _immobile_dislocations[_qp].resize(_number_slip_systems);
   _immobile_dislocations_increment[_qp].resize(_number_slip_systems);
-  _cross_slip_dislocations[_qp].resize(_number_slip_systems);
+  _cross_slip_dislocations_increment[_qp].resize(_number_slip_systems);
   _glide_velocity[_qp].resize(_number_slip_systems);
 
   // Loop over the slip systems and set the initial values from the user input
@@ -190,7 +205,7 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::initQpStatefulProperties()
     _mobile_dislocations_increment[_qp][i] = 0.0;
     _immobile_dislocations[_qp][i] = initial_immobile_per_system;
     _immobile_dislocations_increment[_qp][i] = 0.0;
-    _cross_slip_dislocations[_qp][i] = 0.0;
+    _cross_slip_dislocations_increment[_qp][i] = 0.0;
 
     _slip_increment[_qp][i] = 0.0;
     _glide_velocity[_qp][i] = 0.0;
@@ -219,6 +234,9 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::setInitialConstitutiveVaria
 
   _slip_resistance[_qp] = _slip_resistance_old[_qp];
   _previous_substep_slip_resistance = _slip_resistance_old[_qp];
+
+  unsigned int random_seed = _t_step;
+  MooseRandom::seed(random_seed);
 }
 
 void
@@ -259,6 +277,7 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::calculateSlipRate()
 
       return false;
     }
+
     // Hold on to this because I"m not sure if I'm goign to need to multiply by the timestep here
     // if (std::abs(_slip_increment[_qp][i]) * _substep_dt > _slip_incr_tol)
     // {
@@ -308,19 +327,32 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::calculateConstitutiveSlipDe
 bool
 CrystalPlasticityContinuumDislocationDynamicsUpdate::areConstitutiveStateVariablesConverged()
 {
-  if (isConstitutiveStateVariableConverged(_mobile_dislocations[_qp],
-                                           _mobile_dislocations_before_update,
-                                           _previous_substep_mobile_dislocations,
-                                           _rel_state_var_tol) &&
+  const bool mobile = isConstitutiveStateVariableConverged(_mobile_dislocations[_qp],
+                                                           _mobile_dislocations_before_update,
+                                                           _previous_substep_mobile_dislocations,
+                                                           _rel_state_var_tol);
+  const bool immobile =
       isConstitutiveStateVariableConverged(_immobile_dislocations[_qp],
                                            _immobile_dislocations_before_update,
                                            _previous_substep_immobile_dislocations,
-                                           _rel_state_var_tol) &&
-      isConstitutiveStateVariableConverged(_slip_resistance[_qp],
-                                           _slip_resistance_before_update,
-                                           _previous_substep_slip_resistance,
-                                           _resistance_tol))
+                                           _rel_state_var_tol);
+  const bool resistance = isConstitutiveStateVariableConverged(_slip_resistance[_qp],
+                                                               _slip_resistance_before_update,
+                                                               _previous_substep_slip_resistance,
+                                                               _resistance_tol);
+
+  if (mobile && immobile && resistance)
     return true;
+
+  if (_print_convergence_message)
+  {
+    if (!mobile)
+      mooseWarning("CrystalPlasticityContinuumDislocationDynamicsUpdate: One or more of the slip system mobile dislocation densities has not converged within the user-specified state variable tolerance");
+    if (!immobile)
+      mooseWarning("CrystalPlasticityContinuumDislocationDynamicsUpdate: The immobile dislocation density on one or more of the slip systems has not converged within the user-specified state variable tolerance");
+    if (!resistance)
+      mooseWarning("CrystalPlasticityContinuumDislocationDynamicsUpdate: One or more slip system resistance values did not converge with the user-specified slip system resistance tolerance");
+  }
   return false;
 }
 
@@ -355,17 +387,22 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::calculateStateVariableEvolu
 void
 CrystalPlasticityContinuumDislocationDynamicsUpdate::calculateStochasticDislocationCrossSlip()
 {
+  for (const auto i : make_range(_number_slip_systems))
+    _stochastic_sum_cross_slip_dislocations[i] = 0.0;
+
   for (const auto i : make_range(_number_cross_slip_directions))
   {
     std::vector<Real> family_xslip_probability(_number_cross_slip_planes);
     Real family_xslip_probability_sum = 0.0;
-    std::vector<std::vector<unsigned int> > family_xslip_interactions(_number_cross_slip_planes, std::vector<unsigned int>(_number_cross_slip_planes, 1000));
+    std::vector<std::vector<unsigned int>> family_xslip_interactions(
+        _number_cross_slip_planes, std::vector<unsigned int>(_number_cross_slip_planes, 1000));
 
     // Determine the probability of cross slip for each slip plane in the family
     for (const auto j : make_range(_number_cross_slip_planes))
     {
       const auto index = _cross_slip_familes[i][j];
-      const Real xslip_force = (_cs_activation_barrier - std::abs(_tau[_qp][index])) * _cs_activation_volume;
+      const Real xslip_force =
+          (_cs_activation_barrier - std::abs(_tau[_qp][index])) * _cs_activation_volume;
       const Real xslip_probabilty = std::exp(-xslip_force / (_boltzmann_constant * _temperature));
 
       family_xslip_probability[j] = xslip_probabilty;
@@ -377,17 +414,19 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::calculateStochasticDislocat
       family_xslip_probability[j] /= family_xslip_probability_sum;
 
     // And build the CDF function for this family
-    for (const auto j : make_range(_number_cross_slip_planes-1))
+    for (const auto j : make_range(_number_cross_slip_planes - 1))
       family_xslip_probability[j + 1] += family_xslip_probability[j];
 
-    if (MooseUtils::relativeFuzzyGreaterThan(family_xslip_probability[_number_cross_slip_planes - 1], 1.0))
-      mooseError("The cumulative distribution function for the stochastic cross slip analysis was incorrectly calculated");
+    if (MooseUtils::relativeFuzzyGreaterThan(
+            family_xslip_probability[_number_cross_slip_planes - 1], 1.0))
+      mooseError("The cumulative distribution function for the stochastic cross slip analysis was "
+                 "incorrectly calculated");
 
     // Monte Carlo Analysis using Moose's RandomInterface, assumes all systems can cross slip
     for (const auto giving_system : make_range(_number_cross_slip_planes))
     {
-      // const Real xslip_dice = getRandomReal();
-      const Real xslip_dice = 0.5;
+      // const auto xslip_dice = _noise.getQpValue(_current_elem->id(), _qp);
+      const auto xslip_dice = getRandomReal();
 
       // Now check the value of the random xslip dice against the bin values to determine into which
       // slip system the dislocations will cross slip
@@ -396,16 +435,14 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::calculateStochasticDislocat
         if (xslip_dice < family_xslip_probability[j])
         {
           const auto recieving_system = j;
-
-          if (giving_system != recieving_system)  // Not self: cross slip occurs
+          if (giving_system != recieving_system) // Not self: cross slip occurs
           {
             // Find the actual index that corresponds to the giving system
             const auto index = _cross_slip_familes[i][giving_system];
             family_xslip_interactions[giving_system][giving_system] = index;
             family_xslip_interactions[recieving_system][giving_system] = index;
-            // std::cout << "The value of the random Real is " << xslip_dice << " on slip system " << index << "\n";
           }
-        break;
+          break;
         }
       }
     }
@@ -421,29 +458,29 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::calculateStochasticDislocat
         {
           const auto index = family_xslip_interactions[a][b];
 
-          if (a != b) // recieving dislocations
-            single_system_sum += _mobile_dislocations[_qp][index];
+          if (a != b) // recieving dislocations, lagged one substep
+            single_system_sum += _previous_substep_mobile_dislocations[index];
           else // a == b, giving dislocations
-            single_system_sum -= _mobile_dislocations[_qp][index];
+            single_system_sum -= _previous_substep_mobile_dislocations[index];
         }
       }
-      // Now that have completed the summing, store in the appropriate position in the material property
+      // Now that have completed the summing, store in the appropriate position in the material
+      // property
       const auto self_index = _cross_slip_familes[i][a];
-      _cross_slip_dislocations[_qp][self_index] = single_system_sum;
+      _stochastic_sum_cross_slip_dislocations[self_index] = single_system_sum;
     }
   }
 }
-
 
 void
 CrystalPlasticityContinuumDislocationDynamicsUpdate::calculateCDDModelDislocationIncrement()
 {
   const Real glide_path_inv = calculateMeanFreeGlidePath();
 
-  std::cout << "Looking at the cross slip for each slip system at qp " << _qp << "\n";
+  // std::cout << "Looking at the cross slip for each slip system at qp " << _qp << "\n";
   for (const auto i : make_range(_number_slip_systems))
   {
-    std::cout << "On slip system: " << i << "\n";
+    // std::cout << "On slip system: " << i << "\n";
     const Real term1 = _alpha_1 * _mobile_dislocations[_qp][i] * glide_path_inv;
 
     const Real term2_mobile_sq = _mobile_dislocations[_qp][i] * _mobile_dislocations[_qp][i];
@@ -453,9 +490,11 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::calculateCDDModelDislocatio
     const Real term4_force = std::sqrt(std::abs(_tau[_qp][i] / _slip_resistance[_qp][i]));
     const Real term4 = _alpha_4 * term4_force * _immobile_dislocations[_qp][i] * glide_path_inv;
 
-    std::cout << "  the cross slip dislocations from the specific method is " << _cross_slip_dislocations[_qp][i] << "\n";
-    const Real term5 = _cross_slip_dislocations[_qp][i] * _alpha_5 * glide_path_inv;
-    std::cout << "  and the term 5 value is " << term5 * std::abs(_glide_velocity[_qp][i]) * _substep_dt << "\n";
+    // std::cout << "  the cross slip dislocations from the specific method is "
+    //           << _stochastic_sum_cross_slip_dislocations[i] << "\n";
+    const Real term5 = _stochastic_sum_cross_slip_dislocations[i] * _alpha_5 * glide_path_inv;
+    // std::cout << "  and the term 5 value is "
+    //           << term5 * std::abs(_glide_velocity[_qp][i]) * _substep_dt << "\n";
 
     const Real term6 = _alpha_6 * _radius_capture * _burgers_vector * _mobile_dislocations[_qp][i] *
                        _immobile_dislocations[_qp][i];
@@ -466,12 +505,19 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::calculateCDDModelDislocatio
     _immobile_dislocations_increment[_qp][i] =
         (term3 - term4 - term6) * std::abs(_glide_velocity[_qp][i]) * _substep_dt;
 
+    // std::cout << "  The mobile dislocation increment is: " << _mobile_dislocations_increment[_qp][i]
+    //           << "\n";
+    // std::cout << "  and the immobile dislocation increment is "
+    //           << _immobile_dislocations_increment[_qp][i] << "\n";
+
     // Update here the cross slip dislocations for consistency with other dislocation measures
     if (_calculate_cross_slip)
     {
-      _cross_slip_dislocations[_qp][i] *=
-          _alpha_5 * glide_path_inv * std::abs(_glide_velocity[_qp][i]) * _substep_dt;
-      std::cout << "  and after mobile, immobile dislocation update the cross slip dislocation density is " << _cross_slip_dislocations[_qp][i] <<"\n\n";
+      _cross_slip_dislocations_increment[_qp][i] =
+          term5 * std::abs(_glide_velocity[_qp][i]) * _substep_dt;
+      // std::cout << "  and after mobile, immobile dislocation update the cross slip dislocation "
+      //              "density is "
+      //           << _cross_slip_dislocations_increment[_qp][i] << "\n\n";
     }
   }
 }

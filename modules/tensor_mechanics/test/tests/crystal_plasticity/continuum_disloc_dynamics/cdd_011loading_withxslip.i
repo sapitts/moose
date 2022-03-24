@@ -6,9 +6,9 @@
   [cube]
     type = GeneratedMeshGenerator
     dim = 3
-    nx = 8
-    ny = 8
-    nz = 8
+    nx = 4
+    ny = 4
+    nz = 4
     elem_type = HEX8
   []
 []
@@ -662,8 +662,8 @@
     type = RankTwoAux
     variable = e_yy
     rank_two_tensor = total_lagrangian_strain
-    index_j = 0
-    index_i = 0
+    index_j = 1
+    index_i = 1
     execute_on = timestep_end
   []
   [vonmises_stress_cauchy]
@@ -716,7 +716,7 @@
   [xslip_disl_0]
     type = MaterialStdVectorAux
     variable = xslip_disl_0
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 0
     execute_on = timestep_end
   []
@@ -751,7 +751,7 @@
   [xslip_disl_1]
     type = MaterialStdVectorAux
     variable = xslip_disl_1
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 1
     execute_on = timestep_end
   []
@@ -786,7 +786,7 @@
   [xslip_disl_2]
     type = MaterialStdVectorAux
     variable = xslip_disl_2
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 2
     execute_on = timestep_end
   []
@@ -821,7 +821,7 @@
   [xslip_disl_3]
     type = MaterialStdVectorAux
     variable = xslip_disl_3
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 3
     execute_on = timestep_end
   []
@@ -856,7 +856,7 @@
   [xslip_disl_4]
     type = MaterialStdVectorAux
     variable = xslip_disl_4
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 4
     execute_on = timestep_end
   []
@@ -891,7 +891,7 @@
   [xslip_disl_5]
     type = MaterialStdVectorAux
     variable = xslip_disl_5
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 5
     execute_on = timestep_end
   []
@@ -926,7 +926,7 @@
   [xslip_disl_6]
     type = MaterialStdVectorAux
     variable = xslip_disl_6
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 6
     execute_on = timestep_end
   []
@@ -961,7 +961,7 @@
   [xslip_disl_7]
     type = MaterialStdVectorAux
     variable = xslip_disl_7
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 7
     execute_on = timestep_end
   []
@@ -996,7 +996,7 @@
   [xslip_disl_8]
     type = MaterialStdVectorAux
     variable = xslip_disl_8
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 8
     execute_on = timestep_end
   []
@@ -1031,7 +1031,7 @@
   [xslip_disl_9]
     type = MaterialStdVectorAux
     variable = xslip_disl_9
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 9
     execute_on = timestep_end
   []
@@ -1066,7 +1066,7 @@
   [xslip_disl_10]
     type = MaterialStdVectorAux
     variable = xslip_disl_10
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 10
     execute_on = timestep_end
   []
@@ -1101,7 +1101,7 @@
   [xslip_disl_11]
     type = MaterialStdVectorAux
     variable = xslip_disl_11
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 11
     execute_on = timestep_end
   []
@@ -1136,7 +1136,7 @@
   [xslip_disl_12]
     type = MaterialStdVectorAux
     variable = xslip_disl_12
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 12
     execute_on = timestep_end
   []
@@ -1171,7 +1171,7 @@
   [xslip_disl_13]
     type = MaterialStdVectorAux
     variable = xslip_disl_13
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 13
     execute_on = timestep_end
   []
@@ -1206,7 +1206,7 @@
   [xslip_disl_14]
     type = MaterialStdVectorAux
     variable = xslip_disl_14
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 14
     execute_on = timestep_end
   []
@@ -1241,7 +1241,7 @@
   [xslip_disl_15]
     type = MaterialStdVectorAux
     variable = xslip_disl_15
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 15
     execute_on = timestep_end
   []
@@ -1276,7 +1276,7 @@
   [xslip_disl_16]
     type = MaterialStdVectorAux
     variable = xslip_disl_16
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 16
     execute_on = timestep_end
   []
@@ -1311,7 +1311,7 @@
   [xslip_disl_17]
     type = MaterialStdVectorAux
     variable = xslip_disl_17
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 17
     execute_on = timestep_end
   []
@@ -1346,7 +1346,7 @@
   [xslip_disl_18]
     type = MaterialStdVectorAux
     variable = xslip_disl_18
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 18
     execute_on = timestep_end
   []
@@ -1381,7 +1381,7 @@
   [xslip_disl_19]
     type = MaterialStdVectorAux
     variable = xslip_disl_19
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 19
     execute_on = timestep_end
   []
@@ -1416,7 +1416,7 @@
   [xslip_disl_20]
     type = MaterialStdVectorAux
     variable = xslip_disl_20
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 20
     execute_on = timestep_end
   []
@@ -1451,7 +1451,7 @@
   [xslip_disl_21]
     type = MaterialStdVectorAux
     variable = xslip_disl_21
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 21
     execute_on = timestep_end
   []
@@ -1486,7 +1486,7 @@
   [xslip_disl_22]
     type = MaterialStdVectorAux
     variable = xslip_disl_22
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 22
     execute_on = timestep_end
   []
@@ -1521,7 +1521,7 @@
   [xslip_disl_23]
     type = MaterialStdVectorAux
     variable = xslip_disl_23
-    property = cross_slip_dislocations
+    property = cross_slip_dislocations_increment
     index = 23
     execute_on = timestep_end
   []
@@ -1583,6 +1583,7 @@
     type = ComputeMultipleCrystalPlasticityStress
     crystal_plasticity_models = 'trial_xtalpl'
     tan_mod_type = exact
+    maximum_substep_iteration = 1
     print_state_variable_convergence_error_messages = true
   []
   [trial_xtalpl]
@@ -1594,6 +1595,7 @@
     temperature = 323.0
     initial_immobile_dislocation_density = 3.5e7 #Lambrecht(2008) pure Fe
     initial_mobile_dislocation_density = 3.5e7 #Lambrecht(2008) pure Fe
+    alpha_5 = 0.015
 #    initial_mean_irradiation_cluster_defect_size = 0.0 #34.0e-6
 #    inital_irradiation_cluster_defect_density = 0.0 #5.0e13
     #initial_irradiation_SIA_loop_density = 0.0 #8.15e10 #Bring down to same order of magnitude as Pritam seemed to use
@@ -2165,7 +2167,7 @@
 
 [Executioner]
   type = Transient
-  solve_type = PJFNK
+  solve_type = NEWTON
 
   # l_tol = 1e-3
   petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -ksp_type -ksp_gmres_restart'
@@ -2176,8 +2178,8 @@
   dtmax = 1.0
   dtmin = 1.0e-6
 
-  dt = 1.0e-2
-  end_time = 50
+  dt = 0.25
+  end_time = 100  #2.5
   # num_steps = 5
   # end_time = 500.0
 []

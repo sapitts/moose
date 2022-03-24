@@ -10,6 +10,7 @@
 #pragma once
 
 #include "CrystalPlasticityStressUpdateBase.h"
+// #include "ConservedNoiseBase.h"
 
 class CrystalPlasticityContinuumDislocationDynamicsUpdate;
 
@@ -132,8 +133,10 @@ protected:
   const Real _initial_immobile_dislocation_density;
   ///@}
 
-  /// Population of dislocations that cross slip
-  MaterialProperty<std::vector<Real>> & _cross_slip_dislocations;
+  ///@{ Population of dislocations that cross slip
+  std::vector<Real> _stochastic_sum_cross_slip_dislocations;
+  MaterialProperty<std::vector<Real>> & _cross_slip_dislocations_increment;
+  ///@}
 
   // MaterialProperty<Real> & _geometrical_necessary_dislocations;
   // MaterialProperty<RankTwoTensor> & _slip_increment_sum;
@@ -198,9 +201,13 @@ protected:
   std::vector<Real> _previous_substep_slip_resistance;
   ///@}
 
-  ///@{ Caching current slip resistance, dislocation density values before final update
+  ///@{Caching current slip resistance, dislocation density values before final update
   std::vector<Real> _mobile_dislocations_before_update;
   std::vector<Real> _immobile_dislocations_before_update;
   std::vector<Real> _slip_resistance_before_update;
   ///@}
+
+// private:
+  ///Used to generate timestep-consistent random numbers for stochastic cross slip
+  // const ConservedNoiseInterface & _noise;
 };

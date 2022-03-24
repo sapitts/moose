@@ -338,12 +338,12 @@ CrystalPlasticityStressUpdateBase::sortCrossSlipFamilies()
 
   if (_print_convergence_message)
   {
-    mooseWarning("Checking the slip system ordering now:");
+    mooseInfo("Checking the slip system ordering now:");
     for (unsigned int i = 0; i < _number_cross_slip_directions; ++i)
     {
-      Moose::out << "In cross slip family " << i << std::endl;
+      mooseInfo("In cross slip family ", i);
       for (unsigned int j = 0; j < _number_cross_slip_planes; ++j)
-        Moose::out << " is the slip direction number " << _cross_slip_familes[i][j] << std::endl;
+        mooseInfo("The slip directon number includes ", _cross_slip_familes[i][j]);
     }
   }
 }
