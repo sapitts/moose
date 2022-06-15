@@ -7,11 +7,11 @@
     lower_bound = -0.1
     upper_bound = 0.1
   []
-  # [left_circle_y]
-  #   type = Uniform
-  #   lower_bound = -0.1
-  #   upper_bound = 0.1
-  # []
+  [left_circle_y]
+    type = Uniform
+    lower_bound = -0.1
+    upper_bound = 0.1
+  []
   # [right_circle_r]
   #   type = Uniform
   #   lower_bound = 0.725
@@ -31,7 +31,7 @@
 
 [GlobalParams]
   sampler = quad
-  distributions = 'right_circle_y' # left_circle_y' # right_circle_r left_circle_r fillet_radius'
+  distributions = 'right_circle_y left_circle_y' # right_circle_r left_circle_r fillet_radius'
 []
 
 [Samplers]
@@ -53,9 +53,9 @@
 
 [Controls]
   [param]
-    type = MultiAppCommandLineControl
+    type = MultiAppSamplerControl
     multi_app = sub
-    param_names = 'Mesh/gmsh/right_circle_y[0]' #' Mesh/gmsh/left_circle_y[1]' #Mesh/gmsh/right_circle_r '
+    param_names = 'Mesh/gmsh/right_circle_y[0] Mesh/gmsh/left_circle_y[1]' #Mesh/gmsh/right_circle_r '
                   #'Mesh/gmsh/left_circle_r Mesh/gmsh/fillet_radius'
   []
 []
@@ -73,15 +73,17 @@
 [Reporters]
   [storage]
     type = StochasticReporter
+    # outputs = none
   []
 []
 
 [Trainers]
   [poly_chaos_stress_xx_center]
     type = PolynomialChaosTrainer
+    execute_on = timestep_end
     order = 4
+    distributions ='right_circle_y left_circle_y' # right_circle_r left_circle_r fillet_radius'
     response = storage/data:stress_xx_center:value
-    # response_type = vector_real
     converged_reporter = storage/data:converged
     skip_unconverged_samples = true
   []
@@ -89,7 +91,7 @@
     type = PolynomialChaosTrainer
     order = 4
     response = storage/data:strain_xx_center:value
-    # response_type = vector_real
+    distributions ='right_circle_y left_circle_y' # right_circle_r left_circle_r fillet_radius'
     converged_reporter = storage/data:converged
     skip_unconverged_samples = true
   []
@@ -97,7 +99,7 @@
     type = PolynomialChaosTrainer
     order = 4
     response = storage/data:stress_xx_top:value
-    # response_type = vector_real
+    distributions ='right_circle_y left_circle_y' # right_circle_r left_circle_r fillet_radius'
     converged_reporter = storage/data:converged
     skip_unconverged_samples = true
   []
@@ -105,7 +107,7 @@
     type = PolynomialChaosTrainer
     order = 4
     response = storage/data:strain_xx_top:value
-    # response_type = vector_real
+    distributions ='right_circle_y left_circle_y' # right_circle_r left_circle_r fillet_radius'
     converged_reporter = storage/data:converged
     skip_unconverged_samples = true
   []
@@ -113,7 +115,7 @@
     type = PolynomialChaosTrainer
     order = 4
     response = storage/data:stress_xx_bot:value
-    # response_type = vector_real
+    distributions ='right_circle_y left_circle_y' # right_circle_r left_circle_r fillet_radius'
     converged_reporter = storage/data:converged
     skip_unconverged_samples = true
   []
@@ -121,7 +123,7 @@
     type = PolynomialChaosTrainer
     order = 4
     response = storage/data:strain_xx_bot:value
-    # response_type = vector_real
+    distributions ='right_circle_y left_circle_y' # right_circle_r left_circle_r fillet_radius'
     converged_reporter = storage/data:converged
     skip_unconverged_samples = true
   []
@@ -133,5 +135,6 @@
     type = SurrogateTrainerOutput
     trainers = 'poly_chaos_stress_xx_center  poly_chaos_strain_xx_center poly_chaos_stress_xx_top '
                'poly_chaos_strain_xx_top poly_chaos_stress_xx_bot poly_chaos_strain_xx_bot'
+    execute_on = FINAL  # I'm not sure about this particular use, for stress dependent case
   []
 []
