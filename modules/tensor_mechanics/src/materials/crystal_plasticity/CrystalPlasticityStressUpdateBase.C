@@ -15,7 +15,7 @@
 #include "MooseException.h"
 
 InputParameters
-CrystalPlasticityStressUpdateBase::validParams()
+CrystalPlasticityStressUpdateBase::validParams() 
 {
   InputParameters params = Material::validParams();
   params.addParam<std::string>(
@@ -305,15 +305,10 @@ CrystalPlasticityStressUpdateBase::sortCrossSlipFamilies()
     for (unsigned int j = 0; j < family_counter; ++j)
     {
       // check to see if the slip system direction i matches any of the existing slip directions
-      // First calculate the dot product
-      Real dot_product = 0.0;
-      for (const auto k : make_range(Moose::dim))
-      {
-        unsigned int check_family_index = _cross_slip_familes[j][0];
-        dot_product += std::abs(_slip_direction[check_family_index](k) - _slip_direction[i](k));
-      }
-      // Then check if the dot product is one, if yes, add to family and break
-      if (MooseUtils::absoluteFuzzyEqual(dot_product, 0.0))
+      unsigned int check_family_index = _cross_slip_familes[j][0];
+
+      // Check if the slip directions are parallel (and thus i belongs to an existingly cateloged family)
+      if (MooseUtils::absoluteFuzzyEqual((_slip_direction[check_family_index] - _slip_direction[i]).norm_sq(), 0.0))
       {
         _cross_slip_familes[j].push_back(i);
         if (_cross_slip_familes[j].size() > _number_cross_slip_planes)
@@ -324,9 +319,9 @@ CrystalPlasticityStressUpdateBase::sortCrossSlipFamilies()
                // direction
       }
       // The slip system in question does not belong to an existing family
-      else if (j == (family_counter - 1) && !MooseUtils::absoluteFuzzyEqual(dot_product, 0.0))
+      else if (j == (family_counter - 1))
       {
-        if (family_counter > _number_cross_slip_directions)
+        if (family_counter > _number_cross_slip_directions) //  && !MooseUtils::absoluteFuzzyEqual(dot_product, 0.0))
           mooseError("Exceeds the number of cross slip directions specified for this material");
 
         _cross_slip_familes[family_counter][0] = i;
@@ -338,12 +333,12 @@ CrystalPlasticityStressUpdateBase::sortCrossSlipFamilies()
 
   if (_print_convergence_message)
   {
-    mooseInfo("Checking the slip system ordering now:");
+    mooseWarning("Checking the slip system ordering now:");
     for (unsigned int i = 0; i < _number_cross_slip_directions; ++i)
     {
-      mooseInfo("In cross slip family ", i);
+      mooseWarning("In cross slip family ", i);
       for (unsigned int j = 0; j < _number_cross_slip_planes; ++j)
-        mooseInfo("The slip directon number includes ", _cross_slip_familes[i][j]);
+        mooseWarning("The slip directon number includes ", _cross_slip_familes[i][j]);
     }
   }
 }
