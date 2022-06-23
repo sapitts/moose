@@ -225,7 +225,7 @@ protected:
   std::vector<Real> _slip_resistance_before_update;
   ///@}
 
-// private:
+  // private:
   ///Used to generate timestep-consistent random numbers for stochastic cross slip
   // const ConservedNoiseInterface & _noise;
 };
