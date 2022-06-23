@@ -6,14 +6,17 @@
   [cube]
     type = GeneratedMeshGenerator
     dim = 3
-    nx = 4
-    ny = 4
-    nz = 4
+    #    nx = 4
+    #    ny = 4
+    #    nz = 4
     elem_type = HEX8
   []
 []
 
 [AuxVariables]
+  [temperature]
+    initial_condition = 323.0
+  []
   [stress_zz]
     order = CONSTANT
     family = MONOMIAL
@@ -566,6 +569,7 @@
 
 [Modules/TensorMechanics/Master/all]
   strain = FINITE
+  incremental = true
   add_variables = true
 []
 
@@ -1572,18 +1576,18 @@
   [elasticity_tensor]
     type = ComputeElasticityTensorConstantRotationCP
     C_ijkl = '242.0e3 150.0e3 150.0e3 242.0e3 150.0e3 242.0e3 112.0e3 112.0e3 112.0e3'
-#    C_ijkl = '274.7e3 117.7e3 117.7e3 274.7e3 117.7e3 274.7e3 78.49e3 78.49e3 78.49e3' #Values for 323K
-#    C_ijkl = '279.06e3 119.6e3 119.6e3 279.06e3 119.6e3 279.06e3 79.731e3 79.731e3 79.731e3'  #Values for 273K
+    #    C_ijkl = '274.7e3 117.7e3 117.7e3 274.7e3 117.7e3 274.7e3 78.49e3 78.49e3 78.49e3' #Values for 323K
+    #    C_ijkl = '279.06e3 119.6e3 119.6e3 279.06e3 119.6e3 279.06e3 79.731e3 79.731e3 79.731e3'  #Values for 273K
     fill_method = symmetric9
-    euler_angle_1 = 120.0
-    euler_angle_2 = 125.264
-    euler_angle_3 =  45.0
+    euler_angle_1 = 35.0
+    euler_angle_2 = 45.0
+    euler_angle_3 = 0.0
   []
   [stress]
     type = ComputeMultipleCrystalPlasticityStress
     crystal_plasticity_models = 'trial_xtalpl'
     tan_mod_type = exact
-    maximum_substep_iteration = 1
+    maximum_substep_iteration = 10
     print_state_variable_convergence_error_messages = true
   []
   [trial_xtalpl]
@@ -1592,14 +1596,16 @@
     slip_sys_file_name = input_slip_sys_bcc24.txt
     number_cross_slip_directions = 4
     number_cross_slip_planes = 6
-    temperature = 323.0
+    temperature = temperature
     initial_immobile_dislocation_density = 3.5e7 #Lambrecht(2008) pure Fe
     initial_mobile_dislocation_density = 3.5e7 #Lambrecht(2008) pure Fe
     alpha_5 = 0.015
-#    initial_mean_irradiation_cluster_defect_size = 0.0 #34.0e-6
-#    inital_irradiation_cluster_defect_density = 0.0 #5.0e13
+    #    initial_mean_irradiation_cluster_defect_size = 0.0 #34.0e-6
+    #    inital_irradiation_cluster_defect_density = 0.0 #5.0e13
     #initial_irradiation_SIA_loop_density = 0.0 #8.15e10 #Bring down to same order of magnitude as Pritam seemed to use
     Peierls_stress = 11.0 #Alpha-iron is 11MPa
+    Baily_Hirsch_barrier_coefficient = 0.0
+    critical_peierls_stress_temperature = 800.0
     shear_modulus = 80.0e3
     # apply_anisotropic_strength = true
     stol = 1.0e-3
@@ -2179,7 +2185,7 @@
   dtmin = 1.0e-6
 
   dt = 0.25
-  end_time = 100  #2.5
+  end_time = 100 #2.5
   # num_steps = 5
   # end_time = 500.0
 []

@@ -25,6 +25,7 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::validParams()
   params.addParam<Real>("initial_immobile_dislocation_density",
                         1.0e6,
                         "Initial density of immobile dislocation densities, in 1/mm^2");
+  params.addCoupledVar("temperature", "The name of the coupled temperature variable, in K");
 
   params.addParam<Real>("burgers_vector", 2.48e-7, "The Burger's vector for the material, in mm");
   params.addParam<Real>("gamma_o", 4.0e-2, "reference strain rate on the slip system, in mm/s");
@@ -85,16 +86,27 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::validParams()
                         "The factor by which to multiply the burger's vector to determine the "
                         "volume required for a dislocation to cross slip");
   params.addParam<Real>("Boltzman_constant", 1.38065e-20, "Boltzman constant, in MPa-mm^3/K");
-  params.addParam<Real>("temperature", 323.0, "The coupled temperature, in K");
+
+  params.addParam<Real>(
+      "critical_peierls_stress_temperature",
+      800.0,
+      "The temperature, in K, at which the thermal contributions to the Peierl's flow stress are "
+      "no longer active; temperatures below this user-specified value are used to calculate the "
+      "Peierl's thermal contributions to the dislocation slip resistance");
+  params.addParam<Real>("peierls_potential_regimeI",
+                        2035.0,
+                        "Representation of the Peierls potential for the Elastic Interaction "
+                        "model, in MPa. This value is used in the mid-temperature range Regime I "
+                        "calculation of the thermal Peierls stress");
+  params.addParam<Real>("peierls_potential_regimeII",
+                        1038.0,
+                        "Antiparabolic representation of the Peierls potentail, in MPa, for the "
+                        "lower temperature Regime II thermal Peierls stress calcualtion. The "
+                        "Regime II expression is based on the Line Theory model.");
 
   // params.addParam<MaterialPropertyName>(
   //     "total_twin_volume_fraction",
   //     "Total twin volume fraction, if twinning is considered in the simulation");
-
-  // params.addParam<UserObjectName>(
-  //     "noise",
-  //     "ConservedNoise userobject that produces the random numbers used in the stochastic cross "
-  //     "slip functionality");
 
   return params;
 }
@@ -120,6 +132,7 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::
     _stochastic_sum_cross_slip_dislocations(_number_slip_systems, 0.0),
     _cross_slip_dislocations_increment(
         declareProperty<std::vector<Real>>(_base_name + "cross_slip_dislocations_increment")),
+    _temperature(coupledValue("temperature")),
 
     // Mobile dislocation glide velocity parameters
     _burgers_vector(getParam<Real>("burgers_vector")),
@@ -156,7 +169,10 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::
     _cs_activation_volume(getParam<Real>("cross_slip_activation_volume_factor") *
                           Utility::pow<3>(_burgers_vector)),
     _boltzmann_constant(getParam<Real>("Boltzman_constant")),
-    _temperature(getParam<Real>("temperature")),
+
+    _critical_peierls_temperature(getParam<Real>("critical_peierls_stress_temperature")),
+    _thermal_peierls_r1(getParam<Real>("peierls_potential_regimeI")),
+    _thermal_peierls_r2(getParam<Real>("peierls_potential_regimeII")),
 
     // // Twinning contributions, if used
     // _include_twinning_in_Lp(parameters.isParamValid("total_twin_volume_fraction")),
@@ -172,15 +188,16 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::
     _immobile_dislocations_before_update(_number_slip_systems, 0.0),
     _slip_resistance_before_update(_number_slip_systems, 0.0)
 
-    // _noise(getUserObject<ConservedNoiseInterface>("noise"))
+// _noise(getUserObject<ConservedNoiseInterface>("noise"))
 
 {
   setRandomResetFrequency(EXEC_LINEAR);
   // if ((_calculate_cross_slip) && (!parameters.isParamSetByUser("noise")))
   //   paramError(
   //       "noise",
-  //       "The name of the user object used to generate the random noise values for the stochastic "
-  //       "cross slip functionality must be supplied if cross slip in selected in this simulation");
+  //       "The name of the user object used to generate the random noise values for the stochastic
+  //       " "cross slip functionality must be supplied if cross slip in selected in this
+  //       simulation");
 }
 
 void
@@ -347,11 +364,17 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::areConstitutiveStateVariabl
   if (_print_convergence_message)
   {
     if (!mobile)
-      mooseWarning("CrystalPlasticityContinuumDislocationDynamicsUpdate: One or more of the slip system mobile dislocation densities has not converged within the user-specified state variable tolerance");
+      mooseWarning("CrystalPlasticityContinuumDislocationDynamicsUpdate: One or more of the slip "
+                   "system mobile dislocation densities has not converged within the "
+                   "user-specified state variable tolerance");
     if (!immobile)
-      mooseWarning("CrystalPlasticityContinuumDislocationDynamicsUpdate: The immobile dislocation density on one or more of the slip systems has not converged within the user-specified state variable tolerance");
+      mooseWarning("CrystalPlasticityContinuumDislocationDynamicsUpdate: The immobile dislocation "
+                   "density on one or more of the slip systems has not converged within the "
+                   "user-specified state variable tolerance");
     if (!resistance)
-      mooseWarning("CrystalPlasticityContinuumDislocationDynamicsUpdate: One or more slip system resistance values did not converge with the user-specified slip system resistance tolerance");
+      mooseWarning(
+          "CrystalPlasticityContinuumDislocationDynamicsUpdate: One or more slip system resistance "
+          "values did not converge with the user-specified slip system resistance tolerance");
   }
   return false;
 }
@@ -403,7 +426,8 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::calculateStochasticDislocat
       const auto index = _cross_slip_familes[i][j];
       const Real xslip_force =
           (_cs_activation_barrier - std::abs(_tau[_qp][index])) * _cs_activation_volume;
-      const Real xslip_probabilty = std::exp(-xslip_force / (_boltzmann_constant * _temperature));
+      const Real xslip_probabilty =
+          std::exp(-xslip_force / (_boltzmann_constant * _temperature[_qp]));
 
       family_xslip_probability[j] = xslip_probabilty;
       family_xslip_probability_sum += xslip_probabilty;
@@ -505,7 +529,8 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::calculateCDDModelDislocatio
     _immobile_dislocations_increment[_qp][i] =
         (term3 - term4 - term6) * std::abs(_glide_velocity[_qp][i]) * _substep_dt;
 
-    // std::cout << "  The mobile dislocation increment is: " << _mobile_dislocations_increment[_qp][i]
+    // std::cout << "  The mobile dislocation increment is: " <<
+    // _mobile_dislocations_increment[_qp][i]
     //           << "\n";
     // std::cout << "  and the immobile dislocation increment is "
     //           << _immobile_dislocations_increment[_qp][i] << "\n";
@@ -576,8 +601,12 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::calculateSlipResistance()
   std::vector<Real> forest_strength(_number_slip_systems, 0.0);
   calculateDislocationForestHardening(forest_strength);
 
+  std::vector<Real> thermal_peierls_stress(_number_slip_systems, 0.0);
+  calculateThermalPeierlsFlowStress(thermal_peierls_stress);
+
   for (const auto i : make_range(_number_slip_systems))
-    _slip_resistance[_qp][i] = forest_strength[i] + _static_resistance_contribution[i];
+    _slip_resistance[_qp][i] =
+        forest_strength[i] + thermal_peierls_stress[i] + _static_resistance_contribution[i];
 
   /**Hold on to the square root dependence, just in case
    * const Real sq_resistance = Utility::pow<2>(forest_strength[i])
@@ -605,5 +634,32 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::calculateDislocationForestH
                (_mobile_dislocations[_qp][j] + _immobile_dislocations[_qp][j]);
     }
     forest_strength[i] = barrier_coeffient * std::sqrt(sum);
+  }
+}
+
+void
+CrystalPlasticityContinuumDislocationDynamicsUpdate::calculateThermalPeierlsFlowStress(
+    std::vector<Real> & thermal_peierls_stress)
+{
+  // Check the temperature to determine if athermal contributions are active
+  if (_temperature[_qp] > _critical_peierls_temperature)
+  {
+    std::fill(thermal_peierls_stress.begin(), thermal_peierls_stress.end(), 0.0);
+    return;
+  }
+
+  for (const auto i : make_range(_number_slip_systems))
+  {
+    const Real reg1_sq = 1.0 - _temperature[_qp] / _critical_peierls_temperature;
+    const Real reg1 = _thermal_peierls_r1 * Utility::pow<2>(reg1_sq);
+
+    const Real reg2_sqrt = std::sqrt(_temperature[_qp] / _critical_peierls_temperature);
+    const Real reg2 = _thermal_peierls_r2 * (1.0 - reg2_sqrt);
+
+    // Compare and save the minimum value
+    if (reg1 < reg2)
+      thermal_peierls_stress[i] = reg1;
+    else
+      thermal_peierls_stress[i] = reg2;
   }
 }

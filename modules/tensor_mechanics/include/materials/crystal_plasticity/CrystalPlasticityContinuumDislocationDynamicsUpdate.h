@@ -10,7 +10,6 @@
 #pragma once
 
 #include "CrystalPlasticityStressUpdateBase.h"
-// #include "ConservedNoiseBase.h"
 
 class CrystalPlasticityContinuumDislocationDynamicsUpdate;
 
@@ -99,7 +98,7 @@ protected:
   /**
    * Calculates the initial slip system resistance based on input parameters.
    * Includes the lone call to constant resistance contributor mechanisms and
-   * sets the value for the static_resistance_contribution vector.
+   * sets the value for the static (athermal) resistance contribution vector.
    */
   virtual void initSlipSystemResistance();
 
@@ -111,6 +110,17 @@ protected:
    * Ohashi PMA 1994.
    */
   void calculateDislocationForestHardening(std::vector<Real> & forest_strength);
+
+  /**
+   * Calculates the temperature dependent Peierls potential flow stress for
+   * BCC metals below the material specific critical temperature, in a two
+   * regime approach, following Lim et al. JMPS (2015). Regime I (middle
+   * temperature regime) is based on the dislocation interaction model
+   * for fully-formed dislocation kink-pairs. Regime II (low temperature
+   * regime) is considers the case of not-fully formed kinks and is based
+   * on the dislocation line tension model.
+   */
+  void calculateThermalPeierlsFlowStress(std::vector<Real> & thermal_peierls_stress);
 
   /**
    * Determines if the dislocation densities have converged by comparing the
@@ -142,6 +152,9 @@ protected:
   // MaterialProperty<RankTwoTensor> & _slip_increment_sum;
   // MaterialProperty<RankTwoTensor> & _nyes_tensor;
   // const MaterialProperty<RankTwoTensor> & _nyes_tensor_old;
+
+  /// Coupled temperature variable, used for cross slip and Peierls stress
+  const VariableValue & _temperature;
 
   ///@{Constants used in Orowans relation to calculate the plastic slip increment
   const Real _burgers_vector;
@@ -183,7 +196,12 @@ protected:
   const Real _cs_activation_barrier;
   const Real _cs_activation_volume;
   const Real _boltzmann_constant;
-  const Real _temperature;
+  ///@}
+
+  ///@{Constants used to calcuate the thermal contributions of the Peierl's stress
+  const Real _critical_peierls_temperature;
+  const Real _thermal_peierls_r1;
+  const Real _thermal_peierls_r2;
   ///@}
 
   // /// Flag to include calculations of geometrically necessary dislocations
