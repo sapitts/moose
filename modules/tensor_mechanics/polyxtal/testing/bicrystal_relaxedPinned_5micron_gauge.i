@@ -11,539 +11,539 @@
     initial_condition = 323.0
   []
   [pk2_zz]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [fp_zz]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [e_zz]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [pk2_xx]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [fp_xx]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [e_xx]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [pk2_yy]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [fp_yy]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [e_yy]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [vonmises_stress_cauchy]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [eff_strain_green]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [vonmises_stress_pk2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [eff_strain_lag]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   #[rot_out_001]
-  #  order = CONSTANT
+  #  order = FIRST
   #  family = MONOMIAL
   #[]
   [gss_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_12]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_12]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_12]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_12]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_12]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_13]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_13]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_13]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_13]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_13]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_14]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_14]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_14]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_14]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_14]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_15]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_15]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_15]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_15]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_15]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_16]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_16]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_16]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_16]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_16]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_17]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_17]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_17]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_17]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_17]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_18]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_18]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_18]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_18]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_18]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_19]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_19]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_19]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_19]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_19]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_20]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_20]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_20]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_20]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_20]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_21]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_21]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_21]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_21]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_21]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_22]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_22]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_22]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_22]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_22]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_23]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [mobile_disl_23]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [xslip_disl_23]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [immobile_disl_23]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_23]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
 []
@@ -1564,8 +1564,8 @@
     number_cross_slip_directions = 4
     number_cross_slip_planes = 6
     temperature = temperature
-    initial_immobile_dislocation_density = 1.0e7 #Srivastava et al (2013) specified mobile 4.5e8 was roughly David's measurement
-    initial_mobile_dislocation_density = 1.0e7 # Srivastava et al (2013) 4.5e8 was roughly David's measurement
+    initial_immobile_dislocation_density = 4.5e8 # roughly David's measurement # 1.0e7 was from Srivastava et al (2013) specified mobile
+    initial_mobile_dislocation_density = 4.5e8 # roughly David's measurement # 1.0e7 from Srivastava et al (2013), assumed equal to mobile
     alpha_5 = 0.015 #avg from Pitts et al (2022) JEMT
     burgers_vector = 2.74e-07 # Lim et al (2015) JMPS
     Peierls_stress = 12.0 #Lim et al (2015) JMPS, High temperature value
@@ -1901,8 +1901,8 @@
   petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -ksp_type -ksp_gmres_restart'
   petsc_options_value = ' asm      2              lu            gmres     200'
   nl_abs_tol = 1e-10
-  nl_rel_tol = 1e-10
-  nl_abs_step_tol = 1e-10
+  nl_rel_tol = 1e-6 # was 1e-10 in initial testing
+  nl_abs_step_tol = 0 #1e-10
 
   dt = 0.5
   dtmin = 1.0e-3
