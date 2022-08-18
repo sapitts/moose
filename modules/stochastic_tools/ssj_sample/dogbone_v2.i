@@ -204,7 +204,7 @@ gauge_height = 5.7
     type = CartesianMeshGenerator
     dim = 2
     dx = ${tab_width}
-    ix = '38'
+    ix = '42'
     dy = '${fparse tab_height - gauge_width / 2.0}'
     iy = '38'
   []
@@ -244,7 +244,7 @@ gauge_height = 5.7
     type = CartesianMeshGenerator
     dim = 2
     dx = ${tab_width}
-    ix = '38'
+    ix = '42'
     dy = '${fparse tab_height - gauge_width / 2.0}'
     iy = '38'
   []
@@ -297,7 +297,6 @@ gauge_height = 5.7
     input = rename_sample_block
     primary_block = 0
     paired_block = 12
-    replace = true
     new_boundary = 'upper_left_shoulder'
   []
   [upright_shoulder_sideset]
@@ -305,7 +304,6 @@ gauge_height = 5.7
     input = upleft_shoulder_sideset
     primary_block = 0
     paired_block = 11
-    replace = true
     new_boundary = 'upper_right_shoulder'
   []
   [lower_left_shoulder_sideset]
@@ -313,7 +311,6 @@ gauge_height = 5.7
     input = upright_shoulder_sideset
     primary_block = 0
     paired_block = 23
-    replace = true
     new_boundary = 'lower_left_shoulder'
   []
   [lower_right_shoulder_sideset]
@@ -321,7 +318,6 @@ gauge_height = 5.7
     input = lower_left_shoulder_sideset
     primary_block = 0
     paired_block = 24
-    replace = true
     new_boundary = 'lower_right_shoulder'
   []
   [delete_shoulder_cutouts]
