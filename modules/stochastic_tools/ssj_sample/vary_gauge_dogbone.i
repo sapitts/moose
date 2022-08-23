@@ -33,7 +33,7 @@ lower_right_tab_height = '${fparse base_tab_height - lower_right_radius}'
     rings = '1 10'
     has_outer_square = true
     pitch = '${fparse 2.0 * upper_left_tab_width}'
-    preserve_volumes = true
+    preserve_volumes = false
     portion = top_right
   []
   [move_upleft_shoulder]
@@ -86,6 +86,7 @@ lower_right_tab_height = '${fparse base_tab_height - lower_right_radius}'
     type = StitchedMeshGenerator
     inputs = 'rename_cutout_upper_left rename_cutout_upper_right'
     stitch_boundaries_pairs = 'cl_up_shoulder_left cl_up_shoulder_right'
+    algorithm = EXHAUSTIVE
   []
   [upper_shoulder_interface]
     type = SideSetsAroundSubdomainGenerator
@@ -125,98 +126,99 @@ lower_right_tab_height = '${fparse base_tab_height - lower_right_radius}'
     type = StitchedMeshGenerator
     inputs = 'upper_shoulder_interface rename_top_gauge'
     stitch_boundaries_pairs = 'upper_shoulder_interface top_gauge_interface'
+    algorithm = BINARY #or EXHAUSTIVE
   []
-  [rename_bottom_gauge]
-    type = SideSetsAroundSubdomainGenerator
-    input = 'stitch_upper_gauge'
-    normal = '0 -1 0'
-    normal_tol = 1e-8 #seems to work, might be able to pull down more
-    block = 100
-    new_boundary = 'bottom_gauge_interface'
-  []
+  # [rename_bottom_gauge]
+  #   type = SideSetsAroundSubdomainGenerator
+  #   input = 'stitch_upper_gauge'
+  #   normal = '0 -1 0'
+  #   normal_tol = 1e-8 #seems to work, might be able to pull down more
+  #   block = 100
+  #   new_boundary = 'bottom_gauge_interface'
+  # []
 
-  [shoulder_lower_left]
-    type = ConcentricCircleMeshGenerator
-    num_sectors = 20
-    radii = '${lower_left_radius}'
-    rings = '1 10'
-    has_outer_square = true
-    pitch = '${fparse 2.0 * lower_left_tab_width}'
-    preserve_volumes = true
-    portion = bottom_right
-  []
-  [move_lowleft_shoulder]
-    type = TransformGenerator
-    input = shoulder_lower_left
-    transform = TRANSLATE
-    vector_value = '${fparse -1.0 * lower_left_tab_width} ${fparse -1.0 * gauge_height / 2.0} 0'
-  []
-  [rename_lower_left]
-    type = RenameBoundaryGenerator
-    input = move_lowleft_shoulder
-    old_boundary = 'right'
-    new_boundary = 'cl_low_shoulder_left'
-  []
-  [rename_cutout_lower_left]
-    type = RenameBlockGenerator
-    input = 'rename_lower_left'
-    old_block = '2 1'
-    new_block = '20 23'
-  []
-  [shoulder_lower_right]
-    type = ConcentricCircleMeshGenerator
-    num_sectors = 20
-    radii = '${lower_right_radius}'
-    rings = '1 10'
-    has_outer_square = true
-    pitch = '${fparse 2.0 * lower_right_tab_width}'
-    preserve_volumes = true
-    portion = bottom_left
-  []
-  [move_lowrght_shoulder]
-    type = TransformGenerator
-    input = shoulder_lower_right
-    transform = TRANSLATE
-    vector_value = '${fparse lower_right_tab_width} ${fparse -1.0 * gauge_height / 2.0} 0'
-  []
-  [rename_lower_right]
-    type = RenameBoundaryGenerator
-    input = move_lowrght_shoulder
-    old_boundary = 'left'
-    new_boundary = 'cl_low_shoulder_right'
-  []
-  [rename_cutout_lower_right]
-    type = RenameBlockGenerator
-    input = 'rename_lower_right'
-    old_block = '2 1'
-    new_block = '20 24'
-  []
-  [stitch_lower_shoulders]
-    type = StitchedMeshGenerator
-    inputs = 'rename_cutout_lower_left rename_cutout_lower_right'
-    stitch_boundaries_pairs = 'cl_low_shoulder_left cl_low_shoulder_right'
-  []
-  [lower_shoulder_interface]
-    type = SideSetsAroundSubdomainGenerator
-    input = 'stitch_lower_shoulders'
-    normal = '0 1 0'
-    normal_tol = 1e-8 #seems to work, might be able to pull down more
-    block = 20
-    new_boundary = 'lower_shoulder_interface'
-  []
-  [stitch_lower_gauge]
-    type = StitchedMeshGenerator
-    inputs = 'lower_shoulder_interface rename_bottom_gauge'
-    stitch_boundaries_pairs = 'lower_shoulder_interface bottom_gauge_interface'
-  []
-  [upper_tab_interface]
-    type = SideSetsAroundSubdomainGenerator
-    input = 'stitch_lower_gauge'
-    normal = '0 1 0'
-    normal_tol = 1e-8 #seems to work, might be able to pull down more
-    block = 10
-    new_boundary = 'upper_shoulder_tab_interface'
-  []
+  # [shoulder_lower_left]
+  #   type = ConcentricCircleMeshGenerator
+  #   num_sectors = 20
+  #   radii = '${lower_left_radius}'
+  #   rings = '1 10'
+  #   has_outer_square = true
+  #   pitch = '${fparse 2.0 * lower_left_tab_width}'
+  #   preserve_volumes = true
+  #   portion = bottom_right
+  # []
+  # [move_lowleft_shoulder]
+  #   type = TransformGenerator
+  #   input = shoulder_lower_left
+  #   transform = TRANSLATE
+  #   vector_value = '${fparse -1.0 * lower_left_tab_width} ${fparse -1.0 * gauge_height / 2.0} 0'
+  # []
+  # [rename_lower_left]
+  #   type = RenameBoundaryGenerator
+  #   input = move_lowleft_shoulder
+  #   old_boundary = 'right'
+  #   new_boundary = 'cl_low_shoulder_left'
+  # []
+  # [rename_cutout_lower_left]
+  #   type = RenameBlockGenerator
+  #   input = 'rename_lower_left'
+  #   old_block = '2 1'
+  #   new_block = '20 23'
+  # []
+  # [shoulder_lower_right]
+  #   type = ConcentricCircleMeshGenerator
+  #   num_sectors = 20
+  #   radii = '${lower_right_radius}'
+  #   rings = '1 10'
+  #   has_outer_square = true
+  #   pitch = '${fparse 2.0 * lower_right_tab_width}'
+  #   preserve_volumes = true
+  #   portion = bottom_left
+  # []
+  # [move_lowrght_shoulder]
+  #   type = TransformGenerator
+  #   input = shoulder_lower_right
+  #   transform = TRANSLATE
+  #   vector_value = '${fparse lower_right_tab_width} ${fparse -1.0 * gauge_height / 2.0} 0'
+  # []
+  # [rename_lower_right]
+  #   type = RenameBoundaryGenerator
+  #   input = move_lowrght_shoulder
+  #   old_boundary = 'left'
+  #   new_boundary = 'cl_low_shoulder_right'
+  # []
+  # [rename_cutout_lower_right]
+  #   type = RenameBlockGenerator
+  #   input = 'rename_lower_right'
+  #   old_block = '2 1'
+  #   new_block = '20 24'
+  # []
+  # [stitch_lower_shoulders]
+  #   type = StitchedMeshGenerator
+  #   inputs = 'rename_cutout_lower_left rename_cutout_lower_right'
+  #   stitch_boundaries_pairs = 'cl_low_shoulder_left cl_low_shoulder_right'
+  # []
+  # [lower_shoulder_interface]
+  #   type = SideSetsAroundSubdomainGenerator
+  #   input = 'stitch_lower_shoulders'
+  #   normal = '0 1 0'
+  #   normal_tol = 1e-8 #seems to work, might be able to pull down more
+  #   block = 20
+  #   new_boundary = 'lower_shoulder_interface'
+  # []
+  # [stitch_lower_gauge]
+  #   type = StitchedMeshGenerator
+  #   inputs = 'lower_shoulder_interface rename_bottom_gauge'
+  #   stitch_boundaries_pairs = 'lower_shoulder_interface bottom_gauge_interface'
+  # []
+  # [upper_tab_interface]
+  #   type = SideSetsAroundSubdomainGenerator
+  #   input = 'stitch_lower_gauge'
+  #   normal = '0 1 0'
+  #   normal_tol = 1e-8 #seems to work, might be able to pull down more
+  #   block = 10
+  #   new_boundary = 'upper_shoulder_tab_interface'
+  # []
 
   # [top_tab]
   #   type = CartesianMeshGenerator
