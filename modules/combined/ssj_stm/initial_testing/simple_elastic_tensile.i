@@ -14,7 +14,7 @@ gauge_height = 5.7
     rings = '1 10'
     has_outer_square = true
     pitch = '${fparse gauge_width + 2.0 * ideal_radius}'
-    preserve_volumes = true
+    preserve_volumes = false
     portion = top_right
   []
   [move_upleft_shoulder]
@@ -42,7 +42,7 @@ gauge_height = 5.7
     rings = '1 10'
     has_outer_square = true
     pitch = '${fparse gauge_width + 2.0 * ideal_radius}'
-    preserve_volumes = true
+    preserve_volumes = false
     portion = top_left
   []
   [move_uprght_shoulder]
@@ -75,6 +75,7 @@ gauge_height = 5.7
     normal_tol = 1e-8 #seems to work, might be able to pull down more
     block = 10
     new_boundary = 'upper_shoulder_interface'
+    show_info = true
   []
 
   [gauge_section]
@@ -102,11 +103,14 @@ gauge_height = 5.7
     input = move_gauge
     old_boundary = 'top'
     new_boundary = 'top_gauge_interface'
+    show_info = true
   []
   [stitch_upper_gauge]
     type = StitchedMeshGenerator
     inputs = 'upper_shoulder_interface rename_top_gauge'
     stitch_boundaries_pairs = 'upper_shoulder_interface top_gauge_interface'
+    show_info = true
+    algorithm = EXHAUSTIVE
   []
   [rename_bottom_gauge]
     type = SideSetsAroundSubdomainGenerator
