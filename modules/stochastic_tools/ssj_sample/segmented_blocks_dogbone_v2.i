@@ -219,7 +219,7 @@ top_gauge_height = '${fparse (gauge_height - gauge_transition_height)/ 2.0}'
   #   input = 'rename_top_tab'
   #   normal = '0 -1 0'
   #   normal_tol = 1.0e-8
-  #   block = 104
+  #   block = 200
   #   new_boundary = 'top_tab_bottom'
   # []
   [stitch_top_tab]
