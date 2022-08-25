@@ -82,6 +82,7 @@ top_gauge_height = '${fparse (gauge_height - gauge_transition_height)/ 2.0}'
     dy = '${top_gauge_height} ${pitch_length}'
     ix = '4'
     iy = '20 13' # 13'
+    subdomain_id = '202 202'
   []
   [move_top_center_gauge]
     type = TransformGenerator
@@ -89,15 +90,9 @@ top_gauge_height = '${fparse (gauge_height - gauge_transition_height)/ 2.0}'
     transform = TRANSLATE
     vector_value = '${fparse -0.5 * top_center_gauge_portion} ${fparse 0.5 * gauge_transition_height} 0'
   []
-  [rename_top_center_section]
-    type = RenameBlockGenerator
-    input = move_top_center_gauge
-    old_block = '0'
-    new_block = '202'
-  []
   [rename_top_center_left]
     type = SideSetsAroundSubdomainGenerator
-    input = 'rename_top_center_section'
+    input = 'move_top_center_gauge'
     normal = '-1 0 0'
     normal_tol = '1.0e-8'
     block = 202

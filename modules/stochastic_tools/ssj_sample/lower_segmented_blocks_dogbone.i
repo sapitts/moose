@@ -87,6 +87,7 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     dy = '${pitch_length} ${section_gauge_height}'
     ix = '4'
     iy = '13 20'
+    subdomain_id = '204 204'
   []
   [move_bottom_center_gauge]
     type = TransformGenerator
@@ -94,15 +95,9 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     transform = TRANSLATE
     vector_value = '${fparse -0.5 * bottom_center_gauge_portion} ${fparse -1.0 * section_gauge_height - pitch_length - 0.5 * gauge_transition_height} 0'
   []
-  [rename_bottom_center_section]
-    type = RenameBlockGenerator
-    input = move_bottom_center_gauge
-    old_block = '0'
-    new_block = '204'
-  []
   [rename_bottom_center_left]
     type = SideSetsAroundSubdomainGenerator
-    input = 'rename_bottom_center_section'
+    input = 'move_bottom_center_gauge'
     normal = '-1 0 0'
     normal_tol = '1.0e-8'
     block = 204
