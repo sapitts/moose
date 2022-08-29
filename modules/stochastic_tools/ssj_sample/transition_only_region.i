@@ -30,18 +30,73 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
 
 ## copied from Oana's PR:
 [Mesh]
-  [transition_middle]
+  [transition_left]
+    type = TransfiniteMeshGenerator
+    corners = '${fparse -0.5 * gauge_width} ${fparse -0.5 * gauge_transition_height} 0.0
+               ${fparse -0.5 * bottom_center_gauge_portion} ${fparse -0.5 * gauge_transition_height} 0.0
+               ${fparse -0.5 * top_center_gauge_portion} ${fparse 0.5 * gauge_transition_height} 0
+               ${fparse -0.5 * gauge_width} ${fparse 0.5 * gauge_transition_height} 0'
+    nx = 4
+    ny = 9
+    bottom = LINE
+    top = LINE
+    right = LINE
+    left = LINE
+  []
+  [rename_transition_left]
+    type = RenameBlockGenerator
+    input = transition_left
+    old_block = '0'
+    new_block = '205'
+  []
+  [transition_center]
     type = TransfiniteMeshGenerator
     corners = '${fparse -0.5 * bottom_center_gauge_portion} ${fparse -0.5 * gauge_transition_height} 0.0
                ${fparse 0.5 * bottom_center_gauge_portion} ${fparse -0.5 * gauge_transition_height} 0.0
                ${fparse 0.5 * top_center_gauge_portion} ${fparse 0.5 * gauge_transition_height} 0
                ${fparse -0.5 * top_center_gauge_portion} ${fparse 0.5 * gauge_transition_height} 0'
     nx = 5
-    ny = 7
+    ny = 9
     bottom = LINE
     top = LINE
     right = LINE
     left = LINE
+  []
+  [rename_transition_center]
+    type = RenameBlockGenerator
+    input = transition_center
+    old_block = '0'
+    new_block = '206'
+  []
+  [stitch_left_transition_region]
+    type = StitchedMeshGenerator
+    inputs = 'rename_transition_left rename_transition_center'
+    stitch_boundaries_pairs = 'right left'
+  []
+
+  [transition_right]
+    type = TransfiniteMeshGenerator
+    corners = '${fparse 0.5 * gauge_width} ${fparse -0.5 * gauge_transition_height} 0.0
+               ${fparse 0.5 * bottom_center_gauge_portion} ${fparse -0.5 * gauge_transition_height} 0.0
+               ${fparse 0.5 * top_center_gauge_portion} ${fparse 0.5 * gauge_transition_height} 0
+               ${fparse 0.5 * gauge_width} ${fparse 0.5 * gauge_transition_height} 0'
+    nx = 4
+    ny = 9
+    bottom = LINE
+    top = LINE
+    right = LINE
+    left = LINE
+  []
+  [rename_transition_right]
+    type = RenameBlockGenerator
+    input = transition_right
+    old_block = '0'
+    new_block = '207'
+  []
+  [stitch_right_transition_region]
+    type = StitchedMeshGenerator
+    inputs = 'stitch_left_transition_region rename_transition_right'
+    stitch_boundaries_pairs = 'right left'
   []
 []
 

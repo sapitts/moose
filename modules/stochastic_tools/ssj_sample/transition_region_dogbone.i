@@ -96,9 +96,38 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     block = 202
     new_boundary = 'top_center_section_right'
   []
+  [top_right_gauge_rectangles]
+    type = CartesianMeshGenerator
+    dim = 2
+    dx = '${top_right_gauge_shoulder} ${upper_right_radius} ' #' ${top_center_gauge_portion} ${top_right_gauge_shoulder}'
+    dy = '${section_gauge_height}'
+    ix = '3 11'
+    iy = '20'
+    subdomain_id = '102 22'
+  []
+  [move_top_right_gauge]
+    type = TransformGenerator
+    input = 'top_right_gauge_rectangles'
+    transform = TRANSLATE
+    # vector_value = '${fparse -1.0 * top_left_gauge_shoulder - 0.5 * top_center_gauge_portion} ${fparse 0.5 * gauge_transition_height} 0'
+    vector_value = '${fparse 0.5 * top_center_gauge_portion} ${fparse 0.5 * gauge_transition_height} 0'
+  []
+  [rename_top_right_shoulder_centerline]
+    type = SideSetsAroundSubdomainGenerator
+    input = 'move_top_right_gauge'
+    normal = '-1 0 0'
+    normal_tol = 1.0e-8
+    block = '102'
+    new_boundary = 'top_right_shoulder_centerline'
+  []
+  [stitch_top_center_right]
+    type = StitchedMeshGenerator
+    inputs = 'rename_top_right_shoulder_centerline rename_top_center_right'
+    stitch_boundaries_pairs = 'top_right_shoulder_centerline top_center_section_right'
+  []
   [rename_top_shoulder_gauge]
     type = RenameBlockGenerator
-    input = 'rename_top_center_right'
+    input = 'stitch_top_center_right'
     old_block = '101 202 102'
     new_block = '202 202 202'
   []
@@ -232,6 +261,115 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     block = '204'
     new_boundary = 'lower_gauge_section_top'
   []
+  [stitch_gauge_sections]
+    type = StitchedMeshGenerator
+    inputs = 'rename_top_shoulder_bottom_side rename_bottom_shoulder_top_side'
+    stitch_boundaries_pairs = 'upper_gauge_section_bottom lower_gauge_section_top'
+  []
+
+  ####################################
+  #### transition region of the gauge
+  ####################################
+  # [transition_left]
+  #   type = TransfiniteMeshGenerator
+  #   corners = '${fparse -0.5 * gauge_width} ${fparse -0.5 * gauge_transition_height} 0.0
+  #              ${fparse -0.5 * bottom_center_gauge_portion} ${fparse -0.5 * gauge_transition_height} 0.0
+  #              ${fparse -0.5 * top_center_gauge_portion} ${fparse 0.5 * gauge_transition_height} 0
+  #              ${fparse -0.5 * gauge_width} ${fparse 0.5 * gauge_transition_height} 0'
+  #   nx = 4
+  #   ny = 9
+  #   bottom = LINE
+  #   top = LINE
+  #   right = LINE
+  #   left = LINE
+  # []
+  # [rename_transition_left]
+  #   type = RenameBlockGenerator
+  #   input = transition_left
+  #   old_block = '0'
+  #   new_block = '205'
+  # []
+  # [transition_center]
+  #   type = TransfiniteMeshGenerator
+  #   corners = '${fparse -0.5 * bottom_center_gauge_portion} ${fparse -0.5 * gauge_transition_height} 0.0
+  #              ${fparse 0.5 * bottom_center_gauge_portion} ${fparse -0.5 * gauge_transition_height} 0.0
+  #              ${fparse 0.5 * top_center_gauge_portion} ${fparse 0.5 * gauge_transition_height} 0
+  #              ${fparse -0.5 * top_center_gauge_portion} ${fparse 0.5 * gauge_transition_height} 0'
+  #   nx = 4
+  #   ny = 9
+  #   bottom = LINE
+  #   top = LINE
+  #   right = LINE
+  #   left = LINE
+  # []
+  # [rename_transition_center]
+  #   type = RenameBlockGenerator
+  #   input = transition_center
+  #   old_block = '0'
+  #   new_block = '206'
+  # []
+  # [stitch_left_transition_region]
+  #   type = StitchedMeshGenerator
+  #   inputs = 'rename_transition_left rename_transition_center'
+  #   stitch_boundaries_pairs = 'right left'
+  # []
+
+  # [transition_right]
+  #   type = TransfiniteMeshGenerator
+  #   corners = '${fparse 0.5 * gauge_width} ${fparse -0.5 * gauge_transition_height} 0.0
+  #              ${fparse 0.5 * bottom_center_gauge_portion} ${fparse -0.5 * gauge_transition_height} 0.0
+  #              ${fparse 0.5 * top_center_gauge_portion} ${fparse 0.5 * gauge_transition_height} 0
+  #              ${fparse 0.5 * gauge_width} ${fparse 0.5 * gauge_transition_height} 0'
+  #   nx = 4
+  #   ny = 9
+  #   bottom = LINE
+  #   top = LINE
+  #   right = LINE
+  #   left = LINE
+  # []
+  # [rename_transition_right]
+  #   type = RenameBlockGenerator
+  #   input = transition_right
+  #   old_block = '0'
+  #   new_block = '207'
+  # []
+  # [stitch_right_transition_region]
+  #   type = StitchedMeshGenerator
+  #   inputs = 'stitch_left_transition_region rename_transition_right'
+  #   stitch_boundaries_pairs = 'right left'
+  # []
+  # [rename_transition_region]
+  #   type = RenameBlockGenerator
+  #   input = 'stitch_right_transition_region'
+  #   old_block = '205 207'
+  #   new_block = '206 206'
+  # []
+  # [rename_transition_top_sideset]
+  #   type = SideSetsAroundSubdomainGenerator
+  #   input = 'rename_transition_region'
+  #   normal = '0 1 0'
+  #   normal_tol = 1.0e-8
+  #   block = '206'
+  #   new_boundary = 'transition_top'
+  # []
+  # [stitch_top_transition_region]
+  #   type = StitchedMeshGenerator
+  #   inputs = 'rename_top_shoulder_bottom_side rename_transition_top_sideset'
+  #   stitch_boundaries_pairs = 'upper_gauge_section_bottom transition_top'
+  # []
+  # [rename_transition_bottom_sideset]
+  #   type = SideSetsAroundSubdomainGenerator
+  #   input = 'rename_transition_top_sideset'
+  #   normal = '0 -1 0'
+  #   normal_tol = 1.0e-8
+  #   block = '206'
+  #   new_boundary = 'transition_bottom'
+  # []
+  # [stitch_bottom_transition_region]
+  #   type = StitchedMeshGenerator
+  #   inputs = 'stitch_top_transition_region rename_bottom_shoulder_top_side'
+  #   stitch_boundaries_pairs = 'bottom lower_gauge_section_top'
+  # []
 
   # ### this will need to be one of the last steps, since it requires
   # ### merging of the sections of the gauge and shoulder regions
@@ -254,4 +392,5 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
   #   old_block = '10 210'
   #   new_block = ' 0   0'
   # []
+  # final_generator = stitch_bottom_transition_region
 []
