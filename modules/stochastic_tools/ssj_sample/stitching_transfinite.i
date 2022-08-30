@@ -52,12 +52,12 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     new_boundary = 'upper_gauge_section_bottom'
   []
 
-  [transition_left]
+  [transition_left_force_align]
     type = TransfiniteMeshGenerator
-    corners = '${fparse - 0.5 * gauge_width} ${fparse -0.5 * gauge_transition_height} 0.0
+    corners = '${fparse -1.0 * bottom_left_gauge_shoulder - 0.5 * bottom_center_gauge_portion} ${fparse -0.5 * gauge_transition_height} 0.0
                ${fparse -0.5 * bottom_center_gauge_portion} ${fparse -0.5 * gauge_transition_height} 0.0
                ${fparse -0.5 * top_center_gauge_portion} ${fparse 0.5 * gauge_transition_height} 0
-               ${fparse - 0.5 * gauge_width} ${fparse 0.5 * gauge_transition_height} 0'
+               ${fparse -1.0 * top_left_gauge_shoulder - 0.5 * top_center_gauge_portion} ${fparse 0.5 * gauge_transition_height} 0'
     nx = 4
     ny = 9
     bottom = LINE
@@ -65,9 +65,22 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     right = LINE
     left = LINE
   []
+  # [transition_left_old_probably_correct]
+  #   type = TransfiniteMeshGenerator
+  #   corners = '${fparse - 0.5 * gauge_width} ${fparse -0.5 * gauge_transition_height} 0.0
+  #              ${fparse -0.5 * bottom_center_gauge_portion} ${fparse -0.5 * gauge_transition_height} 0.0
+  #              ${fparse -0.5 * top_center_gauge_portion} ${fparse 0.5 * gauge_transition_height} 0
+  #              ${fparse - 0.5 * gauge_width} ${fparse 0.5 * gauge_transition_height} 0'
+  #   nx = 4
+  #   ny = 9
+  #   bottom = LINE
+  #   top = LINE
+  #   right = LINE
+  #   left = LINE
+  # []
   [rename_transition_left]
     type = RenameBlockGenerator
-    input = transition_left
+    input = transition_left_force_align
     old_block = '0'
     new_block = '205'
   []
@@ -83,6 +96,43 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     type = StitchedMeshGenerator
     inputs = 'rename_top_gauge_bottom_sideset rename_transition_top_sideset'
     stitch_boundaries_pairs = 'upper_gauge_section_bottom transition_top'
+  []
+  [rename_transition_bottom_sideset]
+    type = SideSetsAroundSubdomainGenerator
+    input = 'stitch_top_transition_region'
+    normal = '0.0 -1.0 0.0'
+    normal_tol = 1.0e-8
+    block = '205'
+    new_boundary = 'transition_bottom'
+  []
+
+  [bottom_gauge_rectangles]
+    type = CartesianMeshGenerator
+    dim = 2
+    dx = '${bottom_left_gauge_shoulder}'
+    dy = '${section_gauge_height}'
+    ix = '3'
+    iy = '20'
+    subdomain_id = '104'
+  []
+  [move_bottom_gauge]
+    type = TransformGenerator
+    input = 'bottom_gauge_rectangles'
+    transform = TRANSLATE
+    vector_value = '${fparse -1.0 * bottom_left_gauge_shoulder - 0.5 * bottom_center_gauge_portion} ${fparse -1.0 * section_gauge_height - 0.5 * gauge_transition_height} 0'
+  []
+  [rename_bottom_gauge_top_sideset]
+    type = SideSetsAroundSubdomainGenerator
+    input = 'move_bottom_gauge'
+    normal = ' 0.0 1.0 0.0'
+    normal_tol = 1.0e-8
+    block = '104'
+    new_boundary = 'lower_gauge_section_top'
+  []
+  [stitch_bottom_transition_region]
+    type = StitchedMeshGenerator
+    inputs = 'rename_transition_bottom_sideset rename_bottom_gauge_top_sideset'
+    stitch_boundaries_pairs = 'transition_bottom lower_gauge_section_top'
   []
 
 []
