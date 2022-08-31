@@ -41,7 +41,7 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     type = TransformGenerator
     input = 'top_gauge_left_rectangle'
     transform = TRANSLATE
-    vector_value = '${fparse -1.0 * top_left_gauge_shoulder - 0.5 * top_center_gauge_portion} ${fparse 0.5 * gauge_transition_height} 0'
+    vector_value = '${fparse - 0.5 * gauge_width} ${fparse 0.5 * gauge_transition_height} 0'
   []
   [rename_top_gauge_bottom_sideset]
     type = SideSetsAroundSubdomainGenerator
@@ -54,10 +54,10 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
 
   [transition_left_force_align]
     type = TransfiniteMeshGenerator
-    corners = '${fparse -1.0 * bottom_left_gauge_shoulder - 0.5 * bottom_center_gauge_portion} ${fparse -0.5 * gauge_transition_height} 0.0
-               ${fparse -0.5 * bottom_center_gauge_portion} ${fparse -0.5 * gauge_transition_height} 0.0
-               ${fparse -0.5 * top_center_gauge_portion} ${fparse 0.5 * gauge_transition_height} 0
-               ${fparse -1.0 * top_left_gauge_shoulder - 0.5 * top_center_gauge_portion} ${fparse 0.5 * gauge_transition_height} 0'
+    corners = '${fparse - 0.5 * gauge_width} ${fparse -0.5 * gauge_transition_height} 0.0
+               ${fparse -0.5 * gauge_width + bottom_left_gauge_shoulder} ${fparse -0.5 * gauge_transition_height} 0.0
+               ${fparse -0.5 * gauge_width + top_left_gauge_shoulder} ${fparse 0.5 * gauge_transition_height} 0
+               ${fparse - 0.5 * gauge_width} ${fparse 0.5 * gauge_transition_height} 0'
     nx = 4
     ny = 9
     bottom = LINE
@@ -119,7 +119,7 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     type = TransformGenerator
     input = 'bottom_gauge_rectangles'
     transform = TRANSLATE
-    vector_value = '${fparse -1.0 * bottom_left_gauge_shoulder - 0.5 * bottom_center_gauge_portion} ${fparse -1.0 * section_gauge_height - 0.5 * gauge_transition_height} 0'
+    vector_value = '${fparse - 0.5 * gauge_width} ${fparse -1.0 * section_gauge_height - 0.5 * gauge_transition_height} 0'
   []
   [rename_bottom_gauge_top_sideset]
     type = SideSetsAroundSubdomainGenerator
