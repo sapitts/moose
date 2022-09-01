@@ -43,7 +43,7 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     type = TransformGenerator
     input = 'lower_left_shoulder'
     transform = TRANSLATE
-    vector_value = '${fparse -1.0 * pitch_length - 0.5 * bottom_center_gauge_portion} ${fparse -1.0 * section_gauge_height - gauge_transition_height/2.0} 0'
+    vector_value = '${fparse - 0.5 * gauge_width - lower_left_radius} ${fparse -1.0 * section_gauge_height - gauge_transition_height/2.0} 0'
   []
   [bottom_gauge_rectangles]
     type = CartesianMeshGenerator
@@ -58,7 +58,7 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     type = TransformGenerator
     input = 'bottom_gauge_rectangles'
     transform = TRANSLATE
-    vector_value = '${fparse -1.0 * pitch_length - 0.5 * bottom_center_gauge_portion} ${fparse -1.0 * section_gauge_height - 0.5 * gauge_transition_height} 0'
+    vector_value = '${fparse - 0.5 * gauge_width - lower_left_radius} ${fparse -1.0 * section_gauge_height - 0.5 * gauge_transition_height} 0'
   []
   [stitch_left_bottom_shoulders_gauge]
     type = StitchedMeshGenerator
@@ -93,7 +93,7 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     type = TransformGenerator
     input = 'bottom_center_shoulder_gauge'
     transform = TRANSLATE
-    vector_value = '${fparse -0.5 * bottom_center_gauge_portion} ${fparse -1.0 * section_gauge_height - pitch_length - 0.5 * gauge_transition_height} 0'
+    vector_value = '${fparse -0.5 * gauge_width + bottom_left_gauge_shoulder} ${fparse -1.0 * section_gauge_height - pitch_length - 0.5 * gauge_transition_height} 0'
   []
   [rename_bottom_center_left]
     type = SideSetsAroundSubdomainGenerator
@@ -131,7 +131,7 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     type = TransformGenerator
     input = 'lower_right_shoulder'
     transform = TRANSLATE
-    vector_value = '${fparse pitch_length + 0.5 * bottom_center_gauge_portion} ${fparse -1.0 * section_gauge_height - gauge_transition_height/2.0} 0'
+    vector_value = '${fparse 0.5 * gauge_width + lower_right_radius} ${fparse -1.0 * section_gauge_height - gauge_transition_height/2.0} 0'
   []
   [bottom_right_gauge_rectangles]
     type = CartesianMeshGenerator
@@ -146,7 +146,7 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     type = TransformGenerator
     input = 'bottom_right_gauge_rectangles'
     transform = TRANSLATE
-    vector_value = '${fparse 0.5 * bottom_center_gauge_portion} ${fparse -1.0 * section_gauge_height - 0.5 * gauge_transition_height} 0'
+    vector_value = '${fparse 0.5 * gauge_width - bottom_right_gauge_shoulder} ${fparse -1.0 * section_gauge_height - 0.5 * gauge_transition_height} 0'
   []
   [stitch_bottom_right_shoulders_gauge]
     type = StitchedMeshGenerator
@@ -203,7 +203,7 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     type = TransformGenerator
     input = 'bottom_tab'
     transform = TRANSLATE
-    vector_value = '${fparse -1.0 * pitch_length - 0.5 * top_center_gauge_portion} ${fparse -1.0 * tab_height - pitch_length - section_gauge_height - 0.5 * gauge_transition_height} 0'
+    vector_value = '${fparse - 0.5 * gauge_width - lower_left_radius} ${fparse -1.0 * tab_height - pitch_length - section_gauge_height - 0.5 * gauge_transition_height} 0'
   []
   [rename_bottom_tab]
     type = RenameBlockGenerator

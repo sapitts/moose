@@ -2,10 +2,10 @@
 ### focus here on buiding the transition only region
 
 ## parameters to vary with STM
-upper_left_radius = 1.2 #min 1.146, max 1.654
-upper_right_radius = 1.4
+upper_left_radius = 1.3 #min 1.146, max 1.654
+upper_right_radius = 1.2
 lower_left_radius = 1.6
-lower_right_radius = 1.3
+lower_right_radius = 1.4
 
 gauge_width = 1.2
 # min 1.166 (constrained by mesh), max 1.454
