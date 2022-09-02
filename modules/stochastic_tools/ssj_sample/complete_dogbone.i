@@ -1,11 +1,11 @@
-### second approach to the segmented block building of the dogbone
-### focus here on buiding the top tab and gauge section
+### third approach to the segmented block building of the dogbone
+### focus here on stitching together the top, transition, and bottom regions
 
 ## parameters to vary with STM
 upper_left_radius = 1.3 #min 1.146, max 1.654
-upper_right_radius = 1.2
+upper_right_radius = 1.4
 lower_left_radius = 1.6
-lower_right_radius = 1.4
+lower_right_radius = 1.2
 
 gauge_width = 1.2
 # min 1.166 (constrained by mesh), max 1.454
@@ -29,6 +29,25 @@ bottom_right_gauge_shoulder = '${fparse pitch_length - lower_right_radius}'
 bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder - bottom_right_gauge_shoulder}'
 
 [Mesh]
+  ######################################
+  #### top shoulders and gauge section
+  ######################################
+  [upper_left_shoulder]
+    type = ConcentricCircleMeshGenerator
+    num_sectors = 20
+    radii = '${upper_left_radius}'
+    rings = '1 2'
+    has_outer_square = true
+    pitch = '${fparse 2.0 * pitch_length}'
+    preserve_volumes = false
+    portion = top_right
+  []
+  [move_upleft_shoulder]
+    type = TransformGenerator
+    input = 'upper_left_shoulder'
+    transform = TRANSLATE
+    vector_value = '${fparse - 0.5 * gauge_width - upper_left_radius} ${fparse section_gauge_height + gauge_transition_height/2.0} 0'
+  []
   [top_gauge_rectangles]
     type = CartesianMeshGenerator
     dim = 2
@@ -44,9 +63,20 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     transform = TRANSLATE
     vector_value = '${fparse - 0.5 * gauge_width - upper_left_radius} ${fparse 0.5 * gauge_transition_height} 0'
   []
+  [stitch_top_shoulders_gauge]
+    type = StitchedMeshGenerator
+    inputs = 'move_upleft_shoulder move_top_gauge'
+    stitch_boundaries_pairs = 'bottom top'
+  []
+  [rename_top_left_shoulders]
+    type = RenameBlockGenerator
+    input = 'stitch_top_shoulders_gauge'
+    old_block = '1 2'
+    new_block = '11 101'
+  []
   [rename_top_left_shoulder_centerline]
     type = SideSetsAroundSubdomainGenerator
-    input = 'move_top_gauge'
+    input = 'rename_top_left_shoulders'
     normal = '1 0 0'
     normal_tol = 1.0e-8
     block = '101'
@@ -57,9 +87,10 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     type = CartesianMeshGenerator
     dim = 2
     dx = '${top_center_gauge_portion}'
-    dy = '${section_gauge_height}' #' ${pitch_length}'
+    dy = '${section_gauge_height} ${pitch_length}'
     ix = '4'
-    iy = '20' # 13' # 13'
+    iy = '20 13' # 13'
+    subdomain_id = '202 202'
   []
   [move_top_center_gauge]
     type = TransformGenerator
@@ -67,15 +98,9 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     transform = TRANSLATE
     vector_value = '${fparse -0.5 * gauge_width + top_left_gauge_shoulder} ${fparse 0.5 * gauge_transition_height} 0'
   []
-  [rename_top_center_section]
-    type = RenameBlockGenerator
-    input = move_top_center_gauge
-    old_block = '0'
-    new_block = '202'
-  []
   [rename_top_center_left]
     type = SideSetsAroundSubdomainGenerator
-    input = 'rename_top_center_section'
+    input = 'move_top_center_gauge'
     normal = '-1 0 0'
     normal_tol = '1.0e-8'
     block = 202
@@ -96,6 +121,23 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     block = 202
     new_boundary = 'top_center_section_right'
   []
+
+  [upper_right_shoulder]
+    type = ConcentricCircleMeshGenerator
+    num_sectors = 20
+    radii = '${upper_right_radius}'
+    rings = '1 2'
+    has_outer_square = true
+    pitch = '${fparse 2.0 * pitch_length}'
+    preserve_volumes = false
+    portion = top_left
+  []
+  [move_upright_shoulder]
+    type = TransformGenerator
+    input = 'upper_right_shoulder'
+    transform = TRANSLATE
+    vector_value = '${fparse 0.5 * gauge_width + upper_right_radius} ${fparse section_gauge_height + gauge_transition_height/2.0} 0'
+  []
   [top_right_gauge_rectangles]
     type = CartesianMeshGenerator
     dim = 2
@@ -111,9 +153,20 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     transform = TRANSLATE
     vector_value = '${fparse 0.5 * gauge_width - top_right_gauge_shoulder} ${fparse 0.5 * gauge_transition_height} 0'
   []
+  [stitch_top_right_shoulders_gauge]
+    type = StitchedMeshGenerator
+    inputs = 'move_upright_shoulder move_top_right_gauge'
+    stitch_boundaries_pairs = 'bottom top'
+  []
+  [rename_top_right_shoulders]
+    type = RenameBlockGenerator
+    input = 'stitch_top_right_shoulders_gauge'
+    old_block = '1 2'
+    new_block = '12 102'
+  []
   [rename_top_right_shoulder_centerline]
     type = SideSetsAroundSubdomainGenerator
-    input = 'move_top_right_gauge'
+    input = 'rename_top_right_shoulders'
     normal = '-1 0 0'
     normal_tol = 1.0e-8
     block = '102'
@@ -124,29 +177,47 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     inputs = 'rename_top_right_shoulder_centerline rename_top_center_right'
     stitch_boundaries_pairs = 'top_right_shoulder_centerline top_center_section_right'
   []
-  [rename_top_shoulder_gauge]
-    type = RenameBlockGenerator
-    input = 'stitch_top_center_right'
-    old_block = '101 202 102'
-    new_block = '202 202 202'
-  []
-  [delete_top_shoulder_side_blocks]
+
+  [cleanup_upper_spacer_blocks]
     type = BlockDeletionGenerator
-    input = 'rename_top_shoulder_gauge'
+    input = 'stitch_top_center_right'
     block = '21 22'
   []
-  [rename_top_shoulder_bottom_side]
+  [rename_top_shoulder_gauge]
+    type = RenameBlockGenerator
+    input = 'cleanup_upper_spacer_blocks'
+    old_block = '101 102 202'
+    new_block = ' 10  10  10'
+  []
+  [rename_top_shoulder_bottom]
     type = SideSetsAroundSubdomainGenerator
-    input = 'delete_top_shoulder_side_blocks'
-    normal = '0 -1 0'
+    input = 'rename_top_shoulder_gauge'
+    normal = '0.0 -1.0 0.0'
     normal_tol = 1.0e-8
-    block = '202'
-    new_boundary = 'upper_gauge_section_bottom'
+    block = '10'
+    new_boundary = 'upper_shoulders_bottom'
   []
 
-  #################################
-  #### bottom section of the gauge
-  ################################
+  ########################################
+  #### botom shoulders and gauge section
+  ########################################
+
+  [lower_left_shoulder]
+    type = ConcentricCircleMeshGenerator
+    num_sectors = 20
+    radii = '${lower_left_radius}'
+    rings = '1 2'
+    has_outer_square = true
+    pitch = '${fparse 2.0 * pitch_length}'
+    preserve_volumes = false
+    portion = bottom_right
+  []
+  [move_downleft_shoulder]
+    type = TransformGenerator
+    input = 'lower_left_shoulder'
+    transform = TRANSLATE
+    vector_value = '${fparse - 0.5 * gauge_width - lower_left_radius} ${fparse -1.0 * section_gauge_height - gauge_transition_height/2.0} 0'
+  []
   [bottom_gauge_rectangles]
     type = CartesianMeshGenerator
     dim = 2
@@ -160,42 +231,48 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     type = TransformGenerator
     input = 'bottom_gauge_rectangles'
     transform = TRANSLATE
-    vector_value = '${fparse -0.5 * gauge_width - lower_left_radius} ${fparse -1.0 * section_gauge_height - 0.5 * gauge_transition_height} 0'
+    vector_value = '${fparse - 0.5 * gauge_width - lower_left_radius} ${fparse -1.0 * section_gauge_height - 0.5 * gauge_transition_height} 0'
+  []
+  [stitch_left_bottom_shoulders_gauge]
+    type = StitchedMeshGenerator
+    inputs = 'move_downleft_shoulder move_bottom_gauge'
+    stitch_boundaries_pairs = 'top bottom'
+  []
+  [rename_bottom_left_shoulders]
+    type = RenameBlockGenerator
+    input = 'stitch_left_bottom_shoulders_gauge'
+    old_block = '1 2'
+    new_block = '14 104'
   []
   [rename_bottom_left_shoulder_centerline]
     type = SideSetsAroundSubdomainGenerator
-    input = 'move_bottom_gauge'
+    input = 'rename_bottom_left_shoulders'
     normal = '1 0 0'
     normal_tol = 1.0e-8
     block = '104'
     new_boundary = 'bottom_left_shoulder_centerline'
   []
+
   [bottom_center_shoulder_gauge]
     type = CartesianMeshGenerator
     dim = 2
     dx = '${bottom_center_gauge_portion}'
-    dy = '${section_gauge_height}' #'${pitch_length} ${section_gauge_height}'
+    dy = '${pitch_length} ${section_gauge_height}'
     ix = '4'
-    iy = '20' #'13 20'
-    subdomain = '204' #204'
+    iy = '13 20'
+    subdomain_id = '204 204'
   []
   [move_bottom_center_gauge]
     type = TransformGenerator
     input = 'bottom_center_shoulder_gauge'
     transform = TRANSLATE
-    vector_value = '${fparse -0.5 * gauge_width + bottom_left_gauge_shoulder} ${fparse -1.0 * section_gauge_height - 0.5 * gauge_transition_height} 0'
-  []
-  [rename_bottom_center_section]
-    type = RenameBlockGenerator
-    input = move_bottom_center_gauge
-    old_block = '0'
-    new_block = '204'
+    vector_value = '${fparse -0.5 * gauge_width + bottom_left_gauge_shoulder} ${fparse -1.0 * section_gauge_height - pitch_length - 0.5 * gauge_transition_height} 0'
   []
   [rename_bottom_center_left]
     type = SideSetsAroundSubdomainGenerator
-    input = 'rename_bottom_center_section'
+    input = 'move_bottom_center_gauge'
     normal = '-1 0 0'
-    normal_tol = '1.0e-8'
+    normal_tol = 1.0e-8
     block = 204
     new_boundary = 'bottom_center_section_left'
   []
@@ -206,6 +283,7 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
   []
   [rename_bottom_center_right]
     type = SideSetsAroundSubdomainGenerator
+    # input = 'rename_bottom_center_section'
     input = 'stitch_bottom_center_left'
     normal = '1 0 0'
     normal_tol = 1.0e-8
@@ -213,6 +291,22 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     new_boundary = 'bottom_center_section_right'
   []
 
+  [lower_right_shoulder]
+    type = ConcentricCircleMeshGenerator
+    num_sectors = 20
+    radii = '${lower_right_radius}'
+    rings = '1 2'
+    has_outer_square = true
+    pitch = '${fparse 2.0 * pitch_length}'
+    preserve_volumes = false
+    portion = bottom_left
+  []
+  [move_downright_shoulder]
+    type = TransformGenerator
+    input = 'lower_right_shoulder'
+    transform = TRANSLATE
+    vector_value = '${fparse 0.5 * gauge_width + lower_right_radius} ${fparse -1.0 * section_gauge_height - gauge_transition_height/2.0} 0'
+  []
   [bottom_right_gauge_rectangles]
     type = CartesianMeshGenerator
     dim = 2
@@ -228,9 +322,20 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     transform = TRANSLATE
     vector_value = '${fparse 0.5 * gauge_width - bottom_right_gauge_shoulder} ${fparse -1.0 * section_gauge_height - 0.5 * gauge_transition_height} 0'
   []
+  [stitch_bottom_right_shoulders_gauge]
+    type = StitchedMeshGenerator
+    inputs = 'move_downright_shoulder move_bottom_right_gauge'
+    stitch_boundaries_pairs = 'top bottom'
+  []
+  [rename_bottom_right_shoulders]
+    type = RenameBlockGenerator
+    input = 'stitch_bottom_right_shoulders_gauge'
+    old_block = '1 2'
+    new_block = '13 103'
+  []
   [rename_bottom_right_shoulder_centerline]
     type = SideSetsAroundSubdomainGenerator
-    input = 'move_bottom_right_gauge'
+    input = 'rename_bottom_right_shoulders'
     normal = '-1 0 0'
     normal_tol = 1.0e-8
     block = '103'
@@ -241,34 +346,30 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
     inputs = 'rename_bottom_right_shoulder_centerline rename_bottom_center_right'
     stitch_boundaries_pairs = 'bottom_right_shoulder_centerline bottom_center_section_right'
   []
+
+  [cleanup_lower_spacer_blocks]
+    type = BlockDeletionGenerator
+    input = 'stitch_bottom_center_right'
+    block = '23 24'
+  []
   [rename_bottom_shoulder_gauge]
     type = RenameBlockGenerator
-    input = 'stitch_bottom_center_right'
+    input = 'cleanup_lower_spacer_blocks'
     old_block = '104 204 103'
-    new_block = '204 204 204'
-  []
-  [delete_bottom_shoulder_side_blocks]
-    type = BlockDeletionGenerator
-    input = 'rename_bottom_shoulder_gauge'
-    block = '24 23'
+    new_block = ' 10  10  10'
   []
   [rename_bottom_shoulder_top_side]
     type = SideSetsAroundSubdomainGenerator
-    input = 'delete_bottom_shoulder_side_blocks'
+    input = 'rename_bottom_shoulder_gauge'
     normal = '0 1 0'
     normal_tol = 1.0e-8
-    block = '204'
-    new_boundary = 'lower_gauge_section_top'
+    block = '10'
+    new_boundary = 'lower_shoulders_top'
   []
-  # [stitch_gauge_sections]
-  #   type = StitchedMeshGenerator
-  #   inputs = 'rename_top_shoulder_bottom_side rename_bottom_shoulder_top_side'
-  #   stitch_boundaries_pairs = 'upper_gauge_section_bottom lower_gauge_section_top'
-  # []
 
-  ####################################
-  #### transition region of the gauge
-  ####################################
+  # ####################################
+  # #### transition region of the gauge
+  # ####################################
   [transition_left]
     type = TransfiniteMeshGenerator
     corners = '${fparse -0.5 * gauge_width} ${fparse -0.5 * gauge_transition_height} 0.0
@@ -353,9 +454,10 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
   []
   [stitch_top_transition_region]
     type = StitchedMeshGenerator
-    inputs = 'rename_top_shoulder_bottom_side rename_transition_top_sideset'
-    stitch_boundaries_pairs = 'upper_gauge_section_bottom transition_top'
+    inputs = 'rename_top_shoulder_bottom rename_transition_top_sideset'
+    stitch_boundaries_pairs = 'upper_shoulders_bottom transition_top'
   []
+
   [rename_transition_bottom_sideset]
     type = SideSetsAroundSubdomainGenerator
     input = 'stitch_top_transition_region'
@@ -367,29 +469,150 @@ bottom_center_gauge_portion = '${fparse gauge_width - bottom_left_gauge_shoulder
   [stitch_bottom_transition_region]
     type = StitchedMeshGenerator
     inputs = 'rename_transition_bottom_sideset rename_bottom_shoulder_top_side'
-    stitch_boundaries_pairs = 'transition_bottom lower_gauge_section_top'
+    stitch_boundaries_pairs = 'transition_bottom lower_shoulders_top'
+  []
+  [rename_shoulder_gauge_whole]
+    type = RenameBlockGenerator
+    input = 'stitch_bottom_transition_region'
+    old_block = '206'
+    new_block = ' 10'
   []
 
-  # ### this will need to be one of the last steps, since it requires
-  # ### merging of the sections of the gauge and shoulder regions
-  # ## add the tab on bottom
-  # [rename_bottom_shoulder_gauge]
-  #   type = RenameBlockGenerator
-  #   input = 'stitch_bottom_center_right'
-  #   old_block = '104 204 103'
-  #   new_block = ' 10  10  10'
-  # []
+  #############################################
+  #### add tabs to top and bottom of shoulders
+  #############################################
+  [rename_top_shoulder_top_side]
+    type = SideSetsAroundSubdomainGenerator
+    input = 'rename_shoulder_gauge_whole'
+    normal = '0.0 1.0 0.0'
+    normal_tol = 1.0e-8
+    block = '10'
+    new_boundary = 'upper_shoulders_top'
+  []
 
-  # [delete_shoulder_cutouts]
-  #   type = BlockDeletionGenerator
-  #   input = 'downright_shoulder_sideset'
-  #   block = '13 14 23 24' #'11 12 21 22'
-  # []
-  # [final_single_mesh_block]
-  #   type = RenameBlockGenerator
-  #   input = 'delete_shoulder_cutouts'
-  #   old_block = '10 210'
-  #   new_block = ' 0   0'
-  # []
-  # final_generator = stitch_bottom_transition_region
+  [top_tab]
+    type = CartesianMeshGenerator
+    dim = 2
+    dx = '${pitch_length} ${top_center_gauge_portion} ${pitch_length}'
+    ix = '13 4 13'
+    dy = ' ${tab_height}'
+    iy = '15'
+  []
+  [move_top_tab]
+    type = TransformGenerator
+    input = 'top_tab'
+    transform = TRANSLATE
+    vector_value = '${fparse - 0.5 * gauge_width - upper_left_radius} ${fparse pitch_length + section_gauge_height + 0.5 * gauge_transition_height} 0'
+  []
+  [rename_top_tab]
+    type = RenameBlockGenerator
+    input = 'move_top_tab'
+    old_block = '0'
+    new_block = '200'
+  []
+  [rename_top_tab_bottom]
+    type = SideSetsAroundSubdomainGenerator
+    input = 'rename_top_tab'
+    normal = '0 -1 0'
+    normal_tol = 1.0e-8
+    block = 200
+    new_boundary = 'top_tab_bottom'
+  []
+  [stitch_top_tab]
+    type = StitchedMeshGenerator
+    inputs = 'rename_top_shoulder_top_side rename_top_tab_bottom'
+    stitch_boundaries_pairs = 'upper_shoulders_top top_tab_bottom'
+  []
+
+  [rename_bottom_shoulder_bottom_side]
+    type = SideSetsAroundSubdomainGenerator
+    input = 'stitch_top_tab'
+    normal = '0 -1 0'
+    normal_tol = 1.0e-8
+    block = '10'
+    new_boundary = 'lower_shoulders_bottom'
+  []
+  [bottom_tab]
+    type = CartesianMeshGenerator
+    dim = 2
+    dx = '${pitch_length} ${bottom_center_gauge_portion} ${pitch_length}'
+    ix = '13 4 13'
+    dy = ' ${tab_height}'
+    iy = '15'
+  []
+  [move_bottom_tab]
+    type = TransformGenerator
+    input = 'bottom_tab'
+    transform = TRANSLATE
+    vector_value = '${fparse - 0.5 * gauge_width - lower_left_radius} ${fparse -1.0 * tab_height - pitch_length - section_gauge_height - 0.5 * gauge_transition_height} 0'
+  []
+  [rename_bottom_tab]
+    type = RenameBlockGenerator
+    input = 'move_bottom_tab'
+    old_block = '0'
+    new_block = '210'
+  []
+  [rename_bottom_tab_top]
+    type = SideSetsAroundSubdomainGenerator
+    input = 'rename_bottom_tab'
+    normal = '0 1 0'
+    normal_tol = 1.0e-8
+    block = 210
+    new_boundary = 'bottom_tab_top'
+  []
+  [stitch_bottom_tab]
+    type = StitchedMeshGenerator
+    inputs = 'rename_bottom_shoulder_bottom_side rename_bottom_tab_top'
+    stitch_boundaries_pairs = 'lower_shoulders_bottom bottom_tab_top'
+  []
+
+  #############################################
+  #### add BC sidesets, mesh clean up
+  #############################################
+  [upleft_shoulder_sideset]
+    type = SideSetsBetweenSubdomainsGenerator
+    input = stitch_bottom_tab
+    primary_block = 10
+    paired_block = 11
+    new_boundary = 'upper_left_shoulder'
+  []
+  [upright_shoulder_sideset]
+    type = SideSetsBetweenSubdomainsGenerator
+    input = upleft_shoulder_sideset
+    primary_block = 10
+    paired_block = 12
+    new_boundary = 'upper_right_shoulder'
+  []
+  [downleft_shoulder_sideset]
+    type = SideSetsBetweenSubdomainsGenerator
+    input = upright_shoulder_sideset
+    primary_block = 10
+    paired_block = 14
+    new_boundary = 'lower_left_shoulder'
+  []
+  [downright_shoulder_sideset]
+    type = SideSetsBetweenSubdomainsGenerator
+    input = downleft_shoulder_sideset
+    primary_block = 10
+    paired_block = 13
+    new_boundary = 'lower_right_shoulder'
+  []
+
+  [delete_shoulder_cutouts]
+    type = BlockDeletionGenerator
+    input = 'downright_shoulder_sideset'
+    block = '11 12 13 14'
+  []
+  [final_single_mesh_block]
+    type = RenameBlockGenerator
+    input = 'delete_shoulder_cutouts'
+    old_block = '10 200 210'
+    new_block = ' 0   0   0'
+  []
+  [smoothed_final]
+    type = SmoothMeshGenerator
+    input = final_single_mesh_block
+    iterations = 20
+  []
+
 []
