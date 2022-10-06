@@ -191,7 +191,7 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::
 // _noise(getUserObject<ConservedNoiseInterface>("noise"))
 
 {
-  setRandomResetFrequency(EXEC_LINEAR);
+  setRandomResetFrequency(EXEC_TIMESTEP_BEGIN); // had been EXEC_LINEAR
   // if ((_calculate_cross_slip) && (!parameters.isParamSetByUser("noise")))
   //   paramError(
   //       "noise",
@@ -413,25 +413,43 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::calculateStochasticDislocat
   for (const auto i : make_range(_number_slip_systems))
     _stochastic_sum_cross_slip_dislocations[i] = 0.0;
 
-  for (const auto i : make_range(_number_cross_slip_directions))
+  std::cout << "\n\n\n %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% \n\n";
+  std::cout << "On qp number " << _qp << "\n\n";
+
+  for (const auto dir : make_range(_number_cross_slip_directions))
   {
+    // if (_qp == 4)
+    // {
+    std::cout << "On the cross slip family number, sorted by directions: " << dir << "\n";
+    std::cout << "The probability of each of the planes in this cross slip family is:\n";
+    // }
     std::vector<Real> family_xslip_probability(_number_cross_slip_planes);
     Real family_xslip_probability_sum = 0.0;
-    std::vector<std::vector<unsigned int>> family_xslip_interactions(
-        _number_cross_slip_planes, std::vector<unsigned int>(_number_cross_slip_planes, 1000));
+    std::vector<unsigned int> family_recieving_systems(_number_cross_slip_planes, 1000);
 
     // Determine the probability of cross slip for each slip plane in the family
     for (const auto j : make_range(_number_cross_slip_planes))
     {
-      const auto index = _cross_slip_familes[i][j];
+      const auto index = _cross_slip_familes[dir][j];
       const Real xslip_force =
           (_cs_activation_barrier - std::abs(_tau[_qp][index])) * _cs_activation_volume;
       const Real xslip_probabilty =
           std::exp(-xslip_force / (_boltzmann_constant * _temperature[_qp]));
 
+      // if (_qp == 4)
+      // {
+      std::cout << "  the slip on the xslip family entry " << j
+                << ", which is really slip system number " << index << " is \n      ";
+      std::cout << xslip_probabilty << "\n";
+      // }
+
       family_xslip_probability[j] = xslip_probabilty;
       family_xslip_probability_sum += xslip_probabilty;
     }
+    // if (_qp == 4)
+    // {
+    std::cout << "  and the xslip family sum is: " << family_xslip_probability_sum << "\n\n";
+    // }
 
     // Now normalize the components of each probabilty by dividing by the probabilty sum
     for (const auto j : make_range(_number_cross_slip_planes))
@@ -446,11 +464,25 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::calculateStochasticDislocat
       mooseError("The cumulative distribution function for the stochastic cross slip analysis was "
                  "incorrectly calculated");
 
+    // if (_qp == 4)
+    // {
+    std::cout << "Then the normalized and constructed CDF has the form: \n";
+    for (const auto s : make_range(_number_cross_slip_planes))
+      std::cout << "    " << family_xslip_probability[s] << "\n";
+    std::cout << "\n";
+    // }
+
     // Monte Carlo Analysis using Moose's RandomInterface, assumes all systems can cross slip
     for (const auto giving_system : make_range(_number_cross_slip_planes))
     {
       // const auto xslip_dice = _noise.getQpValue(_current_elem->id(), _qp);
       const auto xslip_dice = getRandomReal();
+
+      // if (_qp == 4)
+      // {
+      std::cout << "For the giving system number " << giving_system
+                << " the dice value is: " << xslip_dice << "\n";
+      // }
 
       // Now check the value of the random xslip dice against the bin values to determine into which
       // slip system the dislocations will cross slip
@@ -459,16 +491,23 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::calculateStochasticDislocat
         if (xslip_dice < family_xslip_probability[j])
         {
           const auto recieving_system = j;
-          if (giving_system != recieving_system) // Not self: cross slip occurs
+          if (giving_system != recieving_system) // Not 'self-cross slip', so cross slip occurs
           {
             // Find the actual index that corresponds to the giving system
-            const auto index = _cross_slip_familes[i][giving_system];
-            family_xslip_interactions[giving_system][giving_system] = index;
-            family_xslip_interactions[recieving_system][giving_system] = index;
+            const auto index = _cross_slip_familes[dir][recieving_system];
+            family_recieving_systems[giving_system] = index;
           }
           break;
         }
       }
+      // if (_qp == 4)
+      // {
+      std::cout << "  such that the family recieving systems vector should have the form: \n";
+      for (const auto give_sys : make_range(_number_cross_slip_planes))
+        std::cout << "    " << family_recieving_systems[give_sys] << "\n";
+
+      std::cout << "\n";
+      // }
     }
 
     // Now need to calculate the sum of the cross slip dislocations
@@ -476,22 +515,53 @@ CrystalPlasticityContinuumDislocationDynamicsUpdate::calculateStochasticDislocat
     for (const auto a : make_range(_number_cross_slip_planes))
     {
       Real single_system_sum = 0.0;
+      const auto a_index = _cross_slip_familes[dir][a];
+
+      // if (_qp ==4)
+      // {
+      std::cout << "Finally, summing the dislocation density contributions from the different slip "
+                   "systems\n";
+      std::cout << "  for xslip family system " << a << " which should be crystal system "
+                << a_index << "\n";
+      // }
+
+      if (family_recieving_systems[a] != 1000)
+      {
+        single_system_sum -= _previous_substep_mobile_dislocations[a_index];
+        std::cout << "There is movement of dislocations away from this system: "
+                  << _previous_substep_mobile_dislocations[a_index] << "\n";
+      }
+
       for (const auto b : make_range(_number_cross_slip_planes))
       {
-        if (family_xslip_interactions[a][b] != 1000) // 1000 is the intital placeholder
+        if (family_recieving_systems[b] == a_index)
         {
-          const auto index = family_xslip_interactions[a][b];
-
-          if (a != b) // recieving dislocations, lagged one substep
-            single_system_sum += _previous_substep_mobile_dislocations[index];
-          else // a == b, giving dislocations
-            single_system_sum -= _previous_substep_mobile_dislocations[index];
+          const auto b_index = _cross_slip_familes[dir][b];
+          single_system_sum += _previous_substep_mobile_dislocations[b_index];
+          std::cout << "  and movement of dislocations to this system from slip system " << b_index
+                    << "\n";
+          std::cout << "  in the amount of " << _previous_substep_mobile_dislocations[b_index]
+                    << "\n";
         }
       }
-      // Now that have completed the summing, store in the appropriate position in the material
-      // property
-      const auto self_index = _cross_slip_familes[i][a];
-      _stochastic_sum_cross_slip_dislocations[self_index] = single_system_sum;
+      /**      for (const auto b : make_range(_number_cross_slip_planes))
+            {
+              if (family_xslip_interactions[a][b] != 1000) // 1000 is the intital placeholder
+              {
+                const auto index = family_xslip_interactions[a][b];
+
+                if (a != b) // recieving dislocations, lagged one substep
+                  single_system_sum += _previous_substep_mobile_dislocations[index];
+                else // a == b, giving dislocations
+                  single_system_sum -= _previous_substep_mobile_dislocations[index];
+              }
+            }
+      */
+
+      // Now that have completed summing, store in the appropriate position in the material property
+      _stochastic_sum_cross_slip_dislocations[a_index] = single_system_sum;
+      std::cout << "\n Such that the sum of cross slip dislocation movement ought to be: "
+                << _stochastic_sum_cross_slip_dislocations[a_index] << "\n";
     }
   }
 }
