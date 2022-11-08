@@ -1,4 +1,4 @@
-## Ideal geometry, BCs, elastic only simulation
+# Attempt to build the dogbone sample with only the transfinite generator
 
 ## parameters to vary with STM
 upper_left_radius = 1.654 #1.3 #1.3 #min 1.146, max 1.654
@@ -13,8 +13,6 @@ gauge_height = 5.954 #5.7
 
 upper_rig_offset = 0.0 # -0.15 to 0.15
 lower_rig_offset = 0.0 # -0.15 to 0.15
-
-sample_thickness = 0.5
 
 ## constrained values (hardcoded)
 tab_height = 5.15 # 3.75 +1.4 from tab top to gauge height
@@ -127,9 +125,6 @@ one_minus_inverse_sqrt_two = '${fparse 1.0 - 1.0 / sqrt(2.0)}'
     stitch_boundaries_pairs = 'bottom top'
   []
 
-  #############################################
-  #### add BC sidesets, mesh clean up
-  #############################################
   [smoothed_final]
     type = SmoothMeshGenerator
     input = stitch_bottom_gauge
@@ -139,12 +134,15 @@ one_minus_inverse_sqrt_two = '${fparse 1.0 - 1.0 / sqrt(2.0)}'
   [extruder]
     type = MeshExtruderGenerator
     input = smoothed_final
-    extrusion_vector = "0 0 ${sample_thickness}"
+    extrusion_vector = "0 0 0.5"
     num_layers = 5
     bottom_sideset = back
     top_sideset = front
   []
 
+  #############################################
+  #### add BC sidesets, mesh clean up
+  #############################################
   [downleft_shoulder_sideset]
     type = ParsedGenerateSideset
     # input = 'smoothed_final'
@@ -170,152 +168,5 @@ one_minus_inverse_sqrt_two = '${fparse 1.0 - 1.0 / sqrt(2.0)}'
     input = 'upleft_shoulder_sideset'
     combinatorial_geometry = 'x>=(${fparse 0.5 * rig_gap + (upper_rig_offset)}) & abs((x-(${fparse 0.5 * gauge_width + upper_right_radius}))^2+(y-(${fparse 0.5*gauge_height}))^2-(${upper_right_radius})^2)<1e-2'
     new_sideset_name = 'upper_right_shoulder'
-  []
-[]
-
-[GlobalParams]
-  displacements = 'disp_x disp_y disp_z'
-[]
-
-[BCs]
-  [zero_displacements_y]
-    type = ADDirichletBC
-    variable = disp_y
-    boundary = 'lower_left_shoulder lower_right_shoulder'
-    value = 0.0
-  []
-  [zero_displacements_z]
-    type = ADDirichletBC
-    variable = disp_z
-    boundary = 'lower_left_shoulder lower_right_shoulder upper_left_shoulder upper_right_shoulder'
-    value = 0.0
-  []
-  [tensile_displacement]
-    type = ADFunctionDirichletBC
-    variable = disp_y
-    boundary = 'upper_left_shoulder upper_right_shoulder'
-    function = '0.08*t'
-  []
-[]
-
-[Modules/TensorMechanics/Master]
-  [all]
-    strain = FINITE
-    incremental = true
-    add_variables = true
-    generate_output = 'stress_xx stress_yy stress_xy stress_yz stress_zx stress_zz strain_xx strain_yy strain_zz strain_xy vonmises_stress'
-    additional_material_output_family = MONOMIAL
-    additional_material_output_order = FIRST
-    use_automatic_differentiation = true
-  []
-[]
-
-[Materials]
-  [elasticity_tensor]
-    type = ADComputeIsotropicElasticityTensor
-    youngs_modulus = 9.24e4 #in MPa
-    poissons_ratio = 0.363
-  []
-  [elastic_stress]
-    type = ADComputeFiniteStrainElasticStress
-  []
-  # [radial_return_stress]
-  #   type = ADComputeMultipleInelasticStress
-  #   inelastic_models = 'power_law_hardening'
-  # []
-  # [power_law_hardening]
-  #   type = ADIsotropicPowerLawHardeningStressUpdate
-  #   strength_coefficient = 854 #MPa
-  #   strain_hardening_exponent = 0.125 #n
-  #   relative_tolerance = 1e-6
-  #   absolute_tolerance = 1e-6
-  # []
-[]
-
-[Preconditioning]
-  [smp]
-    type = SMP
-    full = true
-  []
-[]
-
-[Executioner]
-  type = Transient
-  solve_type = 'NEWTON'
-
-  petsc_options_iname = '-pc_type -pc_factor_mat_solver_package' # -pc_factor_shift_type -pc_factor_shift_amount'
-  petsc_options_value = ' lu       superlu_dist' #                  NONZERO 1e-15'
-  line_search = 'none'
-
-  # [TimeStepper]
-  #   type = IterationAdaptiveDT
-  #   dt = 0.1
-  #   optimal_iterations = 8
-  #   iteration_window = 2
-  # []
-  dt = 0.1
-  dtmin = 1e-6
-  end_time = 10
-  nl_max_its = 30
-  nl_rel_tol = 1e-6
-  nl_abs_tol = 1e-6
-[]
-
-[Outputs]
-  csv = true
-  exodus = true
-[]
-
-[Postprocessors]
-  [p1_vonmises_stress]
-    type = PointValue
-    variable = vonmises_stress
-    point = '0 ${fparse 0.5 * gauge_height + 1.4} ${fparse sample_thickness/2.0}'
-  []
-  [p2_vonmises_stress]
-    type = PointValue
-    variable = vonmises_stress
-    point = '0 ${fparse 0.5 * gauge_height} ${fparse sample_thickness/2.0}'
-  []
-  [p3_vonmises_stress]
-    type = PointValue
-    variable = vonmises_stress
-    point = '0 ${fparse 0.25 * gauge_height} ${fparse sample_thickness/2.0}'
-  []
-  [p4_vonmises_stress]
-    type = PointValue
-    variable = vonmises_stress
-    point = '${fparse -0.5*gauge_width} 0 ${fparse sample_thickness/2.0}'
-  []
-  [p5_vonmises_stress]
-    type = PointValue
-    variable = vonmises_stress
-    point = '0 0 ${fparse sample_thickness/2.0}'
-  []
-  [p6_vonmises_stress]
-    type = PointValue
-    variable = vonmises_stress
-    point = '${fparse 0.5*gauge_width} 0 ${fparse sample_thickness/2.0}'
-  []
-  [p7_vonmises_stress]
-    type = PointValue
-    variable = vonmises_stress
-    point = '0 ${fparse -0.25 * gauge_height} ${fparse sample_thickness/2.0}'
-  []
-  [p8_vonmises_stress]
-    type = PointValue
-    variable = vonmises_stress
-    point = '0 ${fparse -0.5 * gauge_height} ${fparse sample_thickness/2.0}'
-  []
-  [p9_vonmises_stress]
-    type = PointValue
-    variable = vonmises_stress
-    point = ' 0 ${fparse -0.5 * gauge_height = 1.4} ${fparse sample_thickness/2.0}'
-  []
-
-  [max_vonmises_stress]
-    type = ElementExtremeValue
-    variable = vonmises_stress
-    value_type = max
   []
 []
