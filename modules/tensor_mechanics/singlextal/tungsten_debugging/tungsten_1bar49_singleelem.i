@@ -6,257 +6,260 @@
   [cube]
     type = GeneratedMeshGenerator
     dim = 3
-    nx = 1
-    ny = 1
-    nz = 1
+    nx = 8
+    ny = 8
+    nz = 8
     elem_type = HEX8
   []
 []
 
 [AuxVariables]
+  [temperature]
+    initial_condition = 297.0 ##24C
+  []
   [pk2_zz]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [fp_zz]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [e_zz]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [pk2_xx]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [fp_xx]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [e_xx]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [pk2_yy]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [fp_yy]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [e_yy]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [vonmises_stress_cauchy]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [eff_strain_green]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [vonmises_stress_pk2]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [eff_strain_lag]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [gss_0]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
-  [mobile_disl_0]
+  [dislocation_0]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [slip_incr_0]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [tau_0]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [gss_1]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
-  [mobile_disl_1]
+  [dislocation_1]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [slip_incr_1]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [tau_1]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [gss_2]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
-  [mobile_disl_2]
+  [dislocation_2]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [slip_incr_2]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [tau_2]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [gss_3]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
-  [mobile_disl_3]
+  [dislocation_3]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [slip_incr_3]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [tau_3]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [gss_4]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
-  [mobile_disl_4]
+  [dislocation_4]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [slip_incr_4]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [tau_4]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [gss_5]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
-  [mobile_disl_5]
+  [dislocation_5]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [slip_incr_5]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [tau_5]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [gss_6]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
-  [mobile_disl_6]
+  [dislocation_6]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [slip_incr_6]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [tau_6]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [gss_7]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
-  [mobile_disl_7]
+  [dislocation_7]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [slip_incr_7]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [tau_7]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [gss_8]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
-  [mobile_disl_8]
+  [dislocation_8]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [slip_incr_8]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [tau_8]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [gss_9]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
-  [mobile_disl_9]
+  [dislocation_9]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [slip_incr_9]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [tau_9]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [gss_10]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
-  [mobile_disl_10]
+  [dislocation_10]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [slip_incr_10]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [tau_10]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [gss_11]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
-  [mobile_disl_11]
+  [dislocation_11]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [slip_incr_11]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
   [tau_11]
     order = FIRST
-    family = MONOMIAL
+    family = LAGRANGE
   []
 []
 
@@ -372,340 +375,320 @@
     execute_on = timestep_end
   []
   [gss_0]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = gss_0
-    property = slip_resistance
-    index = 0
+    nodal_patch_recovery_uo = gss_0_patch
     execute_on = timestep_end
   []
-  [mobile_disl_0]
-    type = MaterialStdVectorAux
-    variable = mobile_disl_0
-    property = mobile_dislocations
-    index = 0
+  [dislocation_0]
+    type = NodalPatchRecoveryAux
+    variable = dislocation_0
+    nodal_patch_recovery_uo = dislocation_0_patch
     execute_on = timestep_end
   []
   [slip_incr_0]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = slip_incr_0
-    property = constitutive_slip_increment
-    index = 0
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = slip_incr_0_patch
+    execute_on = 'TIMESTEP_END'
   []
   [tau_0]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = tau_0
-    property = applied_shear_stress
-    index = 0
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = tau_0_patch
+    execute_on = 'TIMESTEP_END'
   []
+  # [gss_0]
+  #   type = MaterialStdVectorAux
+  #   variable = gss_0
+  #   property = slip_resistance
+  #   index = 0
+  #   execute_on = timestep_end
+  # []
+  # [dislocation_0]
+  #   type = MaterialStdVectorAux
+  #   variable = dislocation_0
+  #   property = dislocation_density
+  #   index = 0
+  #   execute_on = timestep_end
+  # []
+  # [slip_incr_0]
+  #   type = MaterialStdVectorAux
+  #   variable = slip_incr_0
+  #   property = constitutive_slip_increment
+  #   index = 0
+  #   execute_on = timestep_end
+  # []
+  # [tau_0]
+  #   type = MaterialStdVectorAux
+  #   variable = tau_0
+  #   property = applied_shear_stress
+  #   index = 0
+  #   execute_on = timestep_end
+  # []
   [gss_1]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = gss_1
-    property = slip_resistance
-    index = 1
+    nodal_patch_recovery_uo = gss_1_patch
     execute_on = timestep_end
   []
-  [mobile_disl_1]
-    type = MaterialStdVectorAux
-    variable = mobile_disl_1
-    property = mobile_dislocations
-    index = 1
+  [dislocation_1]
+    type = NodalPatchRecoveryAux
+    variable = dislocation_1
+    nodal_patch_recovery_uo = dislocation_1_patch
     execute_on = timestep_end
   []
   [slip_incr_1]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = slip_incr_1
-    property = constitutive_slip_increment
-    index = 1
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = slip_incr_1_patch
+    execute_on = 'TIMESTEP_END'
   []
   [tau_1]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = tau_1
-    property = applied_shear_stress
-    index = 1
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = tau_1_patch
+    execute_on = 'TIMESTEP_END'
   []
   [gss_2]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = gss_2
-    property = slip_resistance
-    index = 2
+    nodal_patch_recovery_uo = gss_2_patch
     execute_on = timestep_end
   []
-  [mobile_disl_2]
-    type = MaterialStdVectorAux
-    variable = mobile_disl_2
-    property = mobile_dislocations
-    index = 2
+  [dislocation_2]
+    type = NodalPatchRecoveryAux
+    variable = dislocation_2
+    nodal_patch_recovery_uo = dislocation_2_patch
     execute_on = timestep_end
   []
   [slip_incr_2]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = slip_incr_2
-    property = constitutive_slip_increment
-    index = 2
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = slip_incr_2_patch
+    execute_on = 'TIMESTEP_END'
   []
   [tau_2]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = tau_2
-    property = applied_shear_stress
-    index = 2
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = tau_2_patch
+    execute_on = 'TIMESTEP_END'
   []
   [gss_3]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = gss_3
-    property = slip_resistance
-    index = 3
+    nodal_patch_recovery_uo = gss_3_patch
     execute_on = timestep_end
   []
-  [mobile_disl_3]
-    type = MaterialStdVectorAux
-    variable = mobile_disl_3
-    property = mobile_dislocations
-    index = 3
+  [dislocation_3]
+    type = NodalPatchRecoveryAux
+    variable = dislocation_3
+    nodal_patch_recovery_uo = dislocation_3_patch
     execute_on = timestep_end
   []
   [slip_incr_3]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = slip_incr_3
-    property = constitutive_slip_increment
-    index = 3
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = slip_incr_3_patch
+    execute_on = 'TIMESTEP_END'
   []
   [tau_3]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = tau_3
-    property = applied_shear_stress
-    index = 3
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = tau_3_patch
+    execute_on = 'TIMESTEP_END'
   []
   [gss_4]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = gss_4
-    property = slip_resistance
-    index = 4
+    nodal_patch_recovery_uo = gss_4_patch
     execute_on = timestep_end
   []
-  [mobile_disl_4]
-    type = MaterialStdVectorAux
-    variable = mobile_disl_4
-    property = mobile_dislocations
-    index = 4
+  [dislocation_4]
+    type = NodalPatchRecoveryAux
+    variable = dislocation_4
+    nodal_patch_recovery_uo = dislocation_4_patch
     execute_on = timestep_end
   []
   [slip_incr_4]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = slip_incr_4
-    property = constitutive_slip_increment
-    index = 4
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = slip_incr_4_patch
+    execute_on = 'TIMESTEP_END'
   []
   [tau_4]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = tau_4
-    property = applied_shear_stress
-    index = 4
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = tau_4_patch
+    execute_on = 'TIMESTEP_END'
   []
   [gss_5]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = gss_5
-    property = slip_resistance
-    index = 5
+    nodal_patch_recovery_uo = gss_5_patch
     execute_on = timestep_end
   []
-  [mobile_disl_5]
-    type = MaterialStdVectorAux
-    variable = mobile_disl_5
-    property = mobile_dislocations
-    index = 5
+  [dislocation_5]
+    type = NodalPatchRecoveryAux
+    variable = dislocation_5
+    nodal_patch_recovery_uo = dislocation_5_patch
     execute_on = timestep_end
   []
   [slip_incr_5]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = slip_incr_5
-    property = constitutive_slip_increment
-    index = 5
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = slip_incr_5_patch
+    execute_on = 'TIMESTEP_END'
   []
   [tau_5]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = tau_5
-    property = applied_shear_stress
-    index = 5
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = tau_5_patch
+    execute_on = 'TIMESTEP_END'
   []
   [gss_6]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = gss_6
-    property = slip_resistance
-    index = 6
+    nodal_patch_recovery_uo = gss_6_patch
     execute_on = timestep_end
   []
-  [mobile_disl_6]
-    type = MaterialStdVectorAux
-    variable = mobile_disl_6
-    property = mobile_dislocations
-    index = 6
+  [dislocation_6]
+    type = NodalPatchRecoveryAux
+    variable = dislocation_6
+    nodal_patch_recovery_uo = dislocation_6_patch
     execute_on = timestep_end
   []
   [slip_incr_6]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = slip_incr_6
-    property = constitutive_slip_increment
-    index = 6
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = slip_incr_6_patch
+    execute_on = 'TIMESTEP_END'
   []
   [tau_6]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = tau_6
-    property = applied_shear_stress
-    index = 6
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = tau_6_patch
+    execute_on = 'TIMESTEP_END'
   []
   [gss_7]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = gss_7
-    property = slip_resistance
-    index = 7
+    nodal_patch_recovery_uo = gss_7_patch
     execute_on = timestep_end
   []
-  [mobile_disl_7]
-    type = MaterialStdVectorAux
-    variable = mobile_disl_7
-    property = mobile_dislocations
-    index = 7
+  [dislocation_7]
+    type = NodalPatchRecoveryAux
+    variable = dislocation_7
+    nodal_patch_recovery_uo = dislocation_7_patch
     execute_on = timestep_end
   []
   [slip_incr_7]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = slip_incr_7
-    property = constitutive_slip_increment
-    index = 7
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = slip_incr_7_patch
+    execute_on = 'TIMESTEP_END'
   []
   [tau_7]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = tau_7
-    property = applied_shear_stress
-    index = 7
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = tau_7_patch
+    execute_on = 'TIMESTEP_END'
   []
   [gss_8]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = gss_8
-    property = slip_resistance
-    index = 8
+    nodal_patch_recovery_uo = gss_8_patch
     execute_on = timestep_end
   []
-  [mobile_disl_8]
-    type = MaterialStdVectorAux
-    variable = mobile_disl_8
-    property = mobile_dislocations
-    index = 8
+  [dislocation_8]
+    type = NodalPatchRecoveryAux
+    variable = dislocation_8
+    nodal_patch_recovery_uo = dislocation_8_patch
     execute_on = timestep_end
   []
   [slip_incr_8]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = slip_incr_8
-    property = constitutive_slip_increment
-    index = 8
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = slip_incr_8_patch
+    execute_on = 'TIMESTEP_END'
   []
   [tau_8]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = tau_8
-    property = applied_shear_stress
-    index = 8
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = tau_8_patch
+    execute_on = 'TIMESTEP_END'
   []
   [gss_9]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = gss_9
-    property = slip_resistance
-    index = 9
+    nodal_patch_recovery_uo = gss_9_patch
     execute_on = timestep_end
   []
-  [mobile_disl_9]
-    type = MaterialStdVectorAux
-    variable = mobile_disl_9
-    property = mobile_dislocations
-    index = 9
+  [dislocation_9]
+    type = NodalPatchRecoveryAux
+    variable = dislocation_9
+    nodal_patch_recovery_uo = dislocation_9_patch
     execute_on = timestep_end
   []
   [slip_incr_9]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = slip_incr_9
-    property = constitutive_slip_increment
-    index = 9
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = slip_incr_9_patch
+    execute_on = 'TIMESTEP_END'
   []
   [tau_9]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = tau_9
-    property = applied_shear_stress
-    index = 9
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = tau_9_patch
+    execute_on = 'TIMESTEP_END'
   []
   [gss_10]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = gss_10
-    property = slip_resistance
-    index = 10
+    nodal_patch_recovery_uo = gss_10_patch
     execute_on = timestep_end
   []
-  [mobile_disl_10]
-    type = MaterialStdVectorAux
-    variable = mobile_disl_10
-    property = mobile_dislocations
-    index = 10
+  [dislocation_10]
+    type = NodalPatchRecoveryAux
+    variable = dislocation_10
+    nodal_patch_recovery_uo = dislocation_10_patch
     execute_on = timestep_end
   []
   [slip_incr_10]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = slip_incr_10
-    property = constitutive_slip_increment
-    index = 10
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = slip_incr_10_patch
+    execute_on = 'TIMESTEP_END'
   []
   [tau_10]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = tau_10
-    property = applied_shear_stress
-    index = 10
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = tau_10_patch
+    execute_on = 'TIMESTEP_END'
   []
   [gss_11]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = gss_11
-    property = slip_resistance
-    index = 11
+    nodal_patch_recovery_uo = gss_11_patch
     execute_on = timestep_end
   []
-  [mobile_disl_11]
-    type = MaterialStdVectorAux
-    variable = mobile_disl_11
-    property = mobile_dislocations
-    index = 11
+  [dislocation_11]
+    type = NodalPatchRecoveryAux
+    variable = dislocation_11
+    nodal_patch_recovery_uo = dislocation_11_patch
     execute_on = timestep_end
   []
   [slip_incr_11]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = slip_incr_11
-    property = constitutive_slip_increment
-    index = 11
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = slip_incr_11_patch
+    execute_on = 'TIMESTEP_END'
   []
   [tau_11]
-    type = MaterialStdVectorAux
+    type = NodalPatchRecoveryAux
     variable = tau_11
-    property = applied_shear_stress
-    index = 11
-    execute_on = timestep_end
+    nodal_patch_recovery_uo = tau_11_patch
+    execute_on = 'TIMESTEP_END'
   []
 []
 
@@ -732,7 +715,7 @@
     type = FunctionDirichletBC
     variable = disp_z
     boundary = 'front'
-    function = '8.5e-4*t' #given strain rate, and 1mm cube
+    function = '8.5e-4*t' #given strain rate for the 1bar49 orientation
   []
 []
 
@@ -754,15 +737,357 @@
     # print_state_variable_convergence_error_messages = true
   []
   [trial_xtalpl]
-    type = CrystalPlasticityKocksMeckingGlideUpdate
+    type = CrystalPlasticityTungstenGlideUpdate
     number_slip_systems = 12
     slip_sys_file_name = input_slip_sys_bcc12.txt
-    initial_dislocation_density = 5.5e3 #from Brunner 2010  #4.5e8 # roughly David's measurement # 1.0e7 from Srivastava et al (2013), assumed equal to mobile
+    temperature = temperature
+    initial_dislocation_density = 1.0e6 # Argon and Maloof 1966 #5.5e3 from Brunner 2010  #4.5e8 # roughly David's measurement # 1.0e7 from Srivastava et al (2013)
     burgers_vector = 2.74e-07 # Lim et al (2015) JMPS
+    dislocation_multiplication_coefficient = 1
+    dipole_annihilation_distance = 2.74e-07 #given in Cereceda et al 2016 as equal to the burgers vector, CHECK THIS AGAIN LATER
     lattice_friction = 12.0 #Lim et al (2015) JMPS, High temperature value
     shear_modulus = 1.600e5 # at 24C, from Lowie and Gonas (1967) J. Applied Physics
     stol = 1.0e-3
-    print_state_variable_convergence_error_messages = true
+    # print_state_variable_convergence_error_messages = true
+  []
+[]
+
+[UserObjects]
+  [gss_0_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'slip_resistance'
+    component = '0'
+    execute_on = TIMESTEP_END
+  []
+  [dislocation_0_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'dislocation_density'
+    component = '0'
+    execute_on = TIMESTEP_END
+  []
+  [slip_incr_0_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'constitutive_slip_increment'
+    component = '0'
+    execute_on = TIMESTEP_END
+  []
+  [tau_0_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'applied_shear_stress'
+    component = '0'
+    execute_on = TIMESTEP_END
+  []
+  [gss_1_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'slip_resistance'
+    component = '1'
+    execute_on = TIMESTEP_END
+  []
+  [dislocation_1_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'dislocation_density'
+    component = '1'
+    execute_on = TIMESTEP_END
+  []
+  [slip_incr_1_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'constitutive_slip_increment'
+    component = '1'
+    execute_on = TIMESTEP_END
+  []
+  [tau_1_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'applied_shear_stress'
+    component = '1'
+    execute_on = TIMESTEP_END
+  []
+  [gss_2_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'slip_resistance'
+    component = '2'
+    execute_on = TIMESTEP_END
+  []
+  [dislocation_2_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'dislocation_density'
+    component = '2'
+    execute_on = TIMESTEP_END
+  []
+  [slip_incr_2_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'constitutive_slip_increment'
+    component = '2'
+    execute_on = TIMESTEP_END
+  []
+  [tau_2_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'applied_shear_stress'
+    component = '2'
+    execute_on = TIMESTEP_END
+  []
+  [gss_3_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'slip_resistance'
+    component = '3'
+    execute_on = TIMESTEP_END
+  []
+  [dislocation_3_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'dislocation_density'
+    component = '3'
+    execute_on = TIMESTEP_END
+  []
+  [slip_incr_3_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'constitutive_slip_increment'
+    component = '3'
+    execute_on = TIMESTEP_END
+  []
+  [tau_3_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'applied_shear_stress'
+    component = '3'
+    execute_on = TIMESTEP_END
+  []
+  [gss_4_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'slip_resistance'
+    component = '4'
+    execute_on = TIMESTEP_END
+  []
+  [dislocation_4_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'dislocation_density'
+    component = '4'
+    execute_on = TIMESTEP_END
+  []
+  [slip_incr_4_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'constitutive_slip_increment'
+    component = '4'
+    execute_on = TIMESTEP_END
+  []
+  [tau_4_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'applied_shear_stress'
+    component = '4'
+    execute_on = TIMESTEP_END
+  []
+  [gss_5_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'slip_resistance'
+    component = '5'
+    execute_on = TIMESTEP_END
+  []
+  [dislocation_5_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'dislocation_density'
+    component = '5'
+    execute_on = TIMESTEP_END
+  []
+  [slip_incr_5_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'constitutive_slip_increment'
+    component = '5'
+    execute_on = TIMESTEP_END
+  []
+  [tau_5_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'applied_shear_stress'
+    component = '5'
+    execute_on = TIMESTEP_END
+  []
+  [gss_6_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'slip_resistance'
+    component = '6'
+    execute_on = TIMESTEP_END
+  []
+  [dislocation_6_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'dislocation_density'
+    component = '6'
+    execute_on = TIMESTEP_END
+  []
+  [slip_incr_6_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'constitutive_slip_increment'
+    component = '6'
+    execute_on = TIMESTEP_END
+  []
+  [tau_6_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'applied_shear_stress'
+    component = '6'
+    execute_on = TIMESTEP_END
+  []
+  [gss_7_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'slip_resistance'
+    component = '7'
+    execute_on = TIMESTEP_END
+  []
+  [dislocation_7_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'dislocation_density'
+    component = '7'
+    execute_on = TIMESTEP_END
+  []
+  [slip_incr_7_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'constitutive_slip_increment'
+    component = '7'
+    execute_on = TIMESTEP_END
+  []
+  [tau_7_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'applied_shear_stress'
+    component = '7'
+    execute_on = TIMESTEP_END
+  []
+  [gss_8_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'slip_resistance'
+    component = '8'
+    execute_on = TIMESTEP_END
+  []
+  [dislocation_8_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'dislocation_density'
+    component = '8'
+    execute_on = TIMESTEP_END
+  []
+  [slip_incr_8_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'constitutive_slip_increment'
+    component = '8'
+    execute_on = TIMESTEP_END
+  []
+  [tau_8_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'applied_shear_stress'
+    component = '8'
+    execute_on = TIMESTEP_END
+  []
+  [gss_9_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'slip_resistance'
+    component = '9'
+    execute_on = TIMESTEP_END
+  []
+  [dislocation_9_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'dislocation_density'
+    component = '9'
+    execute_on = TIMESTEP_END
+  []
+  [slip_incr_9_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'constitutive_slip_increment'
+    component = '9'
+    execute_on = TIMESTEP_END
+  []
+  [tau_9_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'applied_shear_stress'
+    component = '9'
+    execute_on = TIMESTEP_END
+  []
+  [gss_10_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'slip_resistance'
+    component = '10'
+    execute_on = TIMESTEP_END
+  []
+  [dislocation_10_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'dislocation_density'
+    component = '10'
+    execute_on = TIMESTEP_END
+  []
+  [slip_incr_10_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'constitutive_slip_increment'
+    component = '10'
+    execute_on = TIMESTEP_END
+  []
+  [tau_10_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'applied_shear_stress'
+    component = '10'
+    execute_on = TIMESTEP_END
+  []
+  [gss_11_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'slip_resistance'
+    component = '11'
+    execute_on = TIMESTEP_END
+  []
+  [dislocation_11_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'dislocation_density'
+    component = '11'
+    execute_on = TIMESTEP_END
+  []
+  [slip_incr_11_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'constitutive_slip_increment'
+    component = '11'
+    execute_on = TIMESTEP_END
+  []
+  [tau_11_patch]
+    type = NodalPatchRecoveryMaterialProperty
+    patch_polynomial_order = FIRST
+    property = 'applied_shear_stress'
+    component = '11'
+    execute_on = TIMESTEP_END
   []
 []
 
@@ -839,17 +1164,13 @@
     type = ElementAverageValue
     variable = gss_0
   []
-  [mobile_disl_0]
+  [dislocation_0]
     type = ElementAverageValue
-    variable = mobile_disl_0
+    variable = dislocation_0
   []
-  [cross_slip_disl_0]
+  [slip_incr_0]
     type = ElementAverageValue
-    variable = xslip_disl_0
-  []
-  [immobile_disl_0]
-    type = ElementAverageValue
-    variable = immobile_disl_0
+    variable = slip_incr_0
   []
   [tau_0]
     type = ElementAverageValue
@@ -859,17 +1180,13 @@
     type = ElementAverageValue
     variable = gss_1
   []
-  [mobile_disl_1]
+  [dislocation_1]
     type = ElementAverageValue
-    variable = mobile_disl_1
+    variable = dislocation_1
   []
-  [cross_slip_disl_1]
+  [slip_incr_1]
     type = ElementAverageValue
-    variable = xslip_disl_1
-  []
-  [immobile_disl_1]
-    type = ElementAverageValue
-    variable = immobile_disl_1
+    variable = slip_incr_1
   []
   [tau_1]
     type = ElementAverageValue
@@ -879,17 +1196,13 @@
     type = ElementAverageValue
     variable = gss_2
   []
-  [mobile_disl_2]
+  [dislocation_2]
     type = ElementAverageValue
-    variable = mobile_disl_2
+    variable = dislocation_2
   []
-  [cross_slip_disl_2]
+  [slip_incr_2]
     type = ElementAverageValue
-    variable = xslip_disl_2
-  []
-  [immobile_disl_2]
-    type = ElementAverageValue
-    variable = immobile_disl_2
+    variable = slip_incr_2
   []
   [tau_2]
     type = ElementAverageValue
@@ -899,17 +1212,13 @@
     type = ElementAverageValue
     variable = gss_3
   []
-  [mobile_disl_3]
+  [dislocation_3]
     type = ElementAverageValue
-    variable = mobile_disl_3
+    variable = dislocation_3
   []
-  [cross_slip_disl_3]
+  [slip_incr_3]
     type = ElementAverageValue
-    variable = xslip_disl_3
-  []
-  [immobile_disl_3]
-    type = ElementAverageValue
-    variable = immobile_disl_3
+    variable = slip_incr_3
   []
   [tau_3]
     type = ElementAverageValue
@@ -919,17 +1228,13 @@
     type = ElementAverageValue
     variable = gss_4
   []
-  [mobile_disl_4]
+  [dislocation_4]
     type = ElementAverageValue
-    variable = mobile_disl_4
+    variable = dislocation_4
   []
-  [cross_slip_disl_4]
+  [slip_incr_4]
     type = ElementAverageValue
-    variable = xslip_disl_4
-  []
-  [immobile_disl_4]
-    type = ElementAverageValue
-    variable = immobile_disl_4
+    variable = slip_incr_4
   []
   [tau_4]
     type = ElementAverageValue
@@ -939,17 +1244,13 @@
     type = ElementAverageValue
     variable = gss_5
   []
-  [mobile_disl_5]
+  [dislocation_5]
     type = ElementAverageValue
-    variable = mobile_disl_5
+    variable = dislocation_5
   []
-  [cross_slip_disl_5]
+  [slip_incr_5]
     type = ElementAverageValue
-    variable = xslip_disl_5
-  []
-  [immobile_disl_5]
-    type = ElementAverageValue
-    variable = immobile_disl_5
+    variable = slip_incr_5
   []
   [tau_5]
     type = ElementAverageValue
@@ -959,17 +1260,13 @@
     type = ElementAverageValue
     variable = gss_6
   []
-  [mobile_disl_6]
+  [dislocation_6]
     type = ElementAverageValue
-    variable = mobile_disl_6
+    variable = dislocation_6
   []
-  [cross_slip_disl_6]
+  [slip_incr_6]
     type = ElementAverageValue
-    variable = xslip_disl_6
-  []
-  [immobile_disl_6]
-    type = ElementAverageValue
-    variable = immobile_disl_6
+    variable = slip_incr_6
   []
   [tau_6]
     type = ElementAverageValue
@@ -979,17 +1276,13 @@
     type = ElementAverageValue
     variable = gss_7
   []
-  [mobile_disl_7]
+  [dislocation_7]
     type = ElementAverageValue
-    variable = mobile_disl_7
+    variable = dislocation_7
   []
-  [cross_slip_disl_7]
+  [slip_incr_7]
     type = ElementAverageValue
-    variable = xslip_disl_7
-  []
-  [immobile_disl_7]
-    type = ElementAverageValue
-    variable = immobile_disl_7
+    variable = slip_incr_7
   []
   [tau_7]
     type = ElementAverageValue
@@ -999,17 +1292,13 @@
     type = ElementAverageValue
     variable = gss_8
   []
-  [mobile_disl_8]
+  [dislocation_8]
     type = ElementAverageValue
-    variable = mobile_disl_8
+    variable = dislocation_8
   []
-  [cross_slip_disl_8]
+  [slip_incr_8]
     type = ElementAverageValue
-    variable = xslip_disl_8
-  []
-  [immobile_disl_8]
-    type = ElementAverageValue
-    variable = immobile_disl_8
+    variable = slip_incr_8
   []
   [tau_8]
     type = ElementAverageValue
@@ -1019,17 +1308,13 @@
     type = ElementAverageValue
     variable = gss_9
   []
-  [mobile_disl_9]
+  [dislocation_9]
     type = ElementAverageValue
-    variable = mobile_disl_9
+    variable = dislocation_9
   []
-  [cross_slip_disl_9]
+  [slip_incr_9]
     type = ElementAverageValue
-    variable = xslip_disl_9
-  []
-  [immobile_disl_9]
-    type = ElementAverageValue
-    variable = immobile_disl_9
+    variable = slip_incr_9
   []
   [tau_9]
     type = ElementAverageValue
@@ -1039,17 +1324,13 @@
     type = ElementAverageValue
     variable = gss_10
   []
-  [mobile_disl_10]
+  [dislocation_10]
     type = ElementAverageValue
-    variable = mobile_disl_10
+    variable = dislocation_10
   []
-  [cross_slip_disl_10]
+  [slip_incr_10]
     type = ElementAverageValue
-    variable = xslip_disl_10
-  []
-  [immobile_disl_10]
-    type = ElementAverageValue
-    variable = immobile_disl_10
+    variable = slip_incr_10
   []
   [tau_10]
     type = ElementAverageValue
@@ -1059,261 +1340,17 @@
     type = ElementAverageValue
     variable = gss_11
   []
-  [mobile_disl_11]
+  [dislocation_11]
     type = ElementAverageValue
-    variable = mobile_disl_11
+    variable = dislocation_11
   []
-  [cross_slip_disl_11]
+  [slip_incr_11]
     type = ElementAverageValue
-    variable = xslip_disl_11
-  []
-  [immobile_disl_11]
-    type = ElementAverageValue
-    variable = immobile_disl_11
+    variable = slip_incr_11
   []
   [tau_11]
     type = ElementAverageValue
     variable = tau_11
-  []
-  [gss_12]
-    type = ElementAverageValue
-    variable = gss_12
-  []
-  [mobile_disl_12]
-    type = ElementAverageValue
-    variable = mobile_disl_12
-  []
-  [cross_slip_disl_12]
-    type = ElementAverageValue
-    variable = xslip_disl_12
-  []
-  [immobile_disl_12]
-    type = ElementAverageValue
-    variable = immobile_disl_12
-  []
-  [tau_12]
-    type = ElementAverageValue
-    variable = tau_12
-  []
-  [gss_13]
-    type = ElementAverageValue
-    variable = gss_13
-  []
-  [mobile_disl_13]
-    type = ElementAverageValue
-    variable = mobile_disl_13
-  []
-  [cross_slip_disl_13]
-    type = ElementAverageValue
-    variable = xslip_disl_13
-  []
-  [immobile_disl_13]
-    type = ElementAverageValue
-    variable = immobile_disl_13
-  []
-  [tau_13]
-    type = ElementAverageValue
-    variable = tau_13
-  []
-  [gss_14]
-    type = ElementAverageValue
-    variable = gss_14
-  []
-  [mobile_disl_14]
-    type = ElementAverageValue
-    variable = mobile_disl_14
-  []
-  [cross_slip_disl_14]
-    type = ElementAverageValue
-    variable = xslip_disl_14
-  []
-  [immobile_disl_14]
-    type = ElementAverageValue
-    variable = immobile_disl_14
-  []
-  [tau_14]
-    type = ElementAverageValue
-    variable = tau_14
-  []
-  [gss_15]
-    type = ElementAverageValue
-    variable = gss_15
-  []
-  [mobile_disl_15]
-    type = ElementAverageValue
-    variable = mobile_disl_15
-  []
-  [cross_slip_disl_15]
-    type = ElementAverageValue
-    variable = xslip_disl_15
-  []
-  [immobile_disl_15]
-    type = ElementAverageValue
-    variable = immobile_disl_15
-  []
-  [tau_15]
-    type = ElementAverageValue
-    variable = tau_15
-  []
-  [gss_16]
-    type = ElementAverageValue
-    variable = gss_16
-  []
-  [mobile_disl_16]
-    type = ElementAverageValue
-    variable = mobile_disl_16
-  []
-  [cross_slip_disl_16]
-    type = ElementAverageValue
-    variable = xslip_disl_16
-  []
-  [immobile_disl_16]
-    type = ElementAverageValue
-    variable = immobile_disl_16
-  []
-  [tau_16]
-    type = ElementAverageValue
-    variable = tau_16
-  []
-  [gss_17]
-    type = ElementAverageValue
-    variable = gss_17
-  []
-  [mobile_disl_17]
-    type = ElementAverageValue
-    variable = mobile_disl_17
-  []
-  [cross_slip_disl_17]
-    type = ElementAverageValue
-    variable = xslip_disl_17
-  []
-  [immobile_disl_17]
-    type = ElementAverageValue
-    variable = immobile_disl_17
-  []
-  [tau_17]
-    type = ElementAverageValue
-    variable = tau_17
-  []
-  [gss_18]
-    type = ElementAverageValue
-    variable = gss_18
-  []
-  [mobile_disl_18]
-    type = ElementAverageValue
-    variable = mobile_disl_18
-  []
-  [cross_slip_disl_18]
-    type = ElementAverageValue
-    variable = xslip_disl_18
-  []
-  [immobile_disl_18]
-    type = ElementAverageValue
-    variable = immobile_disl_18
-  []
-  [tau_18]
-    type = ElementAverageValue
-    variable = tau_18
-  []
-  [gss_19]
-    type = ElementAverageValue
-    variable = gss_19
-  []
-  [mobile_disl_19]
-    type = ElementAverageValue
-    variable = mobile_disl_19
-  []
-  [cross_slip_disl_19]
-    type = ElementAverageValue
-    variable = xslip_disl_19
-  []
-  [immobile_disl_19]
-    type = ElementAverageValue
-    variable = immobile_disl_19
-  []
-  [tau_19]
-    type = ElementAverageValue
-    variable = tau_19
-  []
-  [gss_20]
-    type = ElementAverageValue
-    variable = gss_20
-  []
-  [mobile_disl_20]
-    type = ElementAverageValue
-    variable = mobile_disl_20
-  []
-  [cross_slip_disl_20]
-    type = ElementAverageValue
-    variable = xslip_disl_20
-  []
-  [immobile_disl_20]
-    type = ElementAverageValue
-    variable = immobile_disl_20
-  []
-  [tau_20]
-    type = ElementAverageValue
-    variable = tau_20
-  []
-  [gss_21]
-    type = ElementAverageValue
-    variable = gss_21
-  []
-  [mobile_disl_21]
-    type = ElementAverageValue
-    variable = mobile_disl_21
-  []
-  [cross_slip_disl_21]
-    type = ElementAverageValue
-    variable = xslip_disl_21
-  []
-  [immobile_disl_21]
-    type = ElementAverageValue
-    variable = immobile_disl_21
-  []
-  [tau_21]
-    type = ElementAverageValue
-    variable = tau_21
-  []
-  [gss_22]
-    type = ElementAverageValue
-    variable = gss_22
-  []
-  [mobile_disl_22]
-    type = ElementAverageValue
-    variable = mobile_disl_22
-  []
-  [cross_slip_disl_22]
-    type = ElementAverageValue
-    variable = xslip_disl_22
-  []
-  [immobile_disl_22]
-    type = ElementAverageValue
-    variable = immobile_disl_22
-  []
-  [tau_22]
-    type = ElementAverageValue
-    variable = tau_22
-  []
-  [gss_23]
-    type = ElementAverageValue
-    variable = gss_23
-  []
-  [mobile_disl_23]
-    type = ElementAverageValue
-    variable = mobile_disl_23
-  []
-  [cross_slip_disl_23]
-    type = ElementAverageValue
-    variable = xslip_disl_23
-  []
-  [immobile_disl_23]
-    type = ElementAverageValue
-    variable = immobile_disl_23
-  []
-  [tau_23]
-    type = ElementAverageValue
-    variable = tau_23
   []
 []
 
@@ -1331,18 +1368,22 @@
   petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -ksp_type -ksp_gmres_restart'
   petsc_options_value = ' asm      2              lu            gmres     200'
   nl_abs_tol = 1e-10
-  nl_rel_tol = 1e-6 # was 1e-10 in initial testing
+  nl_rel_tol = 1e-8 # was 1e-10 in initial testing
 
-  dt = 0.5
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    optimal_iterations = 3
+    dt = 0.1
+  []
   dtmin = 1.0e-3
   dtmax = 10.0
-  end_time = 250.0 # 120s needed to reach 10% strain
+  end_time = 50.0 #250.0 # 120s needed to reach 10% strain
 []
 
 [Outputs]
   exodus = true
   csv = true
   color = false
-  checkpoint = true
+  # checkpoint = true
   perf_graph = true
 []
