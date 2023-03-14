@@ -51,13 +51,15 @@ CrystalPlasticityStressUpdateBase::validParams()
       "slip_sys_file_name",
       "Name of the file containing the slip systems, one slip system per row, with the slip plane "
       "normal given before the slip plane direction.");
-  params.addParam<Real>("number_cross_slip_directions",
-                        0,
-                        "Quanity of unique slip directions, used to determine cross slip familes");
-  params.addParam<Real>("number_cross_slip_planes",
-                        0,
-                        "Quanity of slip planes belonging to a single cross slip direction; used "
-                        "to determine cross slip families");
+  params.addParam<unsigned int>(
+      "number_cross_slip_directions",
+      0,
+      "Quanity of unique slip directions, used to determine cross slip familes");
+  params.addParam<unsigned int>(
+      "number_cross_slip_planes",
+      0,
+      "Quanity of slip planes belonging to a single cross slip direction; used "
+      "to determine cross slip families");
   params.addParam<Real>(
       "slip_increment_tolerance",
       2e-2,
@@ -89,8 +91,8 @@ CrystalPlasticityStressUpdateBase::CrystalPlasticityStressUpdateBase(
     _unit_cell_dimension(getParam<std::vector<Real>>("unit_cell_dimension")),
     _number_slip_systems(getParam<unsigned int>("number_slip_systems")),
     _slip_sys_file_name(getParam<FileName>("slip_sys_file_name")),
-    _number_cross_slip_directions(getParam<Real>("number_cross_slip_directions")),
-    _number_cross_slip_planes(getParam<Real>("number_cross_slip_planes")),
+    _number_cross_slip_directions(getParam<unsigned int>("number_cross_slip_directions")),
+    _number_cross_slip_planes(getParam<unsigned int>("number_cross_slip_planes")),
 
     _rel_state_var_tol(getParam<Real>("stol")),
     _slip_incr_tol(getParam<Real>("slip_increment_tolerance")),

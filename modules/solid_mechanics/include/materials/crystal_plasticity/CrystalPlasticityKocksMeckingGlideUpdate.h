@@ -15,7 +15,7 @@ class CrystalPlasticityKocksMeckingGlideUpdate;
 
 /**
  * CrystalPlasticityKocksMeckingGlideUpdate computes the dislocation
- * forest evolution for the prismatic, pyramidal, and basal slip systems
+ * glide and evolution in a cubic crystal system
  */
 
 class CrystalPlasticityKocksMeckingGlideUpdate : public CrystalPlasticityStressUpdateBase
@@ -44,7 +44,7 @@ protected:
   virtual void cacheStateVariablesBeforeUpdate() override;
 
   /**
-   * Calculates the evolution of the mobile glide dislocations with a two-term
+   * Calculates the evolution of the glide dislocations with a two-term
    * constitutive model with a Kocks-Mecking form, following Cereceda et al.
    * International Journal of Plasticity 78 (2016) 242-265.
    */
@@ -53,33 +53,49 @@ protected:
   virtual bool updateStateVariables() override;
 
   /**
-   * Computes the evolution increment of the mobile (glide) dislocations on each
+   * A helper method to sort and store which slip systems will contribute to the forest
+   * dislocation term calculation for the mean free glide path. Dislocations from slip
+   * system beta are assumed to contribute to the mean free glide path forest dislocation
+   * term for slip system alpha if the dot product of the plane normal alpha with slip
+   * direction beta is non-zero.
+   */
+  void sortForestInteractions();
+
+  /**
+   * Computes the evolution increment of the glide dislocations on each
    * slip system in the Kocks-Mecking form, from equation 23 of Cereceda et al.
    * IJP 78 (2016) 242-265.
    * Additional coefficient values are added to enable model calibration to
    * different cubic crystals.
    */
-  virtual void calculateMobileDislocationEvolutionIncrement();
+  virtual void calculateDislocationEvolutionIncrement();
 
   /**
-   * Calculates the mean free glide path for dislocation glide, following
-   * Lee et al. IJP 2010
+   * Calculates the mean free glide path for dislocation glide, in the fashion
+   * of Cereceda et al. IJP 78 (2016). All interacting systems are assumed to
+   * contribute equally to the calculation of the forest dislocation term
    */
   virtual void calculateMeanFreeGlidePath(DenseVector<Real> & mean_free_glide_path);
 
   /**
-   * Calculate the current value of the incremented mobile dislocation density
+   * Calculate the current value of the incremented dislocation density
    * on each slip system after checking the increment falls within user-specified
    * tolerances
    */
-  bool calculateMobileDislocationDensity();
+  bool calculateDislocationDensity();
 
   /**
-   * Calculates the sum of the contribution of the initial slip resistance and the
-   * forest dislocation density to the current slip resistance for each slip system,
-   * following Ohashi. Philosophical Magazine A (1994) 70(5) 793-803
+   * Calculates the sum of the contributions from the initial slip resistance and the
+   * forest dislocation hardening
    */
   virtual void calculateSlipResistance() override;
+
+  /**
+   * Calculates the forest dislocation density to the current slip resistance
+   * for each slip system, following Ohashi. Philosophical Magazine A (1994)
+   * 70(5) 793-803
+   */
+  virtual void calculateForestSlipResistance(std::vector<Real> & forest_hardening);
 
   /**
    * Determines if the dislocation densities have converged
@@ -87,13 +103,10 @@ protected:
    */
   virtual bool areConstitutiveStateVariablesConverged() override;
 
-  /// Coupled temperature variable
-  const VariableValue & _temperature;
-
-  ///@{Mobile glide dislocation density quantities
-  MaterialProperty<std::vector<Real>> & _mobile_dislocation_density;
-  const MaterialProperty<std::vector<Real>> & _mobile_dislocation_density_old;
-  MaterialProperty<std::vector<Real>> & _mobile_dislocation_increment;
+  ///@{Glide dislocation density quantities
+  MaterialProperty<std::vector<Real>> & _dislocation_density;
+  const MaterialProperty<std::vector<Real>> & _dislocation_density_old;
+  MaterialProperty<std::vector<Real>> & _dislocation_increment;
   const Real _initial_dislocation_density;
   ///@}
 
@@ -103,7 +116,7 @@ protected:
   const Real _gamma_reference;
   /// strain rate sensitivity exponent
   const Real _m_exp;
-  /// Average velocity of the mobile dislocation density, used in Orowan's relation
+  /// Average velocity of the dislocation density, used in Orowan's relation
   MaterialProperty<std::vector<Real>> & _glide_velocity;
   const Real _inital_glide_velocity;
   ///@}
@@ -114,7 +127,7 @@ protected:
    */
   MaterialProperty<std::vector<Real>> & _constitutive_slip_increment;
 
-  ///@{Calibration coefficients for the mobile dislocation evolution terms
+  ///@{Calibration coefficients for the dislocation evolution terms
   const Real _multiplication_coeff;
   const Real _forest_generation_coeff;
   const Real _edge_distance_coeff;
@@ -134,13 +147,16 @@ protected:
 
   ///@{Stores the slip system resistance, dislocation densities from the previous substep
   std::vector<Real> _previous_substep_slip_resistance;
-  std::vector<Real> _previous_substep_mobile_dislocations;
+  std::vector<Real> _previous_substep_dislocations;
   ///@}
 
   ///@{ Caching current slip resistance, dislocation density values before final update
   std::vector<Real> _slip_resistance_before_update;
-  std::vector<Real> _mobile_dislocations_before_update;
+  std::vector<Real> _dislocations_before_update;
   ///@}
+
+  /// Sorted slip systems for forest dislocation interactions, used in calculateMeanFreeGlidePath
+  std::vector<std::vector<unsigned int>> _forest_interaction_systems;
 
   /**
    * Flag to include the total twin volume fraction in the plastic velocity

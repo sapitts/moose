@@ -16,22 +16,20 @@ InputParameters
 CrystalPlasticityKocksMeckingGlideUpdate::validParams()
 {
   InputParameters params = CrystalPlasticityStressUpdateBase::validParams();
-  params.addClassDescription(
-      "Two-term mobile dislocation glide model (multiplication and annhiliation) "
-      "for cubic crystals with a power-law hardening glide velocity model.");
+  params.addClassDescription("Two-term dislocation glide model (multiplication and annhiliation) "
+                             "for cubic crystals with a power-law hardening glide velocity model.");
 
-  params.addCoupledVar("temperature", "The name of the temperature variable");
   params.addRequiredRangeCheckedParam<Real>(
       "initial_dislocation_density",
       "initial_dislocation_density>0",
-      "The initial state density of the mobile glide dislocations, in 1/mm^2, assumed to be split "
+      "The initial state density of the glide dislocations, in 1/mm^2, assumed to be split "
       "evenly among all slip systems");
 
   params.addRangeCheckedParam<Real>(
       "dislocation_multiplication_coefficient",
       1.0,
       "dislocation_multiplication_coefficient>0",
-      "Scaling coefficient for the multiplication terms of the mobile dislocation evolution");
+      "Scaling coefficient for the multiplication terms of the dislocation evolution");
 
   params.addRequiredRangeCheckedParam<Real>(
       "burgers_vector", "burgers_vector>0", "The Burger's vector for the material, in mm");
@@ -54,7 +52,7 @@ CrystalPlasticityKocksMeckingGlideUpdate::validParams()
   params.addRequiredRangeCheckedParam<Real>(
       "dipole_annihilation_distance",
       "dipole_annihilation_distance>0",
-      "Distance between two edge dislocation dipoles for mobile dislocation annihilation");
+      "Distance between two edge dislocation dipoles for dislocation annihilation");
   params.addRangeCheckedParam<Real>("grain_size",
                                     1.0,
                                     "grain_size>0",
@@ -96,16 +94,14 @@ CrystalPlasticityKocksMeckingGlideUpdate::CrystalPlasticityKocksMeckingGlideUpda
     const InputParameters & parameters)
   : CrystalPlasticityStressUpdateBase(parameters),
 
-    _temperature(coupledValue("temperature")),
-    _mobile_dislocation_density(
-        declareProperty<std::vector<Real>>(_base_name + "mobile_dislocation_density")),
-    _mobile_dislocation_density_old(
-        getMaterialPropertyOld<std::vector<Real>>(_base_name + "mobile_dislocation_density")),
-    _mobile_dislocation_increment(
-        declareProperty<std::vector<Real>>(_base_name + "mobile_dislocation_increment")),
+    _dislocation_density(declareProperty<std::vector<Real>>(_base_name + "dislocation_density")),
+    _dislocation_density_old(
+        getMaterialPropertyOld<std::vector<Real>>(_base_name + "dislocation_density")),
+    _dislocation_increment(
+        declareProperty<std::vector<Real>>(_base_name + "dislocation_increment")),
     _initial_dislocation_density(getParam<Real>(_base_name + "initial_dislocation_density")),
 
-    // Mobile dislocation glide velocity parameters
+    // Dislocation glide velocity parameters
     _burgers_vector(getParam<Real>(_base_name + "burgers_vector")),
     _gamma_reference(getParam<Real>(_base_name + "reference_slip_rate")),
     _m_exp(getParam<Real>("strain_rate_sensitivity_exponent")),
@@ -115,7 +111,7 @@ CrystalPlasticityKocksMeckingGlideUpdate::CrystalPlasticityKocksMeckingGlideUpda
     // plastic slip increment used in constitutive model calculations
     _constitutive_slip_increment(declareProperty<std::vector<Real>>("constitutive_slip_increment")),
 
-    // Mobile dislocation evolution calibration coefficients
+    // Dislocation evolution calibration coefficients
     _multiplication_coeff(getParam<Real>(_base_name + "dislocation_multiplication_coefficient")),
     _forest_generation_coeff(
         getParam<Real>(_base_name + "forest_dislocation_multiplication_coefficient")),
@@ -139,9 +135,11 @@ CrystalPlasticityKocksMeckingGlideUpdate::CrystalPlasticityKocksMeckingGlideUpda
 {
   // resize local caching vectors used for substepping
   _previous_substep_slip_resistance.resize(_number_slip_systems);
-  _previous_substep_mobile_dislocations.resize(_number_slip_systems);
+  _previous_substep_dislocations.resize(_number_slip_systems);
   _slip_resistance_before_update.resize(_number_slip_systems);
-  _mobile_dislocations_before_update.resize(_number_slip_systems);
+  _dislocations_before_update.resize(_number_slip_systems);
+
+  sortForestInteractions();
 }
 
 void
@@ -149,8 +147,8 @@ CrystalPlasticityKocksMeckingGlideUpdate::initQpStatefulProperties()
 {
   CrystalPlasticityStressUpdateBase::initQpStatefulProperties();
   // Resize constitutive-model specific material properties
-  _mobile_dislocation_density[_qp].resize(_number_slip_systems);
-  _mobile_dislocation_increment[_qp].resize(_number_slip_systems);
+  _dislocation_density[_qp].resize(_number_slip_systems);
+  _dislocation_increment[_qp].resize(_number_slip_systems);
   _glide_velocity[_qp].resize(_number_slip_systems);
   _constitutive_slip_increment[_qp].resize(_number_slip_systems);
 
@@ -158,8 +156,8 @@ CrystalPlasticityKocksMeckingGlideUpdate::initQpStatefulProperties()
   const Real dislocation_density_per_system = _initial_dislocation_density / _number_slip_systems;
   for (const auto i : make_range(_number_slip_systems))
   {
-    _mobile_dislocation_density[_qp][i] = dislocation_density_per_system;
-    _mobile_dislocation_increment[_qp][i] = 0.0;
+    _dislocation_density[_qp][i] = dislocation_density_per_system;
+    _dislocation_increment[_qp][i] = 0.0;
 
     _slip_increment[_qp][i] = 0.0;
     _glide_velocity[_qp][i] = 0.0;
@@ -170,20 +168,51 @@ CrystalPlasticityKocksMeckingGlideUpdate::initQpStatefulProperties()
 }
 
 void
+CrystalPlasticityKocksMeckingGlideUpdate::sortForestInteractions()
+{
+  _forest_interaction_systems.resize(_number_slip_systems);
+
+  for (const auto p : make_range(_number_slip_systems))
+  {
+    for (const auto d : make_range(_number_slip_systems))
+    {
+      const auto dot = _slip_plane_normal[p] * (_slip_direction[d]);
+      if (!(MooseUtils::absoluteFuzzyEqual(dot, 0.0)))
+        _forest_interaction_systems[p].push_back(d);
+    }
+  }
+
+  if (_print_convergence_message)
+  {
+    mooseWarning("The provided slip systems have been sorted into the forest dislocation "
+                 "interaction groups: \n");
+    for (const auto p : make_range(_number_slip_systems))
+    {
+      Moose::out << "  For slip system " << p
+                 << " the following slip systems will contribute to the forest dislocation "
+                    "calculation:\n      [";
+      for (const auto i : index_range(_forest_interaction_systems[p]))
+        Moose::out << " " << _forest_interaction_systems[p][i] << " ";
+      Moose::out << "]\n";
+    }
+  }
+}
+
+void
 CrystalPlasticityKocksMeckingGlideUpdate::setInitialConstitutiveVariableValues()
 {
   _slip_resistance[_qp] = _slip_resistance_old[_qp];
   _previous_substep_slip_resistance = _slip_resistance_old[_qp];
 
-  _mobile_dislocation_density[_qp] = _mobile_dislocation_density_old[_qp];
-  _previous_substep_mobile_dislocations = _mobile_dislocation_density_old[_qp];
+  _dislocation_density[_qp] = _dislocation_density_old[_qp];
+  _previous_substep_dislocations = _dislocation_density_old[_qp];
 }
 
 void
 CrystalPlasticityKocksMeckingGlideUpdate::setSubstepConstitutiveVariableValues()
 {
   _slip_resistance[_qp] = _previous_substep_slip_resistance;
-  _mobile_dislocation_density[_qp] = _previous_substep_mobile_dislocations;
+  _dislocation_density[_qp] = _previous_substep_dislocations;
 }
 
 bool
@@ -203,11 +232,11 @@ CrystalPlasticityKocksMeckingGlideUpdate::calculateSlipRate()
       _glide_velocity[_qp][i] = 0.0;
   }
 
-  // Calculate the slip increment due to mobile dislocation glide (Orowan's relation)
+  // Calculate the slip increment due to dislocation glide (Orowan's relation)
   for (const auto i : make_range(_number_slip_systems))
   {
     _slip_increment[_qp][i] =
-        _mobile_dislocation_density[_qp][i] * _burgers_vector * _glide_velocity[_qp][i];
+        _dislocation_density[_qp][i] * _burgers_vector * _glide_velocity[_qp][i];
     _constitutive_slip_increment[_qp][i] = _slip_increment[_qp][i] * _substep_dt;
     if (std::abs(_constitutive_slip_increment[_qp][i]) > _slip_incr_tol)
     {
@@ -251,9 +280,9 @@ CrystalPlasticityKocksMeckingGlideUpdate::calculateConstitutiveSlipDerivative(
 bool
 CrystalPlasticityKocksMeckingGlideUpdate::areConstitutiveStateVariablesConverged()
 {
-  if (isConstitutiveStateVariableConverged(_mobile_dislocation_density[_qp],
-                                           _mobile_dislocations_before_update,
-                                           _previous_substep_mobile_dislocations,
+  if (isConstitutiveStateVariableConverged(_dislocation_density[_qp],
+                                           _dislocations_before_update,
+                                           _previous_substep_dislocations,
                                            _rel_state_var_tol) &&
       isConstitutiveStateVariableConverged(_slip_resistance[_qp],
                                            _slip_resistance_before_update,
@@ -267,24 +296,24 @@ void
 CrystalPlasticityKocksMeckingGlideUpdate::updateSubstepConstitutiveVariableValues()
 {
   _previous_substep_slip_resistance = _slip_resistance[_qp];
-  _previous_substep_mobile_dislocations = _mobile_dislocation_density[_qp];
+  _previous_substep_dislocations = _dislocation_density[_qp];
 }
 
 void
 CrystalPlasticityKocksMeckingGlideUpdate::cacheStateVariablesBeforeUpdate()
 {
   _slip_resistance_before_update = _slip_resistance[_qp];
-  _mobile_dislocations_before_update = _mobile_dislocation_density[_qp];
+  _dislocations_before_update = _dislocation_density[_qp];
 }
 
 void
 CrystalPlasticityKocksMeckingGlideUpdate::calculateStateVariableEvolutionRateComponent()
 {
-  calculateMobileDislocationEvolutionIncrement();
+  calculateDislocationEvolutionIncrement();
 }
 
 void
-CrystalPlasticityKocksMeckingGlideUpdate::calculateMobileDislocationEvolutionIncrement()
+CrystalPlasticityKocksMeckingGlideUpdate::calculateDislocationEvolutionIncrement()
 {
   DenseVector<Real> mean_free_glide_path(_number_slip_systems);
   calculateMeanFreeGlidePath(mean_free_glide_path);
@@ -293,8 +322,8 @@ CrystalPlasticityKocksMeckingGlideUpdate::calculateMobileDislocationEvolutionInc
   {
     const Real driving_force = std::abs(_constitutive_slip_increment[_qp][i]) / _burgers_vector;
     const Real multiplication = _multiplication_coeff * mean_free_glide_path(i);
-    const Real annihilation = 2.0 * _edge_distance_coeff * _mobile_dislocation_density[_qp][i];
-    _mobile_dislocation_increment[_qp][i] = driving_force * (multiplication - annihilation);
+    const Real annihilation = 2.0 * _edge_distance_coeff * _dislocation_density[_qp][i];
+    _dislocation_increment[_qp][i] = driving_force * (multiplication - annihilation);
   }
 }
 
@@ -303,20 +332,37 @@ CrystalPlasticityKocksMeckingGlideUpdate::calculateMeanFreeGlidePath(
     DenseVector<Real> & mean_free_glide_path)
 {
   const Real grain_size_term = 1.0 / _grain_size;
-  Real forest_dislocation_sum = 0.0;
+  DenseVector<Real> forest_dislocation_density(_number_slip_systems, 0.0);
+
   for (const auto i : make_range(_number_slip_systems))
-    forest_dislocation_sum += _mobile_dislocation_density[_qp][i];
+  {
+    for (const auto b : index_range(_forest_interaction_systems[i]))
+    {
+      const auto index = _forest_interaction_systems[i][b];
+      forest_dislocation_density(i) += _dislocation_density[_qp][index];
+    }
+  }
 
   for (const auto i : make_range(_number_slip_systems))
     mean_free_glide_path(i) =
-        _forest_generation_coeff * std::sqrt(forest_dislocation_sum) + grain_size_term;
+        _forest_generation_coeff * std::sqrt(forest_dislocation_density(i)) + grain_size_term;
 }
 
 void
 CrystalPlasticityKocksMeckingGlideUpdate::calculateSlipResistance()
 {
-  DenseVector<Real> forest_hardening(_number_slip_systems);
+  std::vector<Real> forest_hardening(_number_slip_systems);
+  calculateForestSlipResistance(forest_hardening);
 
+  // add to the constant initial value, while it's not a function of temperature
+  for (const auto i : make_range(_number_slip_systems))
+    _slip_resistance[_qp][i] = _initial_lattice_friction + forest_hardening[i];
+}
+
+void
+CrystalPlasticityKocksMeckingGlideUpdate::calculateForestSlipResistance(
+    std::vector<Real> & forest_hardening)
+{
   const Real lead_term = _forest_hardening_coeff * _shear_modulus * _burgers_vector;
   for (const auto i : make_range(_number_slip_systems))
   {
@@ -324,42 +370,42 @@ CrystalPlasticityKocksMeckingGlideUpdate::calculateSlipResistance()
     for (const auto j : make_range(_number_slip_systems))
     {
       if (i == j)
-        sum_hardening += _forest_self_hardening * _mobile_dislocation_density[_qp][j];
+        sum_hardening += _forest_self_hardening * _dislocation_density[_qp][j];
       else
-        sum_hardening += _forest_latent_hardening * _mobile_dislocation_density[_qp][j];
+        sum_hardening += _forest_latent_hardening * _dislocation_density[_qp][j];
     }
 
-    forest_hardening(i) = lead_term * std::sqrt(sum_hardening);
+    forest_hardening[i] = lead_term * std::sqrt(sum_hardening);
   }
-
-  // have the constant initial value, while it's not a function of temperature, sum
-  for (const auto i : make_range(_number_slip_systems))
-    _slip_resistance[_qp][i] = _initial_lattice_friction + forest_hardening(i);
 }
 
 bool
 CrystalPlasticityKocksMeckingGlideUpdate::updateStateVariables()
 {
-  if (calculateMobileDislocationDensity())
+  if (calculateDislocationDensity())
     return true;
   else
     return false;
 }
 
 bool
-CrystalPlasticityKocksMeckingGlideUpdate::calculateMobileDislocationDensity()
+CrystalPlasticityKocksMeckingGlideUpdate::calculateDislocationDensity()
 {
+  bool positive_dislocation_density = true;
   for (const auto i : make_range(_number_slip_systems))
   {
-    if (_previous_substep_mobile_dislocations[i] < _zero_tol &&
-        _mobile_dislocation_increment[_qp][i] < 0.0)
-      _mobile_dislocation_density[_qp][i] = _previous_substep_mobile_dislocations[i];
+    if (_previous_substep_dislocations[i] < _zero_tol && _dislocation_increment[_qp][i] < 0.0)
+      _dislocation_density[_qp][i] = _previous_substep_dislocations[i];
     else
-      _mobile_dislocation_density[_qp][i] =
-          _previous_substep_mobile_dislocations[i] + _mobile_dislocation_increment[_qp][i];
+      _dislocation_density[_qp][i] =
+          _previous_substep_dislocations[i] + _dislocation_increment[_qp][i];
 
-    if (_mobile_dislocation_density[_qp][i] < 0.0)
-      return false;
+    if (_dislocation_density[_qp][i] < 0.0)
+    {
+      mooseError("this code really hates me and is a super material. also there was a negative "
+                 "dislocation density");
+      positive_dislocation_density = false;
+    }
   }
-  return true;
+  return positive_dislocation_density;
 }

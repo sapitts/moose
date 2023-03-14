@@ -200,8 +200,8 @@ protected:
   std::string _slip_sys_file_name;
 
   /// @{Parameters to characterize the cross slip behavior of the crystal
-  const Real _number_cross_slip_directions;
-  const Real _number_cross_slip_planes;
+  const unsigned int _number_cross_slip_directions;
+  const unsigned int _number_cross_slip_planes;
   ///@}
 
   /// Internal variable update equation tolerance
