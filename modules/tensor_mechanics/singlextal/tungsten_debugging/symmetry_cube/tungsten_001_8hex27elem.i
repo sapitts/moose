@@ -1,15 +1,16 @@
 [GlobalParams]
   displacements = 'disp_x disp_y disp_z'
+  order = 'SECOND'
 []
 
 [Mesh]
   [cube]
     type = GeneratedMeshGenerator
     dim = 3
-    nx = 10
-    ny = 10
-    nz = 10
-    elem_type = HEX8
+    nx = 8
+    ny = 8
+    nz = 8
+    elem_type = HEX27
   []
 []
 
@@ -70,195 +71,195 @@
     family = MONOMIAL
   []
   [gss_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [slip_incr_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [slip_incr_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [slip_incr_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [slip_incr_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [slip_incr_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [slip_incr_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [slip_incr_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [slip_incr_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [slip_incr_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [slip_incr_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [slip_incr_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [slip_incr_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
 []
@@ -735,7 +736,7 @@
     type = FunctionDirichletBC
     variable = disp_z
     boundary = 'front'
-    function = '8.5e-4*t' #given strain rate for the 1bar49 orientation
+    function = '1.0e-4*t' #given strain rate for the 111 orientation
   []
 []
 
@@ -745,9 +746,6 @@
     # C_ijkl = '521.0e3 201.0e3 201.0e3 521.0e3 201.0e3 521.0e3 160.0e3 160.0e3 160.0e3' #Lim et al (2015) JMPS
     C_ijkl = '5.224e5 2.044e5 2.044e5 5.224e5 2.044e5 5.224e5 1.606e5 1.606e5 1.606e5' # at 24C, from Lowie and Gonas (1967) J. Applied Physics
     fill_method = symmetric9
-    euler_angle_1 = 35.0
-    euler_angle_2 = 24.613597652978576
-    euler_angle_3 = -14.036243467926473
   []
   [stress]
     type = ComputeMultipleCrystalPlasticityStress
@@ -760,8 +758,9 @@
     type = CrystalPlasticityTungstenGlideUpdate
     number_slip_systems = 12
     slip_sys_file_name = input_slip_sys_bcc12.txt
+    number_coplanar_groups = 6
     temperature = temperature
-    initial_dislocation_density = 1.0e6 # Argon and Maloof 1966 #5.5e3 from Brunner 2010  #4.5e8 # roughly David's measurement # 1.0e7 from Srivastava et al (2013)
+    initial_dislocation_density = 1.0e5 # Argon and Maloof 1966 #5.5e3 from Brunner 2010  #4.5e8 # roughly David's measurement # 1.0e7 from Srivastava et al (2013), assumed equal to mobile
     burgers_vector = 2.74e-07 # Lim et al (2015) JMPS
     dislocation_multiplication_coefficient = 1
     dipole_annihilation_distance = 2.74e-07 #given in Cereceda et al 2016 as equal to the burgers vector, CHECK THIS AGAIN LATER
@@ -1051,14 +1050,11 @@
   nl_abs_tol = 1e-10
   nl_rel_tol = 1e-8 # was 1e-10 in initial testing
 
-  [TimeStepper]
-    type = IterationAdaptiveDT
-    optimal_iterations = 3
-    dt = 0.1
-  []
+  dt = 0.1
   dtmin = 1.0e-3
   dtmax = 10.0
-  end_time = 50.0 #250.0 # 120s needed to reach 10% strain
+  end_time = 1.0e3 #250.0 # 120s needed to reach 10% strain
+  timestep_tolerance = 1e-8
 []
 
 [Outputs]

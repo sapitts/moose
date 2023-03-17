@@ -1,15 +1,16 @@
 [GlobalParams]
   displacements = 'disp_x disp_y disp_z'
+  order = 'SECOND'
 []
 
 [Mesh]
   [cube]
     type = GeneratedMeshGenerator
     dim = 3
-    # nx = 4
-    # ny = 4
-    # nz = 4
-    elem_type = HEX8
+    nx = 8
+    ny = 8
+    nz = 8
+    elem_type = HEX27
   []
 []
 
@@ -745,16 +746,16 @@
     # C_ijkl = '521.0e3 201.0e3 201.0e3 521.0e3 201.0e3 521.0e3 160.0e3 160.0e3 160.0e3' #Lim et al (2015) JMPS
     C_ijkl = '5.224e5 2.044e5 2.044e5 5.224e5 2.044e5 5.224e5 1.606e5 1.606e5 1.606e5' # at 24C, from Lowie and Gonas (1967) J. Applied Physics
     fill_method = symmetric9
-    euler_angle_1 = 0.0
-    euler_angle_2 = 54.73561
-    euler_angle_3 = 45.0
+    euler_angle_1 = 35.0
+    euler_angle_2 = 24.613597652978576
+    euler_angle_3 = -14.036243467926473
   []
   [stress]
     type = ComputeMultipleCrystalPlasticityStress
     crystal_plasticity_models = 'trial_xtalpl'
     tan_mod_type = exact
     maximum_substep_iteration = 10
-    print_state_variable_convergence_error_messages = true
+    # print_state_variable_convergence_error_messages = true
   []
   [trial_xtalpl]
     type = CrystalPlasticityTungstenGlideUpdate
@@ -762,14 +763,14 @@
     slip_sys_file_name = input_slip_sys_bcc12.txt
     number_coplanar_groups = 6
     temperature = temperature
-    initial_dislocation_density = 1.0e6 # Argon and Maloof 1966 #5.5e3 from Brunner 2010  #4.5e8 # roughly David's measurement # 1.0e7 from Srivastava et al (2013), assumed equal to mobile
+    initial_dislocation_density = 5.5e3 #from Brunner 2010  #4.5e8 # roughly David's measurement # 1.0e7 from Srivastava et al (2013)
     burgers_vector = 2.74e-07 # Lim et al (2015) JMPS
     dislocation_multiplication_coefficient = 1
     dipole_annihilation_distance = 2.74e-07 #given in Cereceda et al 2016 as equal to the burgers vector, CHECK THIS AGAIN LATER
     lattice_friction = 12.0 #Lim et al (2015) JMPS, High temperature value
     shear_modulus = 1.600e5 # at 24C, from Lowie and Gonas (1967) J. Applied Physics
     stol = 1.0e-3
-    print_state_variable_convergence_error_messages = true
+    # print_state_variable_convergence_error_messages = true
   []
 []
 
@@ -1051,12 +1052,13 @@
   petsc_options_value = ' asm      2              lu            gmres     200'
   nl_abs_tol = 1e-10
   nl_rel_tol = 1e-8 # was 1e-10 in initial testing
+  nl_max_its = 15
 
-  dt = 0.1
+  dt = 0.025
   dtmin = 1.0e-3
   dtmax = 10.0
-  num_steps = 1
-  # end_time = 100.0 #250.0 # 120s needed to reach 10% strain
+  end_time = 100.0 #250.0 # 120s needed to reach 10% strain
+  timestep_tolerance = 1.0e-8
 []
 
 [Outputs]

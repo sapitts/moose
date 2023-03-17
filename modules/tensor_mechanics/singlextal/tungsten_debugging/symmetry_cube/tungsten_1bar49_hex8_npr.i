@@ -1370,11 +1370,7 @@
   nl_abs_tol = 1e-10
   nl_rel_tol = 1e-8 # was 1e-10 in initial testing
 
-  [TimeStepper]
-    type = IterationAdaptiveDT
-    optimal_iterations = 3
-    dt = 0.1
-  []
+  dt = 0.05
   dtmin = 1.0e-3
   dtmax = 10.0
   end_time = 50.0 #250.0 # 120s needed to reach 10% strain

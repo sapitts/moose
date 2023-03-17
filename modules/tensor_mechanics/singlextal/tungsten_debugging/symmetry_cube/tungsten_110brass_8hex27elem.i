@@ -1,15 +1,16 @@
 [GlobalParams]
   displacements = 'disp_x disp_y disp_z'
+  order = 'SECOND'
 []
 
 [Mesh]
   [cube]
     type = GeneratedMeshGenerator
     dim = 3
-    nx = 4
-    ny = 4
-    nz = 4
-    elem_type = HEX8
+    nx = 8
+    ny = 8
+    nz = 8
+    elem_type = HEX27
   []
 []
 
@@ -73,7 +74,7 @@
     order = FIRST
     family = MONOMIAL
   []
-  [mobile_disl_0]
+  [dislocation_0]
     order = FIRST
     family = MONOMIAL
   []
@@ -89,7 +90,7 @@
     order = FIRST
     family = MONOMIAL
   []
-  [mobile_disl_1]
+  [dislocation_1]
     order = FIRST
     family = MONOMIAL
   []
@@ -105,7 +106,7 @@
     order = FIRST
     family = MONOMIAL
   []
-  [mobile_disl_2]
+  [dislocation_2]
     order = FIRST
     family = MONOMIAL
   []
@@ -121,7 +122,7 @@
     order = FIRST
     family = MONOMIAL
   []
-  [mobile_disl_3]
+  [dislocation_3]
     order = FIRST
     family = MONOMIAL
   []
@@ -137,7 +138,7 @@
     order = FIRST
     family = MONOMIAL
   []
-  [mobile_disl_4]
+  [dislocation_4]
     order = FIRST
     family = MONOMIAL
   []
@@ -153,7 +154,7 @@
     order = FIRST
     family = MONOMIAL
   []
-  [mobile_disl_5]
+  [dislocation_5]
     order = FIRST
     family = MONOMIAL
   []
@@ -169,7 +170,7 @@
     order = FIRST
     family = MONOMIAL
   []
-  [mobile_disl_6]
+  [dislocation_6]
     order = FIRST
     family = MONOMIAL
   []
@@ -185,7 +186,7 @@
     order = FIRST
     family = MONOMIAL
   []
-  [mobile_disl_7]
+  [dislocation_7]
     order = FIRST
     family = MONOMIAL
   []
@@ -201,7 +202,7 @@
     order = FIRST
     family = MONOMIAL
   []
-  [mobile_disl_8]
+  [dislocation_8]
     order = FIRST
     family = MONOMIAL
   []
@@ -217,7 +218,7 @@
     order = FIRST
     family = MONOMIAL
   []
-  [mobile_disl_9]
+  [dislocation_9]
     order = FIRST
     family = MONOMIAL
   []
@@ -233,7 +234,7 @@
     order = FIRST
     family = MONOMIAL
   []
-  [mobile_disl_10]
+  [dislocation_10]
     order = FIRST
     family = MONOMIAL
   []
@@ -249,7 +250,7 @@
     order = FIRST
     family = MONOMIAL
   []
-  [mobile_disl_11]
+  [dislocation_11]
     order = FIRST
     family = MONOMIAL
   []
@@ -381,10 +382,10 @@
     index = 0
     execute_on = timestep_end
   []
-  [mobile_disl_0]
+  [dislocation_0]
     type = MaterialStdVectorAux
-    variable = mobile_disl_0
-    property = mobile_dislocation_density
+    variable = dislocation_0
+    property = dislocation_density
     index = 0
     execute_on = timestep_end
   []
@@ -409,10 +410,10 @@
     index = 1
     execute_on = timestep_end
   []
-  [mobile_disl_1]
+  [dislocation_1]
     type = MaterialStdVectorAux
-    variable = mobile_disl_1
-    property = mobile_dislocation_density
+    variable = dislocation_1
+    property = dislocation_density
     index = 1
     execute_on = timestep_end
   []
@@ -437,10 +438,10 @@
     index = 2
     execute_on = timestep_end
   []
-  [mobile_disl_2]
+  [dislocation_2]
     type = MaterialStdVectorAux
-    variable = mobile_disl_2
-    property = mobile_dislocation_density
+    variable = dislocation_2
+    property = dislocation_density
     index = 2
     execute_on = timestep_end
   []
@@ -465,10 +466,10 @@
     index = 3
     execute_on = timestep_end
   []
-  [mobile_disl_3]
+  [dislocation_3]
     type = MaterialStdVectorAux
-    variable = mobile_disl_3
-    property = mobile_dislocation_density
+    variable = dislocation_3
+    property = dislocation_density
     index = 3
     execute_on = timestep_end
   []
@@ -493,10 +494,10 @@
     index = 4
     execute_on = timestep_end
   []
-  [mobile_disl_4]
+  [dislocation_4]
     type = MaterialStdVectorAux
-    variable = mobile_disl_4
-    property = mobile_dislocation_density
+    variable = dislocation_4
+    property = dislocation_density
     index = 4
     execute_on = timestep_end
   []
@@ -521,10 +522,10 @@
     index = 5
     execute_on = timestep_end
   []
-  [mobile_disl_5]
+  [dislocation_5]
     type = MaterialStdVectorAux
-    variable = mobile_disl_5
-    property = mobile_dislocation_density
+    variable = dislocation_5
+    property = dislocation_density
     index = 5
     execute_on = timestep_end
   []
@@ -549,10 +550,10 @@
     index = 6
     execute_on = timestep_end
   []
-  [mobile_disl_6]
+  [dislocation_6]
     type = MaterialStdVectorAux
-    variable = mobile_disl_6
-    property = mobile_dislocation_density
+    variable = dislocation_6
+    property = dislocation_density
     index = 6
     execute_on = timestep_end
   []
@@ -577,10 +578,10 @@
     index = 7
     execute_on = timestep_end
   []
-  [mobile_disl_7]
+  [dislocation_7]
     type = MaterialStdVectorAux
-    variable = mobile_disl_7
-    property = mobile_dislocation_density
+    variable = dislocation_7
+    property = dislocation_density
     index = 7
     execute_on = timestep_end
   []
@@ -605,10 +606,10 @@
     index = 8
     execute_on = timestep_end
   []
-  [mobile_disl_8]
+  [dislocation_8]
     type = MaterialStdVectorAux
-    variable = mobile_disl_8
-    property = mobile_dislocation_density
+    variable = dislocation_8
+    property = dislocation_density
     index = 8
     execute_on = timestep_end
   []
@@ -633,10 +634,10 @@
     index = 9
     execute_on = timestep_end
   []
-  [mobile_disl_9]
+  [dislocation_9]
     type = MaterialStdVectorAux
-    variable = mobile_disl_9
-    property = mobile_dislocation_density
+    variable = dislocation_9
+    property = dislocation_density
     index = 9
     execute_on = timestep_end
   []
@@ -661,10 +662,10 @@
     index = 10
     execute_on = timestep_end
   []
-  [mobile_disl_10]
+  [dislocation_10]
     type = MaterialStdVectorAux
-    variable = mobile_disl_10
-    property = mobile_dislocation_density
+    variable = dislocation_10
+    property = dislocation_density
     index = 10
     execute_on = timestep_end
   []
@@ -689,10 +690,10 @@
     index = 11
     execute_on = timestep_end
   []
-  [mobile_disl_11]
+  [dislocation_11]
     type = MaterialStdVectorAux
-    variable = mobile_disl_11
-    property = mobile_dislocation_density
+    variable = dislocation_11
+    property = dislocation_density
     index = 11
     execute_on = timestep_end
   []
@@ -735,38 +736,40 @@
     type = FunctionDirichletBC
     variable = disp_z
     boundary = 'front'
-    function = '8.5e-4*t' #given strain rate for the 1bar49 orientation
+    function = '1.0e-4*t' #given strain rate for the 111 orientation
   []
 []
 
 [Materials]
   [elasticity_tensor_xtal]
-    type = ComputeElasticityTensorCP
-    # type = ComputeElasticityTensorConstantRotationCP
+    type = ComputeElasticityTensorConstantRotationCP
     # C_ijkl = '521.0e3 201.0e3 201.0e3 521.0e3 201.0e3 521.0e3 160.0e3 160.0e3 160.0e3' #Lim et al (2015) JMPS
     C_ijkl = '5.224e5 2.044e5 2.044e5 5.224e5 2.044e5 5.224e5 1.606e5 1.606e5 1.606e5' # at 24C, from Lowie and Gonas (1967) J. Applied Physics
     fill_method = symmetric9
+    euler_angle_1 = 35.0
+    euler_angle_2 = 45.0
   []
   [stress]
     type = ComputeMultipleCrystalPlasticityStress
     crystal_plasticity_models = 'trial_xtalpl'
     tan_mod_type = exact
     maximum_substep_iteration = 10
-    print_state_variable_convergence_error_messages = true
+    # print_state_variable_convergence_error_messages = true
   []
   [trial_xtalpl]
     type = CrystalPlasticityTungstenGlideUpdate
     number_slip_systems = 12
     slip_sys_file_name = input_slip_sys_bcc12.txt
+    number_coplanar_groups = 6
     temperature = temperature
-    initial_dislocation_density = 1.0e6 # Argon and Maloof 1966 #5.5e3 from Brunner 2010  #4.5e8 # roughly David's measurement # 1.0e7 from Srivastava et al (2013), assumed equal to mobile
+    initial_dislocation_density = 1.0e5 # Argon and Maloof 1966 #5.5e3 from Brunner 2010  #4.5e8 # roughly David's measurement # 1.0e7 from Srivastava et al (2013), assumed equal to mobile
     burgers_vector = 2.74e-07 # Lim et al (2015) JMPS
     dislocation_multiplication_coefficient = 1
     dipole_annihilation_distance = 2.74e-07 #given in Cereceda et al 2016 as equal to the burgers vector, CHECK THIS AGAIN LATER
     lattice_friction = 12.0 #Lim et al (2015) JMPS, High temperature value
     shear_modulus = 1.600e5 # at 24C, from Lowie and Gonas (1967) J. Applied Physics
     stol = 1.0e-3
-    print_state_variable_convergence_error_messages = true
+    # print_state_variable_convergence_error_messages = true
   []
 []
 
@@ -843,9 +846,9 @@
     type = ElementAverageValue
     variable = gss_0
   []
-  [mobile_disl_0]
+  [dislocation_0]
     type = ElementAverageValue
-    variable = mobile_disl_0
+    variable = dislocation_0
   []
   [slip_incr_0]
     type = ElementAverageValue
@@ -859,9 +862,9 @@
     type = ElementAverageValue
     variable = gss_1
   []
-  [mobile_disl_1]
+  [dislocation_1]
     type = ElementAverageValue
-    variable = mobile_disl_1
+    variable = dislocation_1
   []
   [slip_incr_1]
     type = ElementAverageValue
@@ -875,9 +878,9 @@
     type = ElementAverageValue
     variable = gss_2
   []
-  [mobile_disl_2]
+  [dislocation_2]
     type = ElementAverageValue
-    variable = mobile_disl_2
+    variable = dislocation_2
   []
   [slip_incr_2]
     type = ElementAverageValue
@@ -891,9 +894,9 @@
     type = ElementAverageValue
     variable = gss_3
   []
-  [mobile_disl_3]
+  [dislocation_3]
     type = ElementAverageValue
-    variable = mobile_disl_3
+    variable = dislocation_3
   []
   [slip_incr_3]
     type = ElementAverageValue
@@ -907,9 +910,9 @@
     type = ElementAverageValue
     variable = gss_4
   []
-  [mobile_disl_4]
+  [dislocation_4]
     type = ElementAverageValue
-    variable = mobile_disl_4
+    variable = dislocation_4
   []
   [slip_incr_4]
     type = ElementAverageValue
@@ -923,9 +926,9 @@
     type = ElementAverageValue
     variable = gss_5
   []
-  [mobile_disl_5]
+  [dislocation_5]
     type = ElementAverageValue
-    variable = mobile_disl_5
+    variable = dislocation_5
   []
   [slip_incr_5]
     type = ElementAverageValue
@@ -939,9 +942,9 @@
     type = ElementAverageValue
     variable = gss_6
   []
-  [mobile_disl_6]
+  [dislocation_6]
     type = ElementAverageValue
-    variable = mobile_disl_6
+    variable = dislocation_6
   []
   [slip_incr_6]
     type = ElementAverageValue
@@ -955,9 +958,9 @@
     type = ElementAverageValue
     variable = gss_7
   []
-  [mobile_disl_7]
+  [dislocation_7]
     type = ElementAverageValue
-    variable = mobile_disl_7
+    variable = dislocation_7
   []
   [slip_incr_7]
     type = ElementAverageValue
@@ -971,9 +974,9 @@
     type = ElementAverageValue
     variable = gss_8
   []
-  [mobile_disl_8]
+  [dislocation_8]
     type = ElementAverageValue
-    variable = mobile_disl_8
+    variable = dislocation_8
   []
   [slip_incr_8]
     type = ElementAverageValue
@@ -987,9 +990,9 @@
     type = ElementAverageValue
     variable = gss_9
   []
-  [mobile_disl_9]
+  [dislocation_9]
     type = ElementAverageValue
-    variable = mobile_disl_9
+    variable = dislocation_9
   []
   [slip_incr_9]
     type = ElementAverageValue
@@ -1003,9 +1006,9 @@
     type = ElementAverageValue
     variable = gss_10
   []
-  [mobile_disl_10]
+  [dislocation_10]
     type = ElementAverageValue
-    variable = mobile_disl_10
+    variable = dislocation_10
   []
   [slip_incr_10]
     type = ElementAverageValue
@@ -1019,9 +1022,9 @@
     type = ElementAverageValue
     variable = gss_11
   []
-  [mobile_disl_11]
+  [dislocation_11]
     type = ElementAverageValue
-    variable = mobile_disl_11
+    variable = dislocation_11
   []
   [slip_incr_11]
     type = ElementAverageValue
@@ -1052,7 +1055,8 @@
   dt = 0.1
   dtmin = 1.0e-3
   dtmax = 10.0
-  end_time = 50.0 #250.0 # 120s needed to reach 10% strain
+  end_time = 1.0e3 #250.0 # 120s needed to reach 10% strain
+  timestep_tolerance = 1e-8
 []
 
 [Outputs]
