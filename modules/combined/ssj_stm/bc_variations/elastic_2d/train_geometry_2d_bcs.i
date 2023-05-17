@@ -33,6 +33,12 @@
     execute_on = PRE_MULTIAPP_SETUP
     seed = 543
   []
+  # [csv_sample]
+  #   type = CSVSampler
+  #   samples_file = 'samples.csv'
+  #   column_names = 'upper_rig_offset lower_rig_offset'
+  #   execute_on = 'initial timestep_end'
+  # []
 []
 
 [MultiApps]
@@ -391,13 +397,13 @@
     execute_on = final
   []
 
-  [evalute_statistics]
-    type = StatisticsReporter
-    reporters = 'evaluate_p1_stress_yy/GP_p1_stress_yy evaluate_p2_stress_yy/GP_p2_stress_yy evaluate_p3_stress_yy/GP_p3_stress_yy evaluate_p4_stress_yy/GP_p4_stress_yy evaluate_p5_stress_yy/GP_p5_stress_yy evaluate_p6_stress_yy/GP_p6_stress_yy evaluate_p7_stress_yy/GP_p7_stress_yy evaluate_p8_stress_yy/GP_p8_stress_yy evaluate_p9_stress_yy/GP_p9_stress_yy evaluate_max_stress_yy/GP_max_stress_yy evaluate_p1_vonmises_stress/GP_p1_vonmises_stress evaluate_p2_vonmises_stress/GP_p2_vonmises_stress evaluate_p3_vonmises_stress/GP_p3_vonmises_stress evaluate_p4_vonmises_stress/GP_p4_vonmises_stress evaluate_p5_vonmises_stress/GP_p5_vonmises_stress evaluate_p6_vonmises_stress/GP_p6_vonmises_stress evaluate_p7_vonmises_stress/GP_p7_vonmises_stress evaluate_p8_vonmises_stress/GP_p8_vonmises_stress evaluate_p9_vonmises_stress/GP_p9_vonmises_stress evaluate_max_vonmises_stress/GP_max_vonmises_stress'
-    compute = 'mean stddev'
-    ci_method = 'percentile'
-    ci_levels = '0.05 0.95'
-  []
+  # [evalute_statistics]
+  #   type = StatisticsReporter
+  #   reporters = 'evaluate_p1_stress_yy/GP_p1_stress_yy evaluate_p2_stress_yy/GP_p2_stress_yy evaluate_p3_stress_yy/GP_p3_stress_yy evaluate_p4_stress_yy/GP_p4_stress_yy evaluate_p5_stress_yy/GP_p5_stress_yy evaluate_p6_stress_yy/GP_p6_stress_yy evaluate_p7_stress_yy/GP_p7_stress_yy evaluate_p8_stress_yy/GP_p8_stress_yy evaluate_p9_stress_yy/GP_p9_stress_yy evaluate_max_stress_yy/GP_max_stress_yy evaluate_p1_vonmises_stress/GP_p1_vonmises_stress evaluate_p2_vonmises_stress/GP_p2_vonmises_stress evaluate_p3_vonmises_stress/GP_p3_vonmises_stress evaluate_p4_vonmises_stress/GP_p4_vonmises_stress evaluate_p5_vonmises_stress/GP_p5_vonmises_stress evaluate_p6_vonmises_stress/GP_p6_vonmises_stress evaluate_p7_vonmises_stress/GP_p7_vonmises_stress evaluate_p8_vonmises_stress/GP_p8_vonmises_stress evaluate_p9_vonmises_stress/GP_p9_vonmises_stress evaluate_max_vonmises_stress/GP_max_vonmises_stress'
+  #   compute = 'mean stddev'
+  #   ci_method = 'percentile'
+  #   ci_levels = '0.05 0.95'
+  # []
 []
 
 [Trainers]
@@ -412,9 +418,9 @@
     response = storage/data:p1_stress_yy:value
     tune_parameters = 'signal_variance length_factor'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 0.001
+    iter_adam = 20000
+   # batch_size = 100
+    learning_rate_adam = 5.0e-4
     skip_unconverged_samples = true
     converged_reporter = storage/data:converged
   []
@@ -429,9 +435,9 @@
     response = storage/data:p2_stress_yy:value
     tune_parameters = 'signal_variance length_factor'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 0.001
+    iter_adam = 20000
+   # batch_size = 100
+    learning_rate_adam = 5.0e-4
     skip_unconverged_samples = true
     converged_reporter = storage/data:converged
   []
@@ -446,9 +452,9 @@
     response = storage/data:p3_stress_yy:value
     tune_parameters = 'signal_variance length_factor'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 0.001
+    iter_adam = 20000
+   # batch_size = 100
+    learning_rate_adam = 5.0e-4
     skip_unconverged_samples = true
     converged_reporter = storage/data:converged
   []
@@ -463,9 +469,9 @@
     response = storage/data:p4_stress_yy:value
     tune_parameters = 'signal_variance length_factor'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 0.001
+    iter_adam = 20000
+   # batch_size = 100
+    learning_rate_adam = 5.0e-4
     skip_unconverged_samples = true
     converged_reporter = storage/data:converged
   []
@@ -480,9 +486,9 @@
     response = storage/data:p5_stress_yy:value
     tune_parameters = 'signal_variance length_factor'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 0.001
+    iter_adam = 20000
+   # batch_size = 100
+    learning_rate_adam = 5.0e-4
     skip_unconverged_samples = true
     converged_reporter = storage/data:converged
   []
@@ -497,9 +503,9 @@
     response = storage/data:p6_stress_yy:value
     tune_parameters = 'signal_variance length_factor'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 0.001
+    iter_adam = 20000
+   # batch_size = 100
+    learning_rate_adam = 5.0e-4
     skip_unconverged_samples = true
     converged_reporter = storage/data:converged
   []
@@ -514,9 +520,9 @@
     response = storage/data:p7_stress_yy:value
     tune_parameters = 'signal_variance length_factor'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 0.001
+    iter_adam = 20000
+   # batch_size = 100
+    learning_rate_adam = 5.0e-4
     skip_unconverged_samples = true
     converged_reporter = storage/data:converged
   []
@@ -531,9 +537,9 @@
     response = storage/data:p8_stress_yy:value
     tune_parameters = 'signal_variance length_factor'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 0.001
+    iter_adam = 20000
+   # batch_size = 100
+    learning_rate_adam = 5.0e-4
     skip_unconverged_samples = true
     converged_reporter = storage/data:converged
   []
@@ -548,9 +554,9 @@
     response = storage/data:p9_stress_yy:value
     tune_parameters = 'signal_variance length_factor'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 0.001
+    iter_adam = 20000
+   # batch_size = 100
+    learning_rate_adam = 5.0e-4
     skip_unconverged_samples = true
     converged_reporter = storage/data:converged
   []
@@ -565,9 +571,9 @@
     response = storage/data:max_stress_yy:value
     tune_parameters = 'signal_variance length_factor'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 0.001
+    iter_adam = 20000
+   # batch_size = 100
+    learning_rate_adam = 5.0e-4
     skip_unconverged_samples = true
     converged_reporter = storage/data:converged
   []
@@ -583,9 +589,9 @@
     response = storage/data:p1_vonmises_stress:value
     tune_parameters = 'signal_variance length_factor'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 0.001
+    iter_adam = 20000
+   # batch_size = 100
+    learning_rate_adam = 5.0e-4
     skip_unconverged_samples = true
     converged_reporter = storage/data:converged
   []
@@ -600,9 +606,9 @@
     response = storage/data:p2_vonmises_stress:value
     tune_parameters = 'signal_variance length_factor'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 0.001
+    iter_adam = 20000
+   # batch_size = 100
+    learning_rate_adam = 5.0e-4
     skip_unconverged_samples = true
     converged_reporter = storage/data:converged
   []
@@ -617,9 +623,9 @@
     response = storage/data:p3_vonmises_stress:value
     tune_parameters = 'signal_variance length_factor'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 0.001
+    iter_adam = 20000
+   # batch_size = 100
+    learning_rate_adam = 5.0e-4
     skip_unconverged_samples = true
     converged_reporter = storage/data:converged
   []
@@ -634,9 +640,9 @@
     response = storage/data:p4_vonmises_stress:value
     tune_parameters = 'signal_variance length_factor'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 0.001
+    iter_adam = 20000
+   # batch_size = 100
+    learning_rate_adam = 5.0e-4
     skip_unconverged_samples = true
     converged_reporter = storage/data:converged
   []
@@ -651,9 +657,9 @@
     response = storage/data:p5_vonmises_stress:value
     tune_parameters = 'signal_variance length_factor'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 0.001
+    iter_adam = 20000
+   # batch_size = 100
+    learning_rate_adam = 5.0e-4
     skip_unconverged_samples = true
     converged_reporter = storage/data:converged
   []
@@ -668,9 +674,9 @@
     response = storage/data:p6_vonmises_stress:value
     tune_parameters = 'signal_variance length_factor'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 0.001
+    iter_adam = 20000
+   # batch_size = 100
+    learning_rate_adam = 5.0e-4
     skip_unconverged_samples = true
     converged_reporter = storage/data:converged
   []
@@ -685,9 +691,9 @@
     response = storage/data:p7_vonmises_stress:value
     tune_parameters = 'signal_variance length_factor'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 0.001
+    iter_adam = 20000
+   # batch_size = 100
+    learning_rate_adam = 5.0e-4
     skip_unconverged_samples = true
     converged_reporter = storage/data:converged
   []
@@ -702,9 +708,9 @@
     response = storage/data:p8_vonmises_stress:value
     tune_parameters = 'signal_variance length_factor'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 0.001
+    iter_adam = 20000
+   # batch_size = 100
+    learning_rate_adam = 5.0e-4
     skip_unconverged_samples = true
     converged_reporter = storage/data:converged
   []
@@ -719,9 +725,9 @@
     response = storage/data:p9_vonmises_stress:value
     tune_parameters = 'signal_variance length_factor'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 0.001
+    iter_adam = 20000
+   # batch_size = 100
+    learning_rate_adam = 5.0e-4
     skip_unconverged_samples = true
     converged_reporter = storage/data:converged
   []
@@ -736,9 +742,9 @@
     response = storage/data:max_vonmises_stress:value
     tune_parameters = 'signal_variance length_factor'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 0.001
+    iter_adam = 20000
+   # batch_size = 100
+    learning_rate_adam = 5.0e-4
     skip_unconverged_samples = true
     converged_reporter = storage/data:converged
   []
@@ -833,7 +839,7 @@
   [covar]
     type = SquaredExponentialCovariance
     signal_variance = 1.0 #Use a signal variance of 1 in the kernel
-    noise_variance = 1e-4 #A small amount of noise can help with numerical stability
+    noise_variance = 1e-5 #A small amount of noise can help with numerical stability
     length_factor = '1.0 1.0' #Select a length factor for each parameter
   []
 []
@@ -941,10 +947,15 @@
     execute_on = final
   []
 
-  [data]
+  [data_evaluate]
     type = SamplerData
     sampler = evaluate_sample
     execute_on = 'initial timestep_end'
+  []
+  [data_training]
+    type = SamplerData
+    sampler = train_sample
+    execute_on = 'INITIAL TIMESTEP_END'
   []
 []
 
