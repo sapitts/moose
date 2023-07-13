@@ -5,13 +5,21 @@
 [Mesh]
   type = GeneratedMesh
   dim = 3
-  nx = 1
-  ny = 1
-  nz = 1
+  nx = 8
+  ny = 8
+  nz = 8
   elem_type = HEX27
 []
 
 [AuxVariables]
+  [vonmises_stress_pk2]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [eff_strain_lag]
+    order = FIRST
+    family = MONOMIAL
+  []
   [pk2_xx]
     order = CONSTANT
     family = MONOMIAL
@@ -128,6 +136,54 @@
     order = CONSTANT
     family = MONOMIAL
   []
+  [tau_0]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_1]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_2]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_3]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_4]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_5]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_6]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_7]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_8]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_9]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_10]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_11]
+    order = FIRST
+    family = MONOMIAL
+  []
 []
 
 [Modules/TensorMechanics/Master/all]
@@ -139,6 +195,20 @@
 []
 
 [AuxKernels]
+  [vonmises_stress_pk2]
+    type = RankTwoScalarAux
+    variable = vonmises_stress_pk2
+    rank_two_tensor = second_piola_kirchhoff_stress
+    scalar_type = VonMisesStress
+    execute_on = timestep_end
+  []
+  [effective_strain_lag]
+    type = RankTwoScalarAux
+    variable = eff_strain_lag
+    rank_two_tensor = total_lagrangian_strain
+    scalar_type = VonMisesStress
+    execute_on = timestep_end
+  []
   [pk2_xx]
     type = RankTwoAux
     variable = pk2_xx
@@ -351,6 +421,97 @@
     index = 11
     execute_on = timestep_end
   []
+  [tau_0]
+    type = MaterialStdVectorAux
+    variable = tau_0
+    property = applied_shear_stress
+    index = 0
+    execute_on = timestep_end
+  []
+  [tau_1]
+    type = MaterialStdVectorAux
+    variable = tau_1
+    property = applied_shear_stress
+    index = 1
+    execute_on = timestep_end
+  []
+  [tau_2]
+    type = MaterialStdVectorAux
+    variable = tau_2
+    property = applied_shear_stress
+    index = 2
+    execute_on = timestep_end
+  []
+  [tau_3]
+    type = MaterialStdVectorAux
+    variable = tau_3
+    property = applied_shear_stress
+    index = 3
+    execute_on = timestep_end
+  []
+  [tau_4]
+    type = MaterialStdVectorAux
+    variable = tau_4
+    property = applied_shear_stress
+    index = 4
+    execute_on = timestep_end
+  []
+  [tau_5]
+    type = MaterialStdVectorAux
+    variable = tau_5
+    property = applied_shear_stress
+    index = 5
+    execute_on = timestep_end
+  []
+  [tau_6]
+    type = MaterialStdVectorAux
+    variable = tau_6
+    property = applied_shear_stress
+    index = 6
+    execute_on = timestep_end
+  []
+  [tau_7]
+    type = MaterialStdVectorAux
+    variable = tau_7
+    property = applied_shear_stress
+    index = 7
+    execute_on = timestep_end
+  []
+  [tau_8]
+    type = MaterialStdVectorAux
+    variable = tau_8
+    property = applied_shear_stress
+    index = 8
+    execute_on = timestep_end
+  []
+  [tau_9]
+    type = MaterialStdVectorAux
+    variable = tau_9
+    property = applied_shear_stress
+    index = 9
+    execute_on = timestep_end
+  []
+  [tau_10]
+    type = MaterialStdVectorAux
+    variable = tau_10
+    property = applied_shear_stress
+    index = 10
+    execute_on = timestep_end
+  []
+  [tau_11]
+    type = MaterialStdVectorAux
+    variable = tau_11
+    property = applied_shear_stress
+    index = 11
+    execute_on = timestep_end
+  []
+[]
+
+[Functions]
+  [ramp_hold]
+    type = ParsedFunction
+    expression = 'if(t < 10, -25.0*t , -250.0)'
+  []
 []
 
 [BCs]
@@ -372,11 +533,11 @@
     boundary = back
     value = 0
   []
-  [tdisp]
-    type = FunctionDirichletBC
+  [uniaxial_pressure]
+    type = Pressure
     variable = disp_z
     boundary = front
-    function = '0.01*t'
+    function = 'ramp_hold'
   []
 []
 
@@ -390,7 +551,10 @@
     type = ComputeMultipleCrystalPlasticityStress
     crystal_plasticity_models = 'trial_xtalpl'
     tan_mod_type = exact
-    print_state_variable_convergence_error_messages = true
+    line_search_method = CUT_HALF
+    use_line_search = true
+    maximum_substep_iteration = 4
+    # print_state_variable_convergence_error_messages = true
   []
   [trial_xtalpl]
     type = CrystalPlasticityFCCDislocationLinkHuCocksUpdate
@@ -399,7 +563,7 @@
     number_coplanar_groups = 4
     shear_modulus = 1.22e5 #in MPa, from Hu et al 2016 IJP
     burgers_vector = 2.5e-7 #in mm, from Hu et al 2016 IJP
-    initial_pinning_point_density = 2.2e7 ## in 1/mm^2, from Hu et al 2016 IJP
+    initial_pinning_point_density = 2.4e7 ## in 1/mm^2, from Hu et al 2016 IJP
     coefficient_self_plane_evolution = 5.0e8 ## in 1/mm^2, from Hu et al 2016 IJP
     coefficient_latent_plane_evolution = 2.5e9 ## in 1/mm^2, from Hu et al 2016 IJP
     forest_dislocation_hardening_coefficient = 0.35 #unitless, Madec et al 2002 via Hu et al 2016 IJP
@@ -408,7 +572,10 @@
     precipitate_number_density = precipitate_conc
     mean_precipitate_radius = precipitate_radius
     precipitate_hardening_coefficient = 0.84 #unitless, Foreman and Makin 1966 via Hu et al 2016 IJP
-    print_state_variable_convergence_error_messages = true
+    stol = 5.0e-3
+    resistance_tol = 5.0e-3
+    zero_tol = 1e-16
+    # print_state_variable_convergence_error_messages = true
   []
   [concentrations]
     type = GenericConstantMaterial
@@ -418,6 +585,14 @@
 []
 
 [Postprocessors]
+  [vonmises_stress_cauchy]
+    type = ElementAverageValue
+    variable = vonmises_stress
+  []
+  [effective_strain_green]
+    type = ElementAverageValue
+    variable = l2norm_strain
+  []
   [stress_zz]
     type = ElementAverageValue
     variable = stress_zz
@@ -514,32 +689,91 @@
     type = ElementAverageValue
     variable = gss_11
   []
+  [tau_0]
+    type = ElementAverageValue
+    variable = tau_0
+  []
+  [tau_1]
+    type = ElementAverageValue
+    variable = tau_1
+  []
+  [tau_2]
+    type = ElementAverageValue
+    variable = tau_2
+  []
+  [tau_3]
+    type = ElementAverageValue
+    variable = tau_3
+  []
+  [tau_4]
+    type = ElementAverageValue
+    variable = tau_4
+  []
+  [tau_5]
+    type = ElementAverageValue
+    variable = tau_5
+  []
+  [tau_6]
+    type = ElementAverageValue
+    variable = tau_6
+  []
+  [tau_7]
+    type = ElementAverageValue
+    variable = tau_7
+  []
+  [tau_8]
+    type = ElementAverageValue
+    variable = tau_8
+  []
+  [tau_9]
+    type = ElementAverageValue
+    variable = tau_9
+  []
+  [tau_10]
+    type = ElementAverageValue
+    variable = tau_10
+  []
+  [tau_11]
+    type = ElementAverageValue
+    variable = tau_11
+  []
 []
 
 [Preconditioning]
   [smp]
     type = SMP
     full = true
+    petsc_options = '-snes_converged_reason'
   []
+[]
+
+[Debug]
+  show_var_residual_norms = true
 []
 
 [Executioner]
   type = Transient
-  solve_type = 'PJFNK'
-
+  solve_type = 'NEWTON'
+  petsc_options = '-snes_converged_reason'
   petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -ksp_type -ksp_gmres_restart'
   petsc_options_value = ' asm      2              lu            gmres     200'
+  # petsc_options_iname = '-pc_type -pc_hypre_type'
+  # petsc_options_value = 'hypre    boomeramg'
+  line_search = 'none'
   nl_abs_tol = 1e-10
-  nl_rel_tol = 1e-10
-  nl_abs_step_tol = 1e-10
+  nl_rel_tol = 1e-6
+  # nl_abs_step_tol = 1e-10
+  nl_forced_its = 1
 
-  dt = 0.05
-  dtmin = 1.0e-6
-  dtmax = 10.0
-  end_time  = 1
+  dt = 5.0
+  dtmin = 1.0e-4
+  dtmax = 100.0
+  # num_steps = 2
+   end_time  = 50.0 #7.3 #7200 # 2 hours
 []
 
 [Outputs]
   exodus = true
   csv = true
+  perf_graph = true
 []

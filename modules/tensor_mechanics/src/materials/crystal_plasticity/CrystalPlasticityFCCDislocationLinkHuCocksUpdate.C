@@ -234,12 +234,11 @@ CrystalPlasticityFCCDislocationLinkHuCocksUpdate::calculateSlipRate()
 
   for (const auto i : make_range(_number_slip_systems))
   {
-    const Real abs_tau = std::abs(_tau[_qp][i]);
-    const Real driving_force = abs_tau / _slip_resistance[_qp][i];
-    if (driving_force < _zero_tol)
+    if (MooseUtils::absoluteFuzzyEqual(_tau[_qp][i], 0.0))
       _slip_increment[_qp][i] = 0.0;
     else
     {
+      const Real driving_force = std::abs(_tau[_qp][i]) / _slip_resistance[_qp][i];
       _slip_increment[_qp][i] = _gamma_reference * std::pow(driving_force, (_p_exp));
       if (_tau[_qp][i] < 0.0)
         _slip_increment[_qp][i] *= -1.0;
