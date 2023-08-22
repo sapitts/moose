@@ -1,64 +1,36 @@
 [StochasticTools]
 []
 
-[Distributions]
-  [upper_rig_offset]
-    type = TruncatedNormal
-    mean = 0.0
-    standard_deviation = 0.1
-    lower_bound = -0.15
-    upper_bound = 0.15
-  []
-  [lower_rig_offset]
-    type = TruncatedNormal
-    mean = 0.0
-    standard_deviation = 0.1
-    lower_bound = -0.15
-    upper_bound = 0.15
-  []
-[]
+# [Distributions]
+#   [upper_rig_offset]
+#     type = TruncatedNormal
+#     mean = 0.0
+#     standard_deviation = 0.1
+#     lower_bound = -0.15
+#     upper_bound = 0.15
+#   []
+#   [lower_rig_offset]
+#     type = TruncatedNormal
+#     mean = 0.0
+#     standard_deviation = 0.1
+#     lower_bound = -0.15
+#     upper_bound = 0.15
+#   []
+# []
 
 [Samplers]
-  [train_sample]
-    type = LatinHypercube
-    num_rows = 400
-    distributions = 'upper_rig_offset lower_rig_offset'
-    execute_on = PRE_MULTIAPP_SETUP
-    seed = 250
-  []
-  # [csv_sample]
-  #   type = CSVSampler
-  #   samples_file = 'samples.csv'
-  #   column_names = 'upper_rig_offset lower_rig_offset'
-  #   execute_on = 'initial timestep_end'
+  # [train_sample]
+  #   type = LatinHypercube
+  #   num_rows = 400
+  #   distributions = 'upper_rig_offset lower_rig_offset'
+  #   execute_on = PRE_MULTIAPP_SETUP
+  #   seed = 250
   # []
-[]
-
-[MultiApps]
-  [base_mechanics]
-    type = SamplerFullSolveMultiApp
-    input_files = base_geomtry_2d_bcs.i
-    mode = batch-reset #Overwrites results
-    sampler = train_sample
-  []
-[]
-
-[Controls]
-  [geom_variation]
-    type = MultiAppSamplerControl
-    multi_app = base_mechanics
-    sampler = train_sample
-    param_names = 'upper_rig_offset lower_rig_offset'
-  []
-[]
-
-[Transfers]
-  [data]
-    type = SamplerReporterTransfer
-    from_multi_app = base_mechanics
-    sampler = train_sample
-    stochastic_reporter = storage
-    from_reporter = 'p1_stress_yy/value p2_stress_yy/value p3_stress_yy/value p4_stress_yy/value p5_stress_yy/value p6_stress_yy/value p7_stress_yy/value p8_stress_yy/value p9_stress_yy/value max_stress_yy/value p1_vonmises_stress/value p2_vonmises_stress/value p3_vonmises_stress/value p4_vonmises_stress/value p5_vonmises_stress/value p6_vonmises_stress/value p7_vonmises_stress/value p8_vonmises_stress/value p9_vonmises_stress/value max_vonmises_stress/value'
+  [csv_original_bc_distributions]
+    type = CSVSampler
+    samples_file = 'bc_distributions.csv'
+    column_names = 'train_sample_0 train_sample_1'
+    execute_on = LINEAR
   []
 []
 
@@ -71,7 +43,7 @@
   [train_p1_stress_yy]
     type = EvaluateSurrogate
     model = GP_p1_stress_yy
-    sampler = train_sample
+    sampler = csv_original_bc_distributions
     evaluate_std = 'true'
     parallel_type = ROOT
     execute_on = final
@@ -79,7 +51,7 @@
   [train_p2_stress_yy]
     type = EvaluateSurrogate
     model = GP_p2_stress_yy
-    sampler = train_sample
+    sampler = csv_original_bc_distributions
     evaluate_std = 'true'
     parallel_type = ROOT
     execute_on = final
@@ -87,7 +59,7 @@
   [train_p9_stress_yy]
     type = EvaluateSurrogate
     model = GP_p9_stress_yy
-    sampler = train_sample
+    sampler = csv_original_bc_distributions
     evaluate_std = 'true'
     parallel_type = ROOT
     execute_on = final
@@ -127,15 +99,15 @@
     standardize_params = 'true' #Center and scale the training params
     standardize_data = 'true' #Center and scale the training data
     show_optimization_details = true
-    sampler = train_sample
-    response = storage/data:p1_stress_yy:value
-    tune_parameters = 'signal_variance length_factor'
+    sampler = csv_original_bc_distributions
+    response = tm_results_reader/data:p1_stress_yy:value
+    tune_parameters = 'signal_variance length_factor noise_variance'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 5.0e-4
-    skip_unconverged_samples = true
-    converged_reporter = storage/data:converged
+    iter_adam = 2000
+    # batch_size = 100
+    learning_rate_adam = 0.01
+    # skip_unconverged_samples = true
+    # converged_reporter = storage/data:converged
   []
   [GP_p2_stress_yy_trainer]
     type = GaussianProcessTrainer
@@ -144,15 +116,15 @@
     standardize_params = 'true' #Center and scale the training params
     standardize_data = 'true' #Center and scale the training data
     show_optimization_details = true
-    sampler = train_sample
-    response = storage/data:p2_stress_yy:value
-    tune_parameters = 'signal_variance length_factor'
+    sampler = csv_original_bc_distributions
+    response = tm_results_reader/data:p2_stress_yy:value
+    tune_parameters = 'signal_variance length_factor noise_variance'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 5.0e-4
-    skip_unconverged_samples = true
-    converged_reporter = storage/data:converged
+    iter_adam = 2000
+    # batch_size = 100
+    learning_rate_adam = 0.01
+    # skip_unconverged_samples = true
+    # converged_reporter = storage/data:converged
   []
   [GP_p9_stress_yy_trainer]
     type = GaussianProcessTrainer
@@ -161,15 +133,15 @@
     standardize_params = 'true' #Center and scale the training params
     standardize_data = 'true' #Center and scale the training data
     show_optimization_details = true
-    sampler = train_sample
-    response = storage/data:p9_stress_yy:value
-    tune_parameters = 'signal_variance length_factor'
+    sampler = csv_original_bc_distributions
+    response = tm_results_reader/data:p9_stress_yy:value
+    tune_parameters = 'signal_variance length_factor noise_variance'
     tuning_algorithm = 'adam'
-    iter_adam = 5000
-    batch_size = 100
-    learning_rate_adam = 5.0e-4
-    skip_unconverged_samples = true
-    converged_reporter = storage/data:converged
+    iter_adam = 2000
+    # batch_size = 100
+    learning_rate_adam = 0.01
+    # skip_unconverged_samples = true
+    # converged_reporter = storage/data:converged
   []
 
   # [GP_p1_vonmises_stress_trainer]
@@ -181,7 +153,7 @@
   #   show_optimization_details = true
   #   sampler = train_sample
   #   response = storage/data:p1_vonmises_stress:value
-  #   tune_parameters = 'signal_variance length_factor'
+  #   tune_parameters = 'signal_variance length_factor noise_variance'
   #   tuning_algorithm = 'adam'
   #   iter_adam = 5000
   #   batch_size = 100
@@ -198,7 +170,7 @@
   #   show_optimization_details = true
   #   sampler = train_sample
   #   response = storage/data:p2_vonmises_stress:value
-  #   tune_parameters = 'signal_variance length_factor'
+  #   tune_parameters = 'signal_variance length_factor noise_variance'
   #   tuning_algorithm = 'adam'
   #   iter_adam = 5000
   #   batch_size = 100
@@ -215,7 +187,7 @@
   #   show_optimization_details = true
   #   sampler = train_sample
   #   response = storage/data:p9_vonmises_stress:value
-  #   tune_parameters = 'signal_variance length_factor'
+  #   tune_parameters = 'signal_variance length_factor noise_variance'
   #   tuning_algorithm = 'adam'
   #   iter_adam = 5000
   #   batch_size = 100
@@ -263,6 +235,11 @@
 []
 
 [VectorPostprocessors]
+  [tm_results_reader]
+    type = CSVReader
+    csv_file = 'subApp_results.csv'
+  []
+
   [hyperparams_p1_stress_yy]
     type = GaussianProcessData
     gp_name = 'GP_p1_stress_yy'
@@ -297,7 +274,7 @@
 
   [data_training]
     type = SamplerData
-    sampler = train_sample
+    sampler = csv_original_bc_distributions
     execute_on = 'INITIAL TIMESTEP_END'
   []
 []

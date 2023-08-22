@@ -411,10 +411,10 @@ ul_midpt_y = '${fparse upper_gauge_y + (upper_left_radius * sqrt2)}'
 
 [Outputs]
   csv = true
-  [exodus]
-    type = Exodus
-    # execute_on = 'INITIAL FINAL FAILED'
-  []
+  # [exodus]
+  #   type = Exodus
+  #   # execute_on = 'INITIAL FINAL FAILED'
+  # []
   color = false
   perf_graph = true
 []
