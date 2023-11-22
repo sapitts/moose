@@ -6,11 +6,13 @@
 
 `CrystalPlasticityHCPDislocationSlipBeyerleinUpdate` is designed to be used in conjunction with the
 [ComputeMultipleCrystalPlasticityStress](/ComputeMultipleCrystalPlasticityStress.md) class to calculate
-the response of a FCC crystalline solid. Details about the algorithm and specific
+the response of a HCP crystalline solid. Details about the algorithm and specific
 stress and strain measures used in the `CrystalPlasticityUpdate` base class are
 given on the documentation page for
 [ComputeMultipleCrystalPlasticityStress](/ComputeMultipleCrystalPlasticityStress.md).
 
+As in other crystal plasticity constitutive models compatible with [ComputeMultipleCrystalPlasticityStress](/ComputeMultipleCrystalPlasticityStress.md), the user must supply the slip plane normal and slip direction information, and the lengths of the unit cell lattice parameters.
+Unlike other crystal plasticity constitutive models, `CrystalPlasticityHCPDislocationSlipBeyerleinUpdate` is set for use with the HCP lattice type only. Because of this lattice type requirement, four entries each are expected for both the slip plane normal and the slip direction vector entries.
 As in other crystal plasticity constitutive models compatible with [ComputeMultipleCrystalPlasticityStress](/ComputeMultipleCrystalPlasticityStress.md), the user must supply the slip plane normal and slip direction information, and the lengths of the unit cell lattice parameters.
 Unlike other crystal plasticity constitutive models, `CrystalPlasticityHCPDislocationSlipBeyerleinUpdate` is set for use with the HCP lattice type only. Because of this lattice type requirement, four entries each are expected for both the slip plane normal and the slip direction vector entries.
 
@@ -19,6 +21,7 @@ Unlike other crystal plasticity constitutive models, `CrystalPlasticityHCPDisloc
 A constitutive model for only the glide and evolution of forest dislocations within a Hexagonal Close-Packed (HCP) crystal lattice is implemented in this class. The constitutive model is taken from the work of [!cite](beyerlein2008dislocation,capolungo2009interaction,beyerlein2010probabilistic), which was developed for a viscoplastic self-consistent application. Here the constitutive model is employed within a crystal plasticity implementation.
 
 `CrystalPlasticityHCPDislocationSlipBeyerleinUpdate` allows for the evaluation of the slip resistance, forest dislocation density, and substructure density on different types of slip systems, such as basal$<a>$, prismatic$<a>$, pyramidal$<c+a>$, and so on. Within this class these different types of slip systems are termed `modes`, following [!cite](beyerlein2008dislocation). Vectors of values for each slip mode dependent parameter may be supplied within the input file. The number of slip systems, value of the burgers vector, and the value of the initial lattice friction are examples of slip mode dependent input file parameters.
+The specification of modes is not explicitly identified within the code, and no particular order is enforced.
 The specification of modes are not explicitly identified within the code, and no particular order is enforced.
 
 !alert warning
@@ -31,14 +34,14 @@ The resistance to dislocation glide is represented in this constitutive model as
   \label{eqn:hcpGlideTotalSlipResistance}
   g^{\alpha} = g^{\alpha}_o + g^{\alpha}_{HP} + g^{\alpha}_{forest} + g^{\alpha}_{sub}
 \end{equation}
-where g$^{\alpha}_o$ is a user-defined constant initial lattice friction, g$^{\alpha}_{HP}$ represents a Hall-Petch type treatment of the slip resistance dependence on grain size, and g$^{\alpha}_{forest}$ and g$^{\alpha}_{sub}$ represent the hardening contributions from the two dislocation density populations, forest and substructure. [!citep](beyerlein2008dislocation).The grain-size dependence hardening term employs a Hall-Petch type dependence on grain size, following [!cite](beyerlein2008dislocation):
+where g$^{\alpha}_o$ is a user-defined constant initial lattice friction, g$^{\alpha}_{HP}$ represents a Hall-Petch type treatment of the slip resistance dependence on grain size, and g$^{\alpha}_{forest}$ and g$^{\alpha}_{sub}$ represent the hardening contributions from the two dislocation density populations, forest and substructure. [!citep](beyerlein2008dislocation). The grain-size dependence hardening term employs a Hall-Petch type dependence on grain size, following [!cite](beyerlein2008dislocation):
 \begin{equation}
   \label{eqn:hallPetchTypeSlipResistance}
   g^{\alpha}_{HP} = HP^{\alpha}\mu^{\alpha} \sqrt{\frac{b^{\alpha}}{d_g}}
 \end{equation}
 where HP$^{\alpha}$ is a user-defined constant, $\mu^{\alpha}$ is the shear modulus for the slip system, b$^{\alpha}$ is the slip system Burgers vector, and d$_g$ is the average grain size. This value is computed once during the initialization stages of the simulation.
 
-The hardening contribution from forest dislocations, see [forest dislocation evolution ](#forest_dislocation_evolution) discussion, is calculated on a per slip basis[!citep](capolungo2009interaction).
+The hardening contribution from forest dislocations, see [forest dislocation evolution ](#forest_dislocation_evolution) discussion, is calculated on a per-slip basis[!citep](capolungo2009interaction).
 \begin{equation}
   \label{eqn:forestDislocationSlipResistance}
   g^{\alpha}_{forest} = \chi b^{\alpha} \mu^{\alpha} \sqrt{\rho^{\alpha}_{forest}}
@@ -101,7 +104,7 @@ where f$^{\alpha}$ is the slip-mode dependent substructure generation rate coeff
 !listing modules/solid_mechanics/test/tests/crystal_plasticity/hcp_single_crystal/update_method_hcp_aprismatic_capyramidal.i block=Materials/trial_xtalpl
 
 `CrystalPlasticityHCPDislocationSlipBeyerleinUpdate` must be run in conjunction with the crystal
-plasticity specific  stress calculator as shown below:
+plasticity specific stress calculator as shown below:
 
 !listing modules/solid_mechanics/test/tests/crystal_plasticity/hcp_single_crystal/update_method_hcp_aprismatic_capyramidal.i block=Materials/stress
 
