@@ -40,25 +40,25 @@
     order = CONSTANT
     family = MONOMIAL
   []
-  [const_slip_incr_0]
+  [slip_resistance_0]
     order = CONSTANT
     family = MONOMIAL
   []
-  [const_slip_incr_1]
+  [slip_resistance_3]
     order = CONSTANT
     family = MONOMIAL
   []
-  [const_slip_incr_2]
+  [slip_resistance_6]
     order = CONSTANT
     family = MONOMIAL
   []
-  [const_slip_incr_3]
+  [slip_resistance_9]
     order = CONSTANT
     family = MONOMIAL
   []
 []
 
-[Modules/TensorMechanics/Master/all]
+[Physics/SolidMechanics/QuasiStatic/all]
   strain = FINITE
   incremental = true
   add_variables = true
@@ -118,33 +118,41 @@
     index = 3
     execute_on = timestep_end
   []
-  [const_slip_incr_0]
+  [slip_resistance_0]
     type = MaterialStdVectorAux
-    variable = const_slip_incr_0
-    property = coplanar_constitutive_slip_increment
+    variable = slip_resistance_0
+    property = slip_resistance
     index = 0
     execute_on = timestep_end
   []
-  [const_slip_incr_1]
+  [slip_resistance_3]
     type = MaterialStdVectorAux
-    variable = const_slip_incr_1
-    property = coplanar_constitutive_slip_increment
-    index = 1
-    execute_on = timestep_end
-  []
-  [const_slip_incr_2]
-    type = MaterialStdVectorAux
-    variable = const_slip_incr_2
-    property = coplanar_constitutive_slip_increment
-    index = 2
-    execute_on = timestep_end
-  []
-  [const_slip_incr_3]
-    type = MaterialStdVectorAux
-    variable = const_slip_incr_3
-    property = coplanar_constitutive_slip_increment
+    variable = slip_resistance_3
+    property = slip_resistance
     index = 3
     execute_on = timestep_end
+  []
+  [slip_resistance_6]
+    type = MaterialStdVectorAux
+    variable = slip_resistance_6
+    property = slip_resistance
+    index = 6
+    execute_on = timestep_end
+  []
+  [slip_resistance_9]
+    type = MaterialStdVectorAux
+    variable = slip_resistance_9
+    property = slip_resistance
+    index = 9
+    execute_on = timestep_end
+  []
+[]
+
+[Functions]
+  [ramp_hold]
+    type = ParsedFunction
+    expression = 'if(t <= 0.7, 250.0*t ,
+                  if(t <= 0.9, 175 + 25.0 * (t-0.7), 180))'
   []
 []
 
@@ -168,12 +176,10 @@
     value = 0
   []
   [tdisp]
-    type = FunctionDirichletBC
+    type = Pressure
     variable = disp_z
     boundary = front
-    function = 'if(t<=0.2, 3.0e-3*t,
-                if(t<=0.5, (6.0e-4 + 5.0e-4*(t-0.2)),
-                if(t<=0.8, (7.5e-4 + 5.0e-5*(t-0.5)), 7.65e-4 + 1.0e-5*(t-0.8))))'
+    function = 'ramp_hold'
   []
 []
 
@@ -182,9 +188,6 @@
     type = ComputeElasticityTensorCP
     C_ijkl = '1.98e5 1.25e5 1.25e5 1.98e5 1.25e5 1.98e5 1.22e5 1.22e5 1.22e5'
     fill_method = symmetric9
-    euler_angle_1 = 59
-    euler_angle_2 = 37
-    euler_angle_3 = 27
   []
   [stress]
     type = ComputeMultipleCrystalPlasticityStress
@@ -213,7 +216,6 @@
     stol = 5.0e-3
     resistance_tol = 5.0e-3
     zero_tol = 1e-16
-    # print_state_variable_convergence_error_messages = true
   []
   [concentrations]
     type = GenericConstantMaterial
@@ -251,21 +253,30 @@
     type = ElementAverageValue
     variable = pin_point_density_3
   []
-  [const_slip_incr_0]
+  [slip_resistance_0]
     type = ElementAverageValue
-    variable = const_slip_incr_0
+    variable = slip_resistance_0
   []
-  [const_slip_incr_1]
+  [slip_resistance_3]
     type = ElementAverageValue
-    variable = const_slip_incr_1
+    variable = slip_resistance_3
   []
-  [const_slip_incr_2]
+  [slip_resistance_6]
     type = ElementAverageValue
-    variable = const_slip_incr_2
+    variable = slip_resistance_6
   []
-  [const_slip_incr_3]
+  [slip_resistance_9]
     type = ElementAverageValue
-    variable = const_slip_incr_3
+    variable = slip_resistance_9
+  []
+  [pressure]
+    type = FunctionValuePostprocessor
+    function = ramp_hold
+  []
+  [disp_z]
+    type = NodalExtremeValue
+    variable = disp_z
+    value_type = min
   []
 []
 
@@ -282,14 +293,14 @@
 
   petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -ksp_type -ksp_gmres_restart'
   petsc_options_value = ' asm      2              lu            gmres     200'
-  nl_abs_tol = 1e-12
-  nl_rel_tol = 1e-10
+  nl_abs_tol = 1e-10
+  nl_rel_tol = 1e-6
   nl_abs_step_tol = 1e-10
   nl_max_its = 15
 
   dt = 0.1
-  dtmin = 1e-4
-  num_steps = 20
+  dtmin = 0.1
+  end_time = 3.0
 []
 
 [Outputs]

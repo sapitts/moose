@@ -58,7 +58,7 @@
   []
 []
 
-[Modules/TensorMechanics/Master/all]
+[Physics/SolidMechanics/QuasiStatic/all]
   strain = FINITE
   incremental = true
   add_variables = true
@@ -171,9 +171,9 @@
     type = FunctionDirichletBC
     variable = disp_z
     boundary = front
-    function = 'if(t<=0.1, 1.25e-2*t,
-                if(t<=0.3, (1.25e-3 + 2.5e-3*(t-0.1)),
-                if(t<=0.4, (1.75e-3 + 2.5e-4*(t-0.3)), 1.775e-3 + 1.0e-5*(t-0.4))))'
+    function = 'if(t<=0.2, 3.0e-3*t,
+                if(t<=0.5, (6.0e-4 + 5.0e-4*(t-0.2)),
+                if(t<=0.8, (7.5e-4 + 5.0e-5*(t-0.5)), 7.65e-4 + 1.0e-5*(t-0.8))))'
   []
 []
 
@@ -182,6 +182,8 @@
     type = ComputeElasticityTensorCP
     C_ijkl = '1.98e5 1.25e5 1.25e5 1.98e5 1.25e5 1.98e5 1.22e5 1.22e5 1.22e5'
     fill_method = symmetric9
+    euler_angle_1 = 35.0
+    euler_angle_2 = 45.0
   []
   [stress]
     type = ComputeMultipleCrystalPlasticityStress
@@ -210,7 +212,6 @@
     stol = 5.0e-3
     resistance_tol = 5.0e-3
     zero_tol = 1e-16
-    # print_state_variable_convergence_error_messages = true
   []
   [concentrations]
     type = GenericConstantMaterial

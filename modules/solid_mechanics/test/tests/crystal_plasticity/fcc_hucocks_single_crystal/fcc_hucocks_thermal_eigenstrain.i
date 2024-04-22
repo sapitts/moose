@@ -12,15 +12,19 @@
 []
 
 [AuxVariables]
-  [e_zz]
+  [temperature]
+    order = FIRST
+    family = LAGRANGE
+  []
+  [fth_xx]
     order = CONSTANT
     family = MONOMIAL
   []
-  [pk2_zz]
+  [fth_yy]
     order = CONSTANT
     family = MONOMIAL
   []
-  [fp_zz]
+  [fth_zz]
     order = CONSTANT
     family = MONOMIAL
   []
@@ -40,25 +44,9 @@
     order = CONSTANT
     family = MONOMIAL
   []
-  [const_slip_incr_0]
-    order = CONSTANT
-    family = MONOMIAL
-  []
-  [const_slip_incr_1]
-    order = CONSTANT
-    family = MONOMIAL
-  []
-  [const_slip_incr_2]
-    order = CONSTANT
-    family = MONOMIAL
-  []
-  [const_slip_incr_3]
-    order = CONSTANT
-    family = MONOMIAL
-  []
 []
 
-[Modules/TensorMechanics/Master/all]
+[Physics/SolidMechanics/QuasiStatic/all]
   strain = FINITE
   incremental = true
   add_variables = true
@@ -66,26 +54,32 @@
 []
 
 [AuxKernels]
-  [e_zz]
+  [temperature]
+    type = FunctionAux
+    variable = temperature
+    function = '300+100*t' # temperature increases at a constant rate
+    execute_on = timestep_begin
+  []
+  [fth_xx]
     type = RankTwoAux
-    variable = e_zz
-    rank_two_tensor = total_lagrangian_strain
-    index_i = 2
-    index_j = 2
+    variable = fth_xx
+    rank_two_tensor = thermal_deformation_gradient
+    index_j = 0
+    index_i = 0
     execute_on = timestep_end
   []
-  [pk2_zz]
+  [fth_yy]
     type = RankTwoAux
-    variable = pk2_zz
-    rank_two_tensor = second_piola_kirchhoff_stress
-    index_j = 2
-    index_i = 2
+    variable = fth_yy
+    rank_two_tensor = thermal_deformation_gradient
+    index_j = 1
+    index_i = 1
     execute_on = timestep_end
   []
-  [fp_zz]
+  [fth_zz]
     type = RankTwoAux
-    variable = fp_zz
-    rank_two_tensor = plastic_deformation_gradient
+    variable = fth_zz
+    rank_two_tensor = thermal_deformation_gradient
     index_j = 2
     index_i = 2
     execute_on = timestep_end
@@ -115,34 +109,6 @@
     type = MaterialStdVectorAux
     variable = pin_point_density_3
     property = pinning_point_density
-    index = 3
-    execute_on = timestep_end
-  []
-  [const_slip_incr_0]
-    type = MaterialStdVectorAux
-    variable = const_slip_incr_0
-    property = coplanar_constitutive_slip_increment
-    index = 0
-    execute_on = timestep_end
-  []
-  [const_slip_incr_1]
-    type = MaterialStdVectorAux
-    variable = const_slip_incr_1
-    property = coplanar_constitutive_slip_increment
-    index = 1
-    execute_on = timestep_end
-  []
-  [const_slip_incr_2]
-    type = MaterialStdVectorAux
-    variable = const_slip_incr_2
-    property = coplanar_constitutive_slip_increment
-    index = 2
-    execute_on = timestep_end
-  []
-  [const_slip_incr_3]
-    type = MaterialStdVectorAux
-    variable = const_slip_incr_3
-    property = coplanar_constitutive_slip_increment
     index = 3
     execute_on = timestep_end
   []
@@ -164,17 +130,8 @@
   [symmz]
     type = DirichletBC
     variable = disp_z
-    boundary = back
+    boundary = 'back front'
     value = 0
-  []
-  [tdisp]
-    type = FunctionDirichletBC
-    variable = disp_z
-    boundary = front
-    function = 'if(t<=0.1, 5.0e-3*t,
-                if(t<=0.4, (5.0e-4 + 1.0e-3*(t-0.1)),
-                if(t<=0.9, (8.0e-4 + 2.5e-4*(t-0.4)),
-                if(t<=1.3, (9.0e-4 + 1.0e-4*(t-0.9)), 9.4e-4 +5.0e-6*(t-1.3) ))))'
   []
 []
 
@@ -183,17 +140,15 @@
     type = ComputeElasticityTensorCP
     C_ijkl = '1.98e5 1.25e5 1.25e5 1.98e5 1.25e5 1.98e5 1.22e5 1.22e5 1.22e5'
     fill_method = symmetric9
-    euler_angle_1 = 0.0
-    euler_angle_2 = 54.73561
-    euler_angle_3 = 45.0
   []
   [stress]
     type = ComputeMultipleCrystalPlasticityStress
     crystal_plasticity_models = 'trial_xtalpl'
+    eigenstrain_names = thermal_eigenstrain
     tan_mod_type = exact
     line_search_method = CUT_HALF
     use_line_search = true
-    maximum_substep_iteration = 5
+    maximum_substep_iteration = 10
   []
   [trial_xtalpl]
     type = CrystalPlasticityFCCDislocationLinkHuCocksUpdate
@@ -214,27 +169,41 @@
     stol = 5.0e-3
     resistance_tol = 5.0e-3
     zero_tol = 1e-16
-    # print_state_variable_convergence_error_messages = true
   []
   [concentrations]
     type = GenericConstantMaterial
     prop_names = 'solute_conc             precipitate_conc    precipitate_radius'
     prop_values = '2.818586455498711e+17  597211024.5155126     1.0e-3' # in 1/mm^3, backed out from given stress, except radius which is assumed
   []
+  [thermal_eigenstrain]
+    type = ComputeCrystalPlasticityThermalEigenstrain
+    eigenstrain_name = thermal_eigenstrain
+    deformation_gradient_name = thermal_deformation_gradient
+    temperature = temperature
+    thermal_expansion_coefficients = '0.5e-05 0.5e-05 0.5e-05' # thermal expansion coefficients along three directions
+  []
 []
 
 [Postprocessors]
-  [e_zz]
+  [stress_zz]
     type = ElementAverageValue
-    variable = e_zz
+    variable = stress_zz
   []
-  [pk2_zz]
+  [fth_xx]
     type = ElementAverageValue
-    variable = pk2_zz
+    variable = fth_xx
   []
-  [fp_zz]
+  [fth_yy]
     type = ElementAverageValue
-    variable = fp_zz
+    variable = fth_yy
+  []
+  [fth_zz]
+    type = ElementAverageValue
+    variable = fth_zz
+  []
+  [temperature]
+    type = ElementAverageValue
+    variable = temperature
   []
   [pin_point_density_0]
     type = ElementAverageValue
@@ -251,27 +220,6 @@
   [pin_point_density_3]
     type = ElementAverageValue
     variable = pin_point_density_3
-  []
-  [const_slip_incr_0]
-    type = ElementAverageValue
-    variable = const_slip_incr_0
-  []
-  [const_slip_incr_1]
-    type = ElementAverageValue
-    variable = const_slip_incr_1
-  []
-  [const_slip_incr_2]
-    type = ElementAverageValue
-    variable = const_slip_incr_2
-  []
-  [const_slip_incr_3]
-    type = ElementAverageValue
-    variable = const_slip_incr_3
-  []
-  [disp_z]
-    type = NodalExtremeValue
-    variable = disp_z
-    value_type = max
   []
 []
 
@@ -295,8 +243,7 @@
 
   dt = 0.1
   dtmin = 1e-4
-  # end_time = 1000
-  num_steps = 25
+  num_steps = 10
 []
 
 [Outputs]

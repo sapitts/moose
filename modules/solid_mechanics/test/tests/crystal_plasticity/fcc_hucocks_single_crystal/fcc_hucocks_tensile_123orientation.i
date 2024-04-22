@@ -12,6 +12,10 @@
 []
 
 [AuxVariables]
+  [e_zz]
+    order = CONSTANT
+    family = MONOMIAL
+  []
   [pk2_zz]
     order = CONSTANT
     family = MONOMIAL
@@ -20,25 +24,41 @@
     order = CONSTANT
     family = MONOMIAL
   []
-  [slip_resistance_0]
+  [pin_point_density_0]
     order = CONSTANT
     family = MONOMIAL
   []
-  [slip_resistance_3]
+  [pin_point_density_1]
     order = CONSTANT
     family = MONOMIAL
   []
-  [slip_resistance_6]
+  [pin_point_density_2]
     order = CONSTANT
     family = MONOMIAL
   []
-  [slip_resistance_9]
+  [pin_point_density_3]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+  [const_slip_incr_0]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+  [const_slip_incr_1]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+  [const_slip_incr_2]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+  [const_slip_incr_3]
     order = CONSTANT
     family = MONOMIAL
   []
 []
 
-[Modules/TensorMechanics/Master/all]
+[Physics/SolidMechanics/QuasiStatic/all]
   strain = FINITE
   incremental = true
   add_variables = true
@@ -46,6 +66,14 @@
 []
 
 [AuxKernels]
+  [e_zz]
+    type = RankTwoAux
+    variable = e_zz
+    rank_two_tensor = total_lagrangian_strain
+    index_i = 2
+    index_j = 2
+    execute_on = timestep_end
+  []
   [pk2_zz]
     type = RankTwoAux
     variable = pk2_zz
@@ -62,32 +90,60 @@
     index_i = 2
     execute_on = timestep_end
   []
-  [slip_resistance_0]
+  [pin_point_density_0]
     type = MaterialStdVectorAux
-    variable = slip_resistance_0
-    property = slip_resistance
+    variable = pin_point_density_0
+    property = pinning_point_density
     index = 0
     execute_on = timestep_end
   []
-  [slip_resistance_3]
+  [pin_point_density_1]
     type = MaterialStdVectorAux
-    variable = slip_resistance_3
-    property = slip_resistance
+    variable = pin_point_density_1
+    property = pinning_point_density
+    index = 1
+    execute_on = timestep_end
+  []
+  [pin_point_density_2]
+    type = MaterialStdVectorAux
+    variable = pin_point_density_2
+    property = pinning_point_density
+    index = 2
+    execute_on = timestep_end
+  []
+  [pin_point_density_3]
+    type = MaterialStdVectorAux
+    variable = pin_point_density_3
+    property = pinning_point_density
     index = 3
     execute_on = timestep_end
   []
-  [slip_resistance_6]
+  [const_slip_incr_0]
     type = MaterialStdVectorAux
-    variable = slip_resistance_6
-    property = slip_resistance
-    index = 6
+    variable = const_slip_incr_0
+    property = coplanar_constitutive_slip_increment
+    index = 0
     execute_on = timestep_end
   []
-  [slip_resistance_9]
+  [const_slip_incr_1]
     type = MaterialStdVectorAux
-    variable = slip_resistance_9
-    property = slip_resistance
-    index = 9
+    variable = const_slip_incr_1
+    property = coplanar_constitutive_slip_increment
+    index = 1
+    execute_on = timestep_end
+  []
+  [const_slip_incr_2]
+    type = MaterialStdVectorAux
+    variable = const_slip_incr_2
+    property = coplanar_constitutive_slip_increment
+    index = 2
+    execute_on = timestep_end
+  []
+  [const_slip_incr_3]
+    type = MaterialStdVectorAux
+    variable = const_slip_incr_3
+    property = coplanar_constitutive_slip_increment
+    index = 3
     execute_on = timestep_end
   []
 []
@@ -111,18 +167,13 @@
     boundary = back
     value = 0
   []
-  [constant_displacement]
+  [tdisp]
     type = FunctionDirichletBC
     variable = disp_z
     boundary = front
-    function = '1.0e-3*t'
-  []
-[]
-
-[Functions]
-  [solute_function]
-    type = ParsedFunction
-    expression = '2.818586455498711e+17 - 1e17*t'
+    function = 'if(t<=0.2, 3.0e-3*t,
+                if(t<=0.5, (6.0e-4 + 5.0e-4*(t-0.2)),
+                if(t<=0.8, (7.5e-4 + 5.0e-5*(t-0.5)), 7.65e-4 + 1.0e-5*(t-0.8))))'
   []
 []
 
@@ -131,12 +182,17 @@
     type = ComputeElasticityTensorCP
     C_ijkl = '1.98e5 1.25e5 1.25e5 1.98e5 1.25e5 1.98e5 1.22e5 1.22e5 1.22e5'
     fill_method = symmetric9
+    euler_angle_1 = 59
+    euler_angle_2 = 37
+    euler_angle_3 = 27
   []
   [stress]
     type = ComputeMultipleCrystalPlasticityStress
     crystal_plasticity_models = 'trial_xtalpl'
     tan_mod_type = exact
-    maximum_substep_iteration = 1
+    line_search_method = CUT_HALF
+    use_line_search = true
+    maximum_substep_iteration = 5
   []
   [trial_xtalpl]
     type = CrystalPlasticityFCCDislocationLinkHuCocksUpdate
@@ -157,20 +213,20 @@
     stol = 5.0e-3
     resistance_tol = 5.0e-3
     zero_tol = 1e-16
+    # print_state_variable_convergence_error_messages = true
   []
   [concentrations]
     type = GenericConstantMaterial
-    prop_names = 'precipitate_conc    precipitate_radius'
-    prop_values = '597211024.5155126     1.0e-3' # in 1/mm^3, backed out from given stress, except radius which is assumed
-  []
-  [varying_solute_concentration]
-    type = GenericFunctionMaterial
-    prop_names = 'solute_conc'
-    prop_values = solute_function
+    prop_names = 'solute_conc             precipitate_conc    precipitate_radius'
+    prop_values = '2.818586455498711e+17  597211024.5155126     1.0e-3' # in 1/mm^3, backed out from given stress, except radius which is assumed
   []
 []
 
 [Postprocessors]
+  [e_zz]
+    type = ElementAverageValue
+    variable = e_zz
+  []
   [pk2_zz]
     type = ElementAverageValue
     variable = pk2_zz
@@ -179,21 +235,37 @@
     type = ElementAverageValue
     variable = fp_zz
   []
-  [slip_resistance_0]
+  [pin_point_density_0]
     type = ElementAverageValue
-    variable = slip_resistance_0
+    variable = pin_point_density_0
   []
-  [slip_resistance_3]
+  [pin_point_density_1]
     type = ElementAverageValue
-    variable = slip_resistance_3
+    variable = pin_point_density_1
   []
-  [slip_resistance_6]
+  [pin_point_density_2]
     type = ElementAverageValue
-    variable = slip_resistance_6
+    variable = pin_point_density_2
   []
-  [slip_resistance_9]
+  [pin_point_density_3]
     type = ElementAverageValue
-    variable = slip_resistance_9
+    variable = pin_point_density_3
+  []
+  [const_slip_incr_0]
+    type = ElementAverageValue
+    variable = const_slip_incr_0
+  []
+  [const_slip_incr_1]
+    type = ElementAverageValue
+    variable = const_slip_incr_1
+  []
+  [const_slip_incr_2]
+    type = ElementAverageValue
+    variable = const_slip_incr_2
+  []
+  [const_slip_incr_3]
+    type = ElementAverageValue
+    variable = const_slip_incr_3
   []
 []
 
@@ -210,14 +282,14 @@
 
   petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -ksp_type -ksp_gmres_restart'
   petsc_options_value = ' asm      2              lu            gmres     200'
-  nl_abs_tol = 1e-10
-  nl_rel_tol = 1e-8
+  nl_abs_tol = 1e-12
+  nl_rel_tol = 1e-10
   nl_abs_step_tol = 1e-10
   nl_max_its = 15
 
   dt = 0.1
   dtmin = 1e-4
-  num_steps = 5
+  num_steps = 20
 []
 
 [Outputs]

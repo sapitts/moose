@@ -10,7 +10,7 @@
 #include "CrystalPlasticityFCCDislocationLinkHuCocksUpdate.h"
 #include "libmesh/int_range.h"
 
-registerMooseObject("TensorMechanicsApp", CrystalPlasticityFCCDislocationLinkHuCocksUpdate);
+registerMooseObject("SolidMechanicsApp", CrystalPlasticityFCCDislocationLinkHuCocksUpdate);
 
 InputParameters
 CrystalPlasticityFCCDislocationLinkHuCocksUpdate::validParams()
