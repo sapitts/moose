@@ -172,8 +172,6 @@ CrystalPlasticityFCCDislocationLinkHuCocksUpdate::initQpStatefulProperties()
   CrystalPlasticityStressUpdateBase::initQpStatefulProperties();
   // Resize constitutive-model specific material properties
   _pinning_point_density[_qp].resize(_number_coplanar_groups);
-  _pinning_point_increment[_qp].resize(_number_coplanar_groups);
-  _coplanar_constitutive_slip_increment[_qp].resize(_number_coplanar_groups);
 
   // Set constitutive-model specific initial values from parameters
   const Real pin_pts_density_per_plane = _initial_pinning_point_density / _number_coplanar_groups;
@@ -187,17 +185,13 @@ CrystalPlasticityFCCDislocationLinkHuCocksUpdate::initQpStatefulProperties()
   for (const auto i : make_range(_number_slip_systems))
     _slip_increment[_qp][i] = 0.0;
 
-  calculateInitialSlipResistance();
-}
-
-void
-CrystalPlasticityFCCDislocationLinkHuCocksUpdate::calculateInitialSlipResistance()
-{
+  // Set the initial resistance from the lattice friction, solutes, and percipitates
   std::vector<Real> solute_hardening(_number_coplanar_groups, 0.0);
+  std::vector<Real> precipitate_hardening(_number_coplanar_groups, 0.0);
+
   if (_include_solute_hardening)
     calculateSoluteResistance(solute_hardening);
 
-  std::vector<Real> precipitate_hardening(_number_coplanar_groups, 0.0);
   if (_include_precipitate_hardening)
     calculatePrecipitateResistance(precipitate_hardening);
 
@@ -208,6 +202,16 @@ CrystalPlasticityFCCDislocationLinkHuCocksUpdate::calculateInitialSlipResistance
     for (const auto n : index_range(_coplanar_groups[p]))
       _slip_resistance[_qp][_coplanar_groups[p][n]] = hardening_sum;
   }
+}
+
+void
+CrystalPlasticityFCCDislocationLinkHuCocksUpdate::setMaterialVectorSize()
+{
+  CrystalPlasticityStressUpdateBase::setMaterialVectorSize();
+
+  // Resize non-stateful material properties
+  _pinning_point_increment[_qp].resize(_number_coplanar_groups);
+  _coplanar_constitutive_slip_increment[_qp].resize(_number_coplanar_groups);
 }
 
 void

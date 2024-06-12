@@ -27,13 +27,8 @@ public:
   CrystalPlasticityFCCDislocationLinkHuCocksUpdate(const InputParameters & parameters);
 
 protected:
-  /**
-   * Calculate the slip system resistance due to precipitates and solutes, the
-   * non-dislocation sources in the matrix, for the very first timestep
-   */
-  virtual void calculateInitialSlipResistance();
-
   virtual void initQpStatefulProperties() override;
+  virtual void setMaterialVectorSize() override;
 
   virtual void setInitialConstitutiveVariableValues() override;
 
