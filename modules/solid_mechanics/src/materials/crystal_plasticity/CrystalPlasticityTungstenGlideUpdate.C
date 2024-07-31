@@ -9,7 +9,7 @@
 
 #include "CrystalPlasticityTungstenGlideUpdate.h"
 
-registerMooseObject("TensorMechanicsApp", CrystalPlasticityTungstenGlideUpdate);
+registerMooseObject("SolidMechanicsApp", CrystalPlasticityTungstenGlideUpdate);
 
 InputParameters
 CrystalPlasticityTungstenGlideUpdate::validParams()

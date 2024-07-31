@@ -264,14 +264,12 @@
   []
 []
 
-[Modules/TensorMechanics/Master]
-  [all]
-    strain = FINITE
-    incremental = true
-    add_variables = true
-    additional_generate_output = 'stress_zz stress_xx stress_yy vonmises_stress'
-    additional_material_output_order = FIRST
-  []
+[Physics/SolidMechanics/QuasiStatic/all]
+  strain = FINITE
+  incremental = true
+  add_variables = true
+  additional_generate_output = 'stress_zz stress_xx stress_yy vonmises_stress'
+  additional_material_output_order = FIRST
 []
 
 [AuxKernels]
@@ -742,7 +740,7 @@
 
 [Materials]
   [elasticity_tensor_xtal]
-    type = ComputeElasticityTensorConstantRotationCP
+    type = ComputeElasticityTensorCP
     # C_ijkl = '521.0e3 201.0e3 201.0e3 521.0e3 201.0e3 521.0e3 160.0e3 160.0e3 160.0e3' #Lim et al (2015) JMPS
     C_ijkl = '5.224e5 2.044e5 2.044e5 5.224e5 2.044e5 5.224e5 1.606e5 1.606e5 1.606e5' # at 24C, from Lowie and Gonas (1967) J. Applied Physics
     fill_method = symmetric9

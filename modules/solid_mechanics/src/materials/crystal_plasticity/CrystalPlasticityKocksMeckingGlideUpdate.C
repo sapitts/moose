@@ -10,7 +10,7 @@
 #include "CrystalPlasticityKocksMeckingGlideUpdate.h"
 #include "libmesh/int_range.h"
 
-registerMooseObject("TensorMechanicsApp", CrystalPlasticityKocksMeckingGlideUpdate);
+registerMooseObject("SolidMechanicsApp", CrystalPlasticityKocksMeckingGlideUpdate);
 
 InputParameters
 CrystalPlasticityKocksMeckingGlideUpdate::validParams()
