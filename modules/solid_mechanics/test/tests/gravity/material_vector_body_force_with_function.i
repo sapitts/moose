@@ -26,6 +26,17 @@
   []
 []
 
+[Functions]
+  [diff_func_x]
+    type = ParsedFunction
+    expression = 1/t
+  []
+  [diff_func_y]
+    type = ParsedFunction
+    expression = 't*t + x'
+  []
+[]
+
 [BCs]
   [no_x]
     type = DirichletBC
@@ -57,17 +68,24 @@
     type = ComputeLinearElasticStress
   []
   [force_density]
-    type = GenericConstantVectorMaterial
+    type = GenericFunctionVectorMaterial
+    block = 0
     prop_names = force_density
-    prop_values = '-5.0 -19.9995 -10.0'
+    prop_values = 'diff_func_x diff_func_y 0'
   []
 []
 
 [Executioner]
-  type = Steady
-  nl_abs_tol = 1e-10
-  l_max_its = 20
+  type = Transient
+  num_steps = 10
+  dt = 0.1
+
+  solve_type = 'PJFNK'
+
+  petsc_options_iname = '-pc_type -pc_hypre_type'
+  petsc_options_value = 'hypre boomeramg'
 []
+
 
 [Outputs]
   [out]
