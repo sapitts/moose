@@ -148,23 +148,28 @@ CrystalPlasticityKocksMeckingGlideUpdate::initQpStatefulProperties()
   CrystalPlasticityStressUpdateBase::initQpStatefulProperties();
   // Resize constitutive-model specific material properties
   _dislocation_density[_qp].resize(_number_slip_systems);
-  _dislocation_increment[_qp].resize(_number_slip_systems);
-  _glide_velocity[_qp].resize(_number_slip_systems);
-  _constitutive_slip_increment[_qp].resize(_number_slip_systems);
 
   // Set constitutive-model specific initial values from parameters
   const Real dislocation_density_per_system = _initial_dislocation_density / _number_slip_systems;
   for (const auto i : make_range(_number_slip_systems))
   {
     _dislocation_density[_qp][i] = dislocation_density_per_system;
-    _dislocation_increment[_qp][i] = 0.0;
-
     _slip_increment[_qp][i] = 0.0;
-    _glide_velocity[_qp][i] = 0.0;
   }
 
   /// add an initial resistance calculation here?
   /// And then set the slip resistance calculation too
+}
+
+void
+CrystalPlasticityKocksMeckingGlideUpdate::setMaterialVectorSize()
+{
+  CrystalPlasticityStressUpdateBase::setMaterialVectorSize();
+
+  // Resize non-stateful material properties
+  _dislocation_increment[_qp].resize(_number_slip_systems);
+  _glide_velocity[_qp].resize(_number_slip_systems);
+  _constitutive_slip_increment[_qp].resize(_number_slip_systems);
 }
 
 void

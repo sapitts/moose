@@ -456,14 +456,12 @@
   []
 []
 
-[Modules/TensorMechanics/Master]
-  [all]
-    strain = FINITE
-    incremental = true
-    add_variables = true
-    additional_generate_output = 'stress_zz stress_xx stress_yy vonmises_stress'
-    additional_material_output_order = FIRST
-  []
+[Physics/SolidMechanics/QuasiStatic/all]
+  strain = FINITE
+  incremental = true
+  add_variables = true
+  additional_generate_output = 'stress_zz stress_xx stress_yy vonmises_stress'
+  additional_material_output_order = FIRST
 []
 
 [AuxKernels]
@@ -1270,7 +1268,7 @@
 
 [Materials]
   [elasticity_tensor_xtal]
-    type = ComputeElasticityTensorConstantRotationCP
+    type = ComputeElasticityTensorCP
     # C_ijkl = '521.0e3 201.0e3 201.0e3 521.0e3 201.0e3 521.0e3 160.0e3 160.0e3 160.0e3' #Lim et al (2015) JMPS
     C_ijkl = '5.224e5 2.044e5 2.044e5 5.224e5 2.044e5 5.224e5 1.606e5 1.606e5 1.606e5' # at 24C, from Lowie and Gonas (1967) J. Applied Physics
     fill_method = symmetric9
@@ -1279,20 +1277,20 @@
     type = ComputeMultipleCrystalPlasticityStress
     crystal_plasticity_models = 'trial_xtalpl'
     tan_mod_type = exact
-    maximum_substep_iteration = 10
+    maximum_substep_iteration = 5
     # print_state_variable_convergence_error_messages = true
   []
   [trial_xtalpl]
     type = CrystalPlasticityTungstenGlideUpdate
-    number_slip_systems = 24
-    slip_sys_file_name = input_slip_sys_bcc24.txt
+    number_slip_systems = 12
+    slip_sys_file_name = input_slip_sys_bcc12.txt
     temperature = temperature
     initial_dislocation_density = 1.0e5 # Argon and Maloof 1966 #5.5e3 from Brunner 2010  #4.5e8 # roughly David's measurement # 1.0e7 from Srivastava et al (2013), assumed equal to mobile
     burgers_vector = 2.74e-07 # Lim et al (2015) JMPS
     dislocation_multiplication_coefficient = 1
     dipole_annihilation_distance = 2.74e-07 #given in Cereceda et al 2016 as equal to the burgers vector, CHECK THIS AGAIN LATER
     lattice_friction = 12.0 #Lim et al (2015) JMPS, High temperature value
-    shear_modulus = 1.600e5 # at 24C, from Lowie and Gonas (1967) J. Applied Physics
+    shear_modulus = 1.610e5 # Oude Vrielink (2020) Mechanics of Materials 145 (103394)
     stol = 1.0e-3
     # print_state_variable_convergence_error_messages = true
   []
@@ -1770,11 +1768,15 @@
   nl_rel_tol = 1e-8 # was 1e-10 in initial testing
   nl_max_its = 15
 
-  dt = 0.2
-  dtmin = 1.0e-3
-  dtmax = 10.0
-  end_time = 1.0e3 # needed to reach 10% strain on a cube
-  timestep_tolerance = 1e-8
+  [TimeStepper]
+    type = IterationAdaptiveDT
+    optimal_iterations = 6
+    linear_iteration_ratio = 10
+    dt = 0.1
+    growth_factor = 3.0
+    cutback_factor = 0.5
+    iteration_window = 1
+  []
 []
 
 [Outputs]

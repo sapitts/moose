@@ -8,7 +8,8 @@
     dim = 3
     nx = 8
     ny = 8
-    nz = 8
+    nz = 16
+    zmax = 2
     elem_type = HEX27
   []
 []
@@ -16,62 +17,61 @@
 [AuxVariables]
   [temperature]
     initial_condition = 297.0 ##24C
-    order = SECOND
   []
   [pk2_zz]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [fp_zz]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [e_zz]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [pk2_xx]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [fp_xx]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [e_xx]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [pk2_yy]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [fp_yy]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [e_yy]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [vonmises_stress_cauchy]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [eff_strain_green]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [vonmises_stress_pk2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [eff_strain_lag]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_0]
@@ -79,15 +79,15 @@
     family = MONOMIAL
   []
   [slip_incr_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_0]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_1]
@@ -95,15 +95,15 @@
     family = MONOMIAL
   []
   [slip_incr_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_1]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_2]
@@ -111,15 +111,15 @@
     family = MONOMIAL
   []
   [slip_incr_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_2]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_3]
@@ -127,15 +127,15 @@
     family = MONOMIAL
   []
   [slip_incr_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_3]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_4]
@@ -143,15 +143,15 @@
     family = MONOMIAL
   []
   [slip_incr_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_4]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_5]
@@ -159,15 +159,15 @@
     family = MONOMIAL
   []
   [slip_incr_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_5]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_6]
@@ -175,15 +175,15 @@
     family = MONOMIAL
   []
   [slip_incr_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_6]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_7]
@@ -191,15 +191,15 @@
     family = MONOMIAL
   []
   [slip_incr_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_7]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_8]
@@ -207,15 +207,15 @@
     family = MONOMIAL
   []
   [slip_incr_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_8]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_9]
@@ -223,15 +223,15 @@
     family = MONOMIAL
   []
   [slip_incr_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_9]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_10]
@@ -239,15 +239,15 @@
     family = MONOMIAL
   []
   [slip_incr_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_10]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [gss_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [dislocation_11]
@@ -255,11 +255,203 @@
     family = MONOMIAL
   []
   [slip_incr_11]
-    order = CONSTANT
+    order = FIRST
     family = MONOMIAL
   []
   [tau_11]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [gss_12]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [dislocation_12]
     order = CONSTANT
+    family = MONOMIAL
+  []
+  [slip_incr_12]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_12]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [gss_13]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [dislocation_13]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+  [slip_incr_13]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_13]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [gss_14]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [dislocation_14]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+  [slip_incr_14]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_14]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [gss_15]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [dislocation_15]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+  [slip_incr_15]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_15]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [gss_16]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [dislocation_16]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+  [slip_incr_16]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_16]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [gss_17]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [dislocation_17]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+  [slip_incr_17]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_17]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [gss_18]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [dislocation_18]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+  [slip_incr_18]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_18]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [gss_19]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [dislocation_19]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+  [slip_incr_19]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_19]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [gss_20]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [dislocation_20]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+  [slip_incr_20]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_20]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [gss_21]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [dislocation_21]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+  [slip_incr_21]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_21]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [gss_22]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [dislocation_22]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+  [slip_incr_22]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_22]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [gss_23]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [dislocation_23]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+  [slip_incr_23]
+    order = FIRST
+    family = MONOMIAL
+  []
+  [tau_23]
+    order = FIRST
     family = MONOMIAL
   []
 []
@@ -709,13 +901,349 @@
     index = 11
     execute_on = timestep_end
   []
+  [gss_12]
+    type = MaterialStdVectorAux
+    variable = gss_12
+    property = slip_resistance
+    index = 12
+    execute_on = timestep_end
+  []
+  [dislocation_12]
+    type = MaterialStdVectorAux
+    variable = dislocation_12
+    property = dislocation_density
+    index = 12
+    execute_on = timestep_end
+  []
+  [slip_incr_12]
+    type = MaterialStdVectorAux
+    variable = slip_incr_12
+    property = constitutive_slip_increment
+    index = 12
+    execute_on = timestep_end
+  []
+  [tau_12]
+    type = MaterialStdVectorAux
+    variable = tau_12
+    property = applied_shear_stress
+    index = 12
+    execute_on = timestep_end
+  []
+  [gss_13]
+    type = MaterialStdVectorAux
+    variable = gss_13
+    property = slip_resistance
+    index = 13
+    execute_on = timestep_end
+  []
+  [dislocation_13]
+    type = MaterialStdVectorAux
+    variable = dislocation_13
+    property = dislocation_density
+    index = 13
+    execute_on = timestep_end
+  []
+  [slip_incr_13]
+    type = MaterialStdVectorAux
+    variable = slip_incr_13
+    property = constitutive_slip_increment
+    index = 13
+    execute_on = timestep_end
+  []
+  [tau_13]
+    type = MaterialStdVectorAux
+    variable = tau_13
+    property = applied_shear_stress
+    index = 13
+    execute_on = timestep_end
+  []
+  [gss_14]
+    type = MaterialStdVectorAux
+    variable = gss_14
+    property = slip_resistance
+    index = 14
+    execute_on = timestep_end
+  []
+  [dislocation_14]
+    type = MaterialStdVectorAux
+    variable = dislocation_14
+    property = dislocation_density
+    index = 14
+    execute_on = timestep_end
+  []
+  [slip_incr_14]
+    type = MaterialStdVectorAux
+    variable = slip_incr_14
+    property = constitutive_slip_increment
+    index = 14
+    execute_on = timestep_end
+  []
+  [tau_14]
+    type = MaterialStdVectorAux
+    variable = tau_14
+    property = applied_shear_stress
+    index = 14
+    execute_on = timestep_end
+  []
+  [gss_15]
+    type = MaterialStdVectorAux
+    variable = gss_15
+    property = slip_resistance
+    index = 15
+    execute_on = timestep_end
+  []
+  [dislocation_15]
+    type = MaterialStdVectorAux
+    variable = dislocation_15
+    property = dislocation_density
+    index = 15
+    execute_on = timestep_end
+  []
+  [slip_incr_15]
+    type = MaterialStdVectorAux
+    variable = slip_incr_15
+    property = constitutive_slip_increment
+    index = 15
+    execute_on = timestep_end
+  []
+  [tau_15]
+    type = MaterialStdVectorAux
+    variable = tau_15
+    property = applied_shear_stress
+    index = 15
+    execute_on = timestep_end
+  []
+  [gss_16]
+    type = MaterialStdVectorAux
+    variable = gss_16
+    property = slip_resistance
+    index = 16
+    execute_on = timestep_end
+  []
+  [dislocation_16]
+    type = MaterialStdVectorAux
+    variable = dislocation_16
+    property = dislocation_density
+    index = 16
+    execute_on = timestep_end
+  []
+  [slip_incr_16]
+    type = MaterialStdVectorAux
+    variable = slip_incr_16
+    property = constitutive_slip_increment
+    index = 16
+    execute_on = timestep_end
+  []
+  [tau_16]
+    type = MaterialStdVectorAux
+    variable = tau_16
+    property = applied_shear_stress
+    index = 16
+    execute_on = timestep_end
+  []
+  [gss_17]
+    type = MaterialStdVectorAux
+    variable = gss_17
+    property = slip_resistance
+    index = 17
+    execute_on = timestep_end
+  []
+  [dislocation_17]
+    type = MaterialStdVectorAux
+    variable = dislocation_17
+    property = dislocation_density
+    index = 17
+    execute_on = timestep_end
+  []
+  [slip_incr_17]
+    type = MaterialStdVectorAux
+    variable = slip_incr_17
+    property = constitutive_slip_increment
+    index = 17
+    execute_on = timestep_end
+  []
+  [tau_17]
+    type = MaterialStdVectorAux
+    variable = tau_17
+    property = applied_shear_stress
+    index = 17
+    execute_on = timestep_end
+  []
+  [gss_18]
+    type = MaterialStdVectorAux
+    variable = gss_18
+    property = slip_resistance
+    index = 18
+    execute_on = timestep_end
+  []
+  [dislocation_18]
+    type = MaterialStdVectorAux
+    variable = dislocation_18
+    property = dislocation_density
+    index = 18
+    execute_on = timestep_end
+  []
+  [slip_incr_18]
+    type = MaterialStdVectorAux
+    variable = slip_incr_18
+    property = constitutive_slip_increment
+    index = 18
+    execute_on = timestep_end
+  []
+  [tau_18]
+    type = MaterialStdVectorAux
+    variable = tau_18
+    property = applied_shear_stress
+    index = 18
+    execute_on = timestep_end
+  []
+  [gss_19]
+    type = MaterialStdVectorAux
+    variable = gss_19
+    property = slip_resistance
+    index = 19
+    execute_on = timestep_end
+  []
+  [dislocation_19]
+    type = MaterialStdVectorAux
+    variable = dislocation_19
+    property = dislocation_density
+    index = 19
+    execute_on = timestep_end
+  []
+  [slip_incr_19]
+    type = MaterialStdVectorAux
+    variable = slip_incr_19
+    property = constitutive_slip_increment
+    index = 19
+    execute_on = timestep_end
+  []
+  [tau_19]
+    type = MaterialStdVectorAux
+    variable = tau_19
+    property = applied_shear_stress
+    index = 19
+    execute_on = timestep_end
+  []
+  [gss_20]
+    type = MaterialStdVectorAux
+    variable = gss_20
+    property = slip_resistance
+    index = 20
+    execute_on = timestep_end
+  []
+  [dislocation_20]
+    type = MaterialStdVectorAux
+    variable = dislocation_20
+    property = dislocation_density
+    index = 20
+    execute_on = timestep_end
+  []
+  [slip_incr_20]
+    type = MaterialStdVectorAux
+    variable = slip_incr_20
+    property = constitutive_slip_increment
+    index = 20
+    execute_on = timestep_end
+  []
+  [tau_20]
+    type = MaterialStdVectorAux
+    variable = tau_20
+    property = applied_shear_stress
+    index = 20
+    execute_on = timestep_end
+  []
+  [gss_21]
+    type = MaterialStdVectorAux
+    variable = gss_21
+    property = slip_resistance
+    index = 21
+    execute_on = timestep_end
+  []
+  [dislocation_21]
+    type = MaterialStdVectorAux
+    variable = dislocation_21
+    property = dislocation_density
+    index = 21
+    execute_on = timestep_end
+  []
+  [slip_incr_21]
+    type = MaterialStdVectorAux
+    variable = slip_incr_21
+    property = constitutive_slip_increment
+    index = 21
+    execute_on = timestep_end
+  []
+  [tau_21]
+    type = MaterialStdVectorAux
+    variable = tau_21
+    property = applied_shear_stress
+    index = 21
+    execute_on = timestep_end
+  []
+  [gss_22]
+    type = MaterialStdVectorAux
+    variable = gss_22
+    property = slip_resistance
+    index = 22
+    execute_on = timestep_end
+  []
+  [dislocation_22]
+    type = MaterialStdVectorAux
+    variable = dislocation_22
+    property = dislocation_density
+    index = 22
+    execute_on = timestep_end
+  []
+  [slip_incr_22]
+    type = MaterialStdVectorAux
+    variable = slip_incr_22
+    property = constitutive_slip_increment
+    index = 22
+    execute_on = timestep_end
+  []
+  [tau_22]
+    type = MaterialStdVectorAux
+    variable = tau_22
+    property = applied_shear_stress
+    index = 22
+    execute_on = timestep_end
+  []
+  [gss_23]
+    type = MaterialStdVectorAux
+    variable = gss_23
+    property = slip_resistance
+    index = 23
+    execute_on = timestep_end
+  []
+  [dislocation_23]
+    type = MaterialStdVectorAux
+    variable = dislocation_23
+    property = dislocation_density
+    index = 23
+    execute_on = timestep_end
+  []
+  [slip_incr_23]
+    type = MaterialStdVectorAux
+    variable = slip_incr_23
+    property = constitutive_slip_increment
+    index = 23
+    execute_on = timestep_end
+  []
+  [tau_23]
+    type = MaterialStdVectorAux
+    variable = tau_23
+    property = applied_shear_stress
+    index = 23
+    execute_on = timestep_end
+  []
 []
 
 [BCs]
   [fixed_bottom_y]
     type = DirichletBC
     variable = disp_y
-    boundary = 'bottom'
+    boundary = 'back'
     value = 0.0
   []
   [fixed_bottom_x]
@@ -734,7 +1262,7 @@
     type = FunctionDirichletBC
     variable = disp_z
     boundary = 'front'
-    function = '8.5e-4*t' #given strain rate for the 1bar49 orientation
+    function = '1.0e-4*t' #given strain rate for the 111 orientation
   []
 []
 
@@ -744,9 +1272,9 @@
     # C_ijkl = '521.0e3 201.0e3 201.0e3 521.0e3 201.0e3 521.0e3 160.0e3 160.0e3 160.0e3' #Lim et al (2015) JMPS
     C_ijkl = '5.224e5 2.044e5 2.044e5 5.224e5 2.044e5 5.224e5 1.606e5 1.606e5 1.606e5' # at 24C, from Lowie and Gonas (1967) J. Applied Physics
     fill_method = symmetric9
-    euler_angle_1 = 35.0
-    euler_angle_2 = 24.613597652978576
-    euler_angle_3 = -14.036243467926473
+    euler_angle_1 = 0.0
+    euler_angle_2 = 54.73561
+    euler_angle_3 = 45.0
   []
   [stress]
     type = ComputeMultipleCrystalPlasticityStress
@@ -759,14 +1287,13 @@
     type = CrystalPlasticityTungstenGlideUpdate
     number_slip_systems = 12
     slip_sys_file_name = input_slip_sys_bcc12.txt
-    # number_coplanar_groups = 6
     temperature = temperature
-    initial_dislocation_density = 5.5e3 #from Brunner 2010  #4.5e8 # roughly David's measurement # 1.0e7 from Srivastava et al (2013)
+    initial_dislocation_density = 1.0e5 # Argon and Maloof 1966 #5.5e3 from Brunner 2010  #4.5e8 # roughly David's measurement # 1.0e7 from Srivastava et al (2013), assumed equal to mobile
     burgers_vector = 2.74e-07 # Lim et al (2015) JMPS
     dislocation_multiplication_coefficient = 1
     dipole_annihilation_distance = 2.74e-07 #given in Cereceda et al 2016 as equal to the burgers vector, CHECK THIS AGAIN LATER
     lattice_friction = 12.0 #Lim et al (2015) JMPS, High temperature value
-    shear_modulus = 1.600e5 # at 24C, from Lowie and Gonas (1967) J. Applied Physics
+    shear_modulus = 1.610e5 # Oude Vrielink (2020) Mechanics of Materials 145 (103394)
     stol = 1.0e-3
     # print_state_variable_convergence_error_messages = true
   []
@@ -1033,6 +1560,198 @@
     type = ElementAverageValue
     variable = tau_11
   []
+  [gss_12]
+    type = ElementAverageValue
+    variable = gss_12
+  []
+  [dislocation_12]
+    type = ElementAverageValue
+    variable = dislocation_12
+  []
+  [slip_incr_12]
+    type = ElementAverageValue
+    variable = slip_incr_12
+  []
+  [tau_12]
+    type = ElementAverageValue
+    variable = tau_12
+  []
+  [gss_13]
+    type = ElementAverageValue
+    variable = gss_13
+  []
+  [dislocation_13]
+    type = ElementAverageValue
+    variable = dislocation_13
+  []
+  [slip_incr_13]
+    type = ElementAverageValue
+    variable = slip_incr_13
+  []
+  [tau_13]
+    type = ElementAverageValue
+    variable = tau_13
+  []
+  [gss_14]
+    type = ElementAverageValue
+    variable = gss_14
+  []
+  [dislocation_14]
+    type = ElementAverageValue
+    variable = dislocation_14
+  []
+  [slip_incr_14]
+    type = ElementAverageValue
+    variable = slip_incr_14
+  []
+  [tau_14]
+    type = ElementAverageValue
+    variable = tau_14
+  []
+  [gss_15]
+    type = ElementAverageValue
+    variable = gss_15
+  []
+  [dislocation_15]
+    type = ElementAverageValue
+    variable = dislocation_15
+  []
+  [slip_incr_15]
+    type = ElementAverageValue
+    variable = slip_incr_15
+  []
+  [tau_15]
+    type = ElementAverageValue
+    variable = tau_15
+  []
+  [gss_16]
+    type = ElementAverageValue
+    variable = gss_16
+  []
+  [dislocation_16]
+    type = ElementAverageValue
+    variable = dislocation_16
+  []
+  [slip_incr_16]
+    type = ElementAverageValue
+    variable = slip_incr_16
+  []
+  [tau_16]
+    type = ElementAverageValue
+    variable = tau_16
+  []
+  [gss_17]
+    type = ElementAverageValue
+    variable = gss_17
+  []
+  [dislocation_17]
+    type = ElementAverageValue
+    variable = dislocation_17
+  []
+  [slip_incr_17]
+    type = ElementAverageValue
+    variable = slip_incr_17
+  []
+  [tau_17]
+    type = ElementAverageValue
+    variable = tau_17
+  []
+  [gss_18]
+    type = ElementAverageValue
+    variable = gss_18
+  []
+  [dislocation_18]
+    type = ElementAverageValue
+    variable = dislocation_18
+  []
+  [slip_incr_18]
+    type = ElementAverageValue
+    variable = slip_incr_18
+  []
+  [tau_18]
+    type = ElementAverageValue
+    variable = tau_18
+  []
+  [gss_19]
+    type = ElementAverageValue
+    variable = gss_19
+  []
+  [dislocation_19]
+    type = ElementAverageValue
+    variable = dislocation_19
+  []
+  [slip_incr_19]
+    type = ElementAverageValue
+    variable = slip_incr_19
+  []
+  [tau_19]
+    type = ElementAverageValue
+    variable = tau_19
+  []
+  [gss_20]
+    type = ElementAverageValue
+    variable = gss_20
+  []
+  [dislocation_20]
+    type = ElementAverageValue
+    variable = dislocation_20
+  []
+  [slip_incr_20]
+    type = ElementAverageValue
+    variable = slip_incr_20
+  []
+  [tau_20]
+    type = ElementAverageValue
+    variable = tau_20
+  []
+  [gss_21]
+    type = ElementAverageValue
+    variable = gss_21
+  []
+  [dislocation_21]
+    type = ElementAverageValue
+    variable = dislocation_21
+  []
+  [slip_incr_21]
+    type = ElementAverageValue
+    variable = slip_incr_21
+  []
+  [tau_21]
+    type = ElementAverageValue
+    variable = tau_21
+  []
+  [gss_22]
+    type = ElementAverageValue
+    variable = gss_22
+  []
+  [dislocation_22]
+    type = ElementAverageValue
+    variable = dislocation_22
+  []
+  [slip_incr_22]
+    type = ElementAverageValue
+    variable = slip_incr_22
+  []
+  [tau_22]
+    type = ElementAverageValue
+    variable = tau_22
+  []
+  [gss_23]
+    type = ElementAverageValue
+    variable = gss_23
+  []
+  [dislocation_23]
+    type = ElementAverageValue
+    variable = dislocation_23
+  []
+  [slip_incr_23]
+    type = ElementAverageValue
+    variable = slip_incr_23
+  []
+  [tau_23]
+    type = ElementAverageValue
+    variable = tau_23
+  []
 []
 
 [Preconditioning]
@@ -1045,16 +1764,19 @@
 [Executioner]
   type = Transient
   solve_type = NEWTON #'PJFNK'
+  residual_and_jacobian_together = true
 
-  petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -ksp_type -ksp_gmres_restart'
-  petsc_options_value = ' asm      2              lu            gmres     200'
+  petsc_options_iname = '-pc_type'
+  petsc_options_value = ' lu'
+  # petsc_options_iname = '-pc_type -pc_asm_overlap -sub_pc_type -ksp_type -ksp_gmres_restart'
+  # petsc_options_value = ' asm      2              lu            gmres     200'
   nl_abs_tol = 1e-10
   nl_rel_tol = 1e-8 # was 1e-10 in initial testing
   nl_max_its = 15
 
   dtmin = 1.0e-3
   dtmax = 10.0
-  end_time = 25.0 #250.0 # 120s needed to reach 10% strain
+  end_time = 120.0 #250.0 # 120s needed to reach 10% strain
   timestep_tolerance = 1.0e-8
 
   [TimeStepper]

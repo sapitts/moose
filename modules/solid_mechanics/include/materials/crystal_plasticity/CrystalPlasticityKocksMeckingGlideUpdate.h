@@ -27,6 +27,7 @@ public:
 
 protected:
   virtual void initQpStatefulProperties() override;
+  virtual void setMaterialVectorSize() override;
 
   virtual void setInitialConstitutiveVariableValues() override;
 
