@@ -87,7 +87,7 @@ CrystalPlasticityFCCDislocationLinkHuCocksUpdate::validParams()
       1.0,
       "precipitate_hardening_coefficient>=0",
       "Leading coefficient for the precipitate contribution to slip system hardening; precipates "
-      "are assumed to act as arrays of weak pinning barriers to dislocation motion.");
+      "are assumed to act as arrays of strong pinning barriers to dislocation motion.");
   params.addRequiredRangeCheckedParam<Real>(
       "burgers_vector", "burgers_vector>0", "The Burger's vector for the material, in mm");
   params.addRequiredRangeCheckedParam<Real>(
