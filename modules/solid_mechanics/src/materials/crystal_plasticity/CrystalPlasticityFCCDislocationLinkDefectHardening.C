@@ -90,209 +90,9 @@ void
 CrystalPlasticityFCCDislocationLinkDefectHardening::initQpStatefulProperties()
 {
   CrystalPlasticityFCCDislocationLinkHuCocksUpdate::initQpStatefulProperties();
-  // Resize constitutive-model specific material properties
-  // _pinning_point_density[_qp].resize(_number_coplanar_groups);
-
-  // // Set constitutive-model specific initial values from parameters
-  // const Real pin_pts_density_per_plane = _initial_pinning_point_density /
-  // _number_coplanar_groups; for (const auto p : make_range(_number_coplanar_groups))
-  // {
-  //   _pinning_point_density[_qp][p] = pin_pts_density_per_plane;
-  //   _pinning_point_increment[_qp][p] = 0.0;
-  //   _coplanar_constitutive_slip_increment[_qp][p] = 0.0;
-  // }
-
-  // for (const auto i : make_range(_number_slip_systems))
-  // _slip_increment[_qp][i] = 0.0;
 
   calculateSlipResistance();
-
-  // // Set the initial resistance from the different hardening contributors
-  // std::vector<Real> forest_hardening(_number_coplanar_groups, 0.0);
-  // std::vector<Real> solute_hardening(_number_coplanar_groups, 0.0);
-  // std::vector<Real> precipitate_hardening(_number_coplanar_groups, 0.0);
-  // std::vector<Real> void_hardening(_number_coplanar_groups, 0.0);
-  // std::vector<Real> loop_hardening(_number_coplanar_groups, 0.0);
-
-  // CrystalPlasticityFCCDislocationLinkHuCocksUpdate::calculateForestSlipResistance(forest_hardening);
-
-  // if (_include_solute_hardening)
-  //   CrystalPlasticityFCCDislocationLinkHuCocksUpdate::calculateSoluteResistance(solute_hardening);
-
-  // if (_include_precipitate_hardening)
-  //   CrystalPlasticityFCCDislocationLinkHuCocksUpdate::calculatePrecipitateResistance(
-  //       precipitate_hardening);
-
-  //   if (_include_void_hardening)
-  //   calculateVoidResistance(void_hardening);
-
-  // if (_include_dislocation_loop_hardening)
-  //   calculateLoopResistance(loop_hardening);
-
-  // for (const auto p : make_range(_number_coplanar_groups))
-  // {
-  //   const Real hardening_sum = precipitate_hardening[p] + solute_hardening[p];
-
-  //   for (const auto n : index_range(_coplanar_groups[p]))
-  //     _slip_resistance[_qp][_coplanar_groups[p][n]] = hardening_sum;
-  // }
 }
-
-// void
-// CrystalPlasticityFCCDislocationLinkDefectHardening::setMaterialVectorSize()
-// {
-//   CrystalPlasticityFCCDislocationLinkHuCocksUpdate::setMaterialVectorSize();
-
-//   // Resize non-stateful material properties
-//   _pinning_point_increment[_qp].resize(_number_coplanar_groups);
-//   _coplanar_constitutive_slip_increment[_qp].resize(_number_coplanar_groups);
-// }
-
-// void
-// CrystalPlasticityFCCDislocationLinkDefectHardening::setInitialConstitutiveVariableValues()
-// {
-//   _slip_resistance[_qp] = _slip_resistance_old[_qp];
-//   _previous_substep_slip_resistance = _slip_resistance_old[_qp];
-
-//   // _pinning_point_density[_qp] = _pinning_point_density_old[_qp];
-//   // _previous_substep_pinning_points = _pinning_point_density_old[_qp];
-// }
-
-// void
-// CrystalPlasticityFCCDislocationLinkDefectHardening::setSubstepConstitutiveVariableValues()
-// {
-//   _slip_resistance[_qp] = _previous_substep_slip_resistance;
-//   _pinning_point_density[_qp] = _previous_substep_pinning_points;
-// }
-
-// bool
-// CrystalPlasticityFCCDislocationLinkDefectHardening::calculateSlipRate()
-// {
-//   bool allowable_slip_increment = true;
-
-//   for (const auto i : make_range(_number_slip_systems))
-//   {
-//     if (MooseUtils::absoluteFuzzyEqual(_tau[_qp][i], 0.0))
-//       _slip_increment[_qp][i] = 0.0;
-//     else
-//     {
-//       const Real driving_force = std::abs(_tau[_qp][i]) / _slip_resistance[_qp][i];
-//       _slip_increment[_qp][i] = _gamma_reference * std::pow(driving_force, (_p_exp));
-//       if (_tau[_qp][i] < 0.0)
-//         _slip_increment[_qp][i] *= -1.0;
-//     }
-
-//     // Check that none of the slip increments are outside of the allowable tolerance
-//     if (std::abs(_slip_increment[_qp][i] * _substep_dt) > _slip_incr_tol)
-//     {
-//       if (_print_convergence_message)
-//         mooseWarning("Maximum allowable slip increment exceeded ",
-//                      std::abs(_slip_increment[_qp][i] * _substep_dt));
-
-//       allowable_slip_increment = false;
-//     }
-//   }
-
-//   return allowable_slip_increment;
-// }
-
-// void
-// CrystalPlasticityFCCDislocationLinkDefectHardening::calculateEquivalentSlipIncrement(
-//     RankTwoTensor & equivalent_slip_increment)
-// {
-//   if (_include_twinning_in_Lp)
-//   {
-//     for (const auto i : make_range(_number_slip_systems))
-//       equivalent_slip_increment += (1.0 - (*_twin_volume_fraction_total)[_qp]) *
-//                                    _flow_direction[_qp][i] * _slip_increment[_qp][i] *
-//                                    _substep_dt;
-//   }
-//   else // if no twinning volume fraction material property supplied, use base class
-//     CrystalPlasticityFCCDislocationLinkHuCocksUpdate::calculateEquivalentSlipIncrement(
-//         equivalent_slip_increment);
-// }
-
-// void
-// CrystalPlasticityFCCDislocationLinkDefectHardening::calculateConstitutiveSlipDerivative(
-//     std::vector<Real> & dslip_dtau)
-// {
-//   for (const auto i : make_range(_number_slip_systems))
-//   {
-//     if (MooseUtils::absoluteFuzzyEqual(_tau[_qp][i], 0.0))
-//       dslip_dtau[i] = 0.0;
-//     else
-//       dslip_dtau[i] = _slip_increment[_qp][i] / (_p_exp * std::abs(_tau[_qp][i])) * _substep_dt;
-//   }
-// }
-
-// bool
-// CrystalPlasticityFCCDislocationLinkDefectHardening::areConstitutiveStateVariablesConverged()
-// {
-//   if (isConstitutiveStateVariableConverged(_pinning_point_density[_qp],
-//                                            _pinning_points_before_update,
-//                                            _previous_substep_pinning_points,
-//                                            _rel_state_var_tol) &&
-//       isConstitutiveStateVariableConverged(_slip_resistance[_qp],
-//                                            _slip_resistance_before_update,
-//                                            _previous_substep_slip_resistance,
-//                                            _resistance_tol))
-//     return true;
-//   return false;
-// }
-
-// void
-// CrystalPlasticityFCCDislocationLinkDefectHardening::updateSubstepConstitutiveVariableValues()
-// {
-//   _previous_substep_slip_resistance = _slip_resistance[_qp];
-//   _previous_substep_pinning_points = _pinning_point_density[_qp];
-// }
-
-// void
-// CrystalPlasticityFCCDislocationLinkDefectHardening::cacheStateVariablesBeforeUpdate()
-// {
-//   _slip_resistance_before_update = _slip_resistance[_qp];
-//   _pinning_points_before_update = _pinning_point_density[_qp];
-// }
-
-// void
-// CrystalPlasticityFCCDislocationLinkDefectHardening::calculateStateVariableEvolutionRateComponent()
-// {
-//   calculateConstitutiveCoplanarSlipIncrement();
-//   calculatePinningPointEvolutionIncrement();
-// }
-
-// void
-// CrystalPlasticityFCCDislocationLinkDefectHardening::calculateConstitutiveCoplanarSlipIncrement()
-// {
-//   // Compute the coplanar slip increment as the sum of the absolute slip increment
-//   // on each coplanar slip system
-//   for (const auto p : make_range(_number_coplanar_groups))
-//   {
-//     Real sum_coplanar_slip_increment = 0.0;
-//     for (const auto n : index_range(_coplanar_groups[p]))
-//       sum_coplanar_slip_increment += std::abs(_slip_increment[_qp][_coplanar_groups[p][n]]);
-
-//     _coplanar_constitutive_slip_increment[_qp][p] = sum_coplanar_slip_increment * _substep_dt;
-//   }
-// }
-
-// void
-// CrystalPlasticityFCCDislocationLinkDefectHardening::calculatePinningPointEvolutionIncrement()
-// {
-//   for (const auto p : make_range(_number_coplanar_groups))
-//   {
-//     Real increment = 0.0;
-//     for (const auto q : make_range(_number_coplanar_groups))
-//     {
-//       if (p == q) // self hardening
-//         increment += _self_pinpt_coeff * _coplanar_constitutive_slip_increment[_qp][q];
-//       else
-//         increment += _latent_pinpt_coeff * _coplanar_constitutive_slip_increment[_qp][q] /
-//                      (_number_coplanar_groups - 1.0);
-//     }
-//     _pinning_point_increment[_qp][p] = increment;
-//   }
-// }
 
 void
 CrystalPlasticityFCCDislocationLinkDefectHardening::calculateSlipResistance()
@@ -337,11 +137,18 @@ void
 CrystalPlasticityFCCDislocationLinkDefectHardening::calculateVoidResistance(
     std::vector<Real> & void_hardening)
 {
-  const Real lead_term = _void_hardening_coeff * _burgers_vector * _shear_modulus;
-  const Real mean_free_path = 2.0 * (*_void_density)[_qp] * (*_void_radius)[_qp];
+  const Real diameter = 2.0 * (*_void_radius)[_qp];
+  const Real mean_free_path = 1.0 / std::sqrt((*_void_density)[_qp] * diameter);
+  const Real effective_diameter = diameter * mean_free_path / (diameter + mean_free_path);
+
+  const Real lead_denom = 2.0 * libMesh::pi * mean_free_path;
+  const Real lead_term = _void_hardening_coeff * _burgers_vector * _shear_modulus / lead_denom;
+
+  const Real length_term = std::log(mean_free_path / _burgers_vector);
+  const Real diameter_term = std::log(effective_diameter / _burgers_vector) + 0.7;
 
   for (const auto j : make_range(_number_coplanar_groups))
-    void_hardening[j] = lead_term * std::sqrt(mean_free_path);
+    void_hardening[j] = lead_term * std::pow(diameter_term, 1.5) / std::sqrt(length_term);
 }
 
 void
@@ -355,34 +162,3 @@ CrystalPlasticityFCCDislocationLinkDefectHardening::calculateLoopResistance(
   for (const auto j : make_range(_number_coplanar_groups))
     loop_hardening[j] = lead_term * std::sqrt(mean_free_path);
 }
-
-// bool
-// CrystalPlasticityFCCDislocationLinkDefectHardening::updateStateVariables()
-// {
-//   if (calculatePinningPointDensity())
-//     return true;
-//   else
-//     return false;
-// }
-
-// bool
-// CrystalPlasticityFCCDislocationLinkDefectHardening::calculatePinningPointDensity()
-// {
-//   bool positive_pinning_point_density = true;
-//   for (const auto n : make_range(_number_coplanar_groups))
-//   {
-//     if (_previous_substep_pinning_points[n] < _zero_tol && _pinning_point_increment[_qp][n] <
-//     0.0)
-//       _pinning_point_density[_qp][n] = _previous_substep_pinning_points[n];
-//     else
-//       _pinning_point_density[_qp][n] =
-//           _previous_substep_pinning_points[n] + _pinning_point_increment[_qp][n];
-
-//     if (_pinning_point_density[_qp][n] < 0.0)
-//     {
-//       mooseError("A negative pinning points density was computed");
-//       positive_pinning_point_density = false;
-//     }
-//   }
-//   return positive_pinning_point_density;
-// }
