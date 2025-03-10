@@ -114,7 +114,7 @@ CrystalPlasticityFCCDislocationLinkDefectHardening::calculateSlipResistance()
     CrystalPlasticityFCCDislocationLinkHuCocksUpdate::calculatePrecipitateResistance(
         precipitate_hardening);
 
-  if (_include_void_hardening)
+  if (_include_void_hardening && ((*_void_radius)[_qp] > 0.0 && (*_void_density)[_qp] > 0.0))
     calculateVoidResistance(void_hardening);
 
   if (_include_dislocation_loop_hardening)
@@ -140,7 +140,6 @@ CrystalPlasticityFCCDislocationLinkDefectHardening::calculateVoidResistance(
   const Real diameter = 2.0 * (*_void_radius)[_qp];
   const Real mean_free_path = 1.0 / std::sqrt((*_void_density)[_qp] * diameter);
   const Real effective_diameter = diameter * mean_free_path / (diameter + mean_free_path);
-
   const Real lead_denom = 2.0 * libMesh::pi * mean_free_path;
   const Real lead_term = _void_hardening_coeff * _burgers_vector * _shear_modulus / lead_denom;
 
@@ -148,7 +147,7 @@ CrystalPlasticityFCCDislocationLinkDefectHardening::calculateVoidResistance(
   const Real diameter_term = std::log(effective_diameter / _burgers_vector) + 0.7;
 
   for (const auto j : make_range(_number_coplanar_groups))
-    void_hardening[j] = lead_term * std::pow(diameter_term, 1.5) / std::sqrt(length_term);
+    void_hardening[j] = lead_term * std::pow(diameter_term, 3. / 2.0) / std::sqrt(length_term);
 }
 
 void
