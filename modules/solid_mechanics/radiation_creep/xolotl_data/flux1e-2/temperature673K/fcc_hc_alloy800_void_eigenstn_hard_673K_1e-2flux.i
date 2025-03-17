@@ -111,7 +111,7 @@
   [temperature]
     type = ConstantAux
     variable = temperature
-    value = 723
+    value = 673
   []
   [linear_void_strain]
     type = MaterialRealAux
@@ -291,7 +291,7 @@
 [Functions]
   [void_total_density]
     type = PiecewiseLinear
-    data_file = 'alloy800_0D_623k_1e-2flux_mm_voidANDLoops_DensityRadius.csv'
+    data_file = 'new_alloy800_0D_673k_1e-2flux_mm_voidDensityRadius.csv'
     format = columns
     xy_in_file_only = false
     x_index_in_file = 0
@@ -299,26 +299,10 @@
   []
   [void_average_radius]
     type = PiecewiseLinear
-    data_file = 'alloy800_0D_623k_1e-2flux_mm_voidANDLoops_DensityRadius.csv'
+    data_file = 'new_alloy800_0D_673k_1e-2flux_mm_voidDensityRadius.csv'
     format = columns
     x_index_in_file = 0
     y_index_in_file = 2
-    xy_in_file_only = false
-  []
-  [frank_total_density]
-    type = PiecewiseLinear
-    data_file = 'alloy800_0D_623k_1e-2flux_mm_voidANDLoops_DensityRadius.csv'
-    format = columns
-    xy_in_file_only = false
-    x_index_in_file = 0
-    y_index_in_file = 5
-  []
-  [frank_average_radius]
-    type = PiecewiseLinear
-    data_file = 'alloy800_0D_623k_1e-2flux_mm_voidANDLoops_DensityRadius.csv'
-    format = columns
-    x_index_in_file = 0
-    y_index_in_file = 6
     xy_in_file_only = false
   []
 []
@@ -363,10 +347,7 @@
     # print_state_variable_convergence_error_messages = true
     mean_spherical_void_radius = void_radius
     spherical_void_number_density = void_density
-    void_hardening_coefficient = 0.0
-    # mean_dislocation_loop_radius = frank_radius
-    # dislocation_loop_number_density = frank_density
-    # dislocation_loop_hardening_coefficient = 0.5
+    void_hardening_coefficient = 1.0
   []
   [concentrations]
     type = GenericConstantMaterial
@@ -390,16 +371,6 @@
     type = GenericFunctionMaterial
     prop_names = void_radius
     prop_values = 'void_average_radius'
-  []
-  [frank_density]
-    type = GenericFunctionMaterial
-    prop_names = frank_density
-    prop_values = 'frank_total_density'
-  []
-  [frank_radius]
-    type = GenericFunctionMaterial
-    prop_names = frank_radius
-    prop_values = 'frank_average_radius'
   []
 []
 
@@ -512,14 +483,14 @@
   petsc_options_value = ' asm      2              lu            gmres     200'
 
   line_search = 'none'
+  nl_abs_tol = 1e-8
   nl_rel_tol = 1e-6
-  nl_abs_tol = 1e-12
   nl_forced_its = 1
   nl_max_its = 10
 
-  dtmin = 1.0e-12
+  dtmin = 1.0e-6
   dtmax = 500.0
-  end_time  = 10.0 # 40001.0
+  end_time  = 1.0e5
 
   [TimeStepper]
     type = IterationAdaptiveDT
