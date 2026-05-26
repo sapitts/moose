@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -17,6 +17,8 @@ InputParameters
 CoupledVarThresholdElementSubdomainModifier::validParams()
 {
   InputParameters params = ThresholdElementSubdomainModifier::validParams();
+  params.addClassDescription("Modify the element subdomain ID if a coupled variable satisfies the "
+                             "criterion for the threshold (above, equal, or below)");
   params.addRequiredCoupledVar("coupled_var",
                                "Coupled variable whose value is used in the criterion");
   return params;

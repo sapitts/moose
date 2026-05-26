@@ -22,9 +22,9 @@
                  0 0 0
                  0 0 0
                  0 0 0'
-    cli_args = 'id=1;frequencyHz=1.0;
-                id=2;frequencyHz=2.0;
-                id=3;frequencyHz=3.0;
+    cli_args = 'id=1;frequencyHz=1.0
+                id=2;frequencyHz=2.0
+                id=3;frequencyHz=3.0
                 id=4;frequencyHz=4.0'
   []
 []
@@ -45,15 +45,15 @@
   [objective]
     type = ParsedVectorRealReductionReporter
     name = objective
-    reporter_name = from_sub_rep/rec_vec
-    initial_value = 0
+    vector_reporter_name = from_sub_rep/rec_vec
+    initial_reduction_value = 0
     expression = 'reduction_value+indexed_value'
   []
   [gradient]
     type = ParsedVectorVectorRealReductionReporter
     name = gradient
-    reporter_name = "from_sub_rep/rec_vec_vec"
-    initial_value = 0
+    vector_of_vector_reporter_name = "from_sub_rep/rec_vec_vec"
+    initial_reduction_value = 0
     expression = 'reduction_value+indexed_value'
   []
 []

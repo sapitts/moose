@@ -1,11 +1,10 @@
 # Making a Change to this package?
 # REMEMBER TO UPDATE the .yaml files for the following packages:
 #   moose-dev/*
-#   pyhit/*
 #
 # As well as any directions pertaining to modifying those files.
 # ALSO: Follow the directions in scripts/tests/versioner_hashes.yaml
-{% set version = "2024.05.08" %}
+{% set version = "2025.09.19_02960f1" %}
 
 package:
   name: moose-wasp
@@ -14,25 +13,25 @@ package:
 source:
   - path: ../../framework/contrib/wasp
   - path: ../../scripts/configure_wasp.sh
+  - path: ../functions/retry_build.sh
 
 build:
-  number: 0
-  string: build_0
-  skip: true  # [win]
+  number: 6
+  string: build_6
   script_env:
     - MOOSE_JOBS
     - REQUESTS_CA_BUNDLE
     - SSL_CERT_FILE
-  run_exports:
-    - {{ pin_subpackage('moose-wasp', max_pin='x.x')}}
+    - CURL_CA_BUNDLE
+    - NODE_EXTRA_CA_CERTS
 
 requirements:
   build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
-    - make
+    - {{ compiler("c") }}
+    - {{ compiler("cxx") }}
+    - {{ stdlib('c') }}
     - cmake
-    - pkg-config
+    - ninja
 
 about:
   home: https://code.ornl.gov/neams-workbench/wasp
@@ -43,5 +42,5 @@ about:
     access, validation, and analysis of ascii text files.
 extra:
   recipe-maintainers:
-    - milljm
+    - cticenhour
     - loganharbour

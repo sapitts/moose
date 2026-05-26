@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -26,6 +26,11 @@ PNSFVSolidHeatTransferPhysics::validParams()
 {
   InputParameters params = HeatConductionFV::validParams();
   params.addClassDescription("Define the Navier Stokes porous media solid energy equation");
+
+  // These boundary conditions parameters are not implemented yet
+  params.suppressParameter<std::vector<BoundaryName>>("fixed_convection_boundaries");
+  params.suppressParameter<std::vector<MooseFunctorName>>("fixed_convection_T_fluid");
+  params.suppressParameter<std::vector<MooseFunctorName>>("fixed_convection_htc");
 
   // Swap out some parameters, base class is not specific to porous media
   // Variables
@@ -135,7 +140,7 @@ PNSFVSolidHeatTransferPhysics::PNSFVSolidHeatTransferPhysics(const InputParamete
     _ambient_convection_alpha(getParam<std::vector<MooseFunctorName>>("ambient_convection_alpha")),
     _ambient_temperature(getParam<std::vector<MooseFunctorName>>("ambient_convection_temperature"))
 {
-  saveNonlinearVariableName(_solid_temperature_name);
+  saveSolverVariableName(_solid_temperature_name);
 
   // Parameter checks
   if (getParam<std::vector<MooseFunctorName>>("ambient_convection_temperature").size() != 1)
@@ -149,17 +154,18 @@ PNSFVSolidHeatTransferPhysics::PNSFVSolidHeatTransferPhysics(const InputParamete
 }
 
 void
-PNSFVSolidHeatTransferPhysics::addNonlinearVariables()
+PNSFVSolidHeatTransferPhysics::addSolverVariables()
 {
   // Dont add if the user already defined the variable
-  if (nonlinearVariableExists(_solid_temperature_name,
-                              /*error_if_aux=*/true))
+  if (variableExists(_solid_temperature_name,
+                     /*error_if_aux=*/true))
     checkBlockRestrictionIdentical(_solid_temperature_name,
                                    getProblem().getVariable(0, _solid_temperature_name).blocks());
   else
   {
     auto params = getFactory().getValidParams("INSFVEnergyVariable");
     assignBlocks(params, _blocks);
+    params.set<SolverSystemName>("solver_sys") = getSolverSystem(_solid_temperature_name);
     params.set<std::vector<Real>>("scaling") = {getParam<Real>("temperature_scaling")};
     params.set<MooseEnum>("face_interp_method") =
         getParam<MooseEnum>("solid_temperature_face_interpolation");
@@ -339,16 +345,23 @@ PNSFVSolidHeatTransferPhysics::processThermalConductivity()
         if (getProblem().hasFunctorWithType<ADRealVectorValue>(_thermal_conductivity_name[i],
                                                                /*thread_id=*/0))
           have_vector = true;
-        else
+        else if (getProblem().hasFunctor(_thermal_conductivity_name[i],
+                                         /*thread_id=*/0))
           paramError("thermal_conductivity_solid",
                      "We only allow functor of type (AD)Real or (AD)RealVectorValue for thermal "
                      "conductivity! Functor '" +
                          _thermal_conductivity_name[i] + "' is not of the requested type.");
+        else
+          // If another Physics is creating this functor, we could be running into an order of
+          // creation problem
+          paramWarning("thermal_conductivity_solid",
+                       "Functor '" + _thermal_conductivity_name[i] +
+                           "' was not found in the Problem. Did you mispell it?");
       }
     }
   }
 
-  if (have_vector == have_scalar)
+  if (have_vector && (have_vector == have_scalar))
     paramError("thermal_conductivity_solid",
                "The entries on thermal conductivity shall either be scalars or vectors, mixing "
                "them is not supported!");

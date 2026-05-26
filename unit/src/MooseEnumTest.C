@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -234,18 +234,21 @@ TEST(MultiMooseEnum, testExecuteOn)
 
   // Checks that names are added and removed
   EXPECT_EQ(exec_enum.getRawNames(),
-            "NONE INITIAL LINEAR NONLINEAR POSTCHECK TIMESTEP_END TIMESTEP_BEGIN "
-            "MULTIAPP_FIXED_POINT_END "
-            "MULTIAPP_FIXED_POINT_BEGIN FINAL CUSTOM");
+            "NONE INITIAL LINEAR LINEAR_CONVERGENCE NONLINEAR NONLINEAR_CONVERGENCE POSTCHECK "
+            "TIMESTEP_END TIMESTEP_BEGIN MULTIAPP_FIXED_POINT_END MULTIAPP_FIXED_POINT_BEGIN "
+            "MULTIAPP_FIXED_POINT_CONVERGENCE FINAL CUSTOM");
   std::vector<std::string> opts = {"NONE",
                                    "INITIAL",
                                    "LINEAR",
+                                   "LINEAR_CONVERGENCE",
                                    "NONLINEAR",
+                                   "NONLINEAR_CONVERGENCE",
                                    "POSTCHECK",
                                    "TIMESTEP_END",
                                    "TIMESTEP_BEGIN",
                                    "MULTIAPP_FIXED_POINT_END",
                                    "MULTIAPP_FIXED_POINT_BEGIN",
+                                   "MULTIAPP_FIXED_POINT_CONVERGENCE",
                                    "FINAL",
                                    "CUSTOM"};
   EXPECT_EQ(exec_enum.getNames(), opts);
@@ -298,11 +301,10 @@ TEST(MultiMooseEnum, testExecuteOn)
 
   // MultiMooseEnum doc string generation
   std::string doc = exec_enum.getDocString();
-  EXPECT_EQ(doc,
-            "The list of flag(s) indicating when this object should be executed, the "
-            "available options include NONE, INITIAL, LINEAR, NONLINEAR, POSTCHECK, TIMESTEP_END, "
-            "TIMESTEP_BEGIN, MULTIAPP_FIXED_POINT_END, MULTIAPP_FIXED_POINT_BEGIN, FINAL, FAILED, "
-            "CUSTOM.");
+  EXPECT_EQ(
+      doc,
+      "The list of flag(s) indicating when this object should be executed. For a description of "
+      "each flag, see https://mooseframework.inl.gov/source/interfaces/SetupInterface.html.");
 
   // Tests with ExecFlagType assignment operators
   exec_enum = EXEC_FINAL;

@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -10,6 +10,7 @@
 #include "ExecFlagEnum.h"
 #include "MooseError.h"
 #include "Conversion.h"
+#include "MooseUtils.h"
 
 ExecFlagEnum::ExecFlagEnum() : MultiMooseEnum() {}
 ExecFlagEnum::ExecFlagEnum(const MultiMooseEnum & other) : MultiMooseEnum(other) {}
@@ -38,9 +39,9 @@ ExecFlagEnum::removeAvailableFlags(const ExecFlagType & flag)
 std::string
 ExecFlagEnum::getDocString() const
 {
-  std::string doc("The list of flag(s) indicating when this object should be executed, the "
-                  "available options include ");
-  doc += Moose::stringify(getNames(), ", ");
+  std::string doc("The list of flag(s) indicating when this object should be executed. For a "
+                  "description of each flag, see ");
+  doc += MooseUtils::mooseDocsURL("source/interfaces/SetupInterface.html");
   doc += ".";
   return doc;
 }

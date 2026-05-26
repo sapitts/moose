@@ -2,11 +2,8 @@
 # REMEMBER TO UPDATE the .yaml files for the following packages:
 #   moose-dev/*
 #
-#   And documentation:
-#   framework/doc/packages_config.yml
-#
 # As well as any directions pertaining to modifying those files.
-{% set version = "2024.07.19" %}
+{% set version = "2026.04.21" %}
 
 package:
   name: moose-tools
@@ -20,15 +17,18 @@ build:
   script_env:
     - REQUESTS_CA_BUNDLE
     - SSL_CERT_FILE
-
+    - CURL_CA_BUNDLE
+    - NODE_EXTRA_CA_CERTS
 requirements:
   build:
-    - {{ moose_python }}
+    - python {{ python }}
     - setuptools
   run:
     - beautifulsoup4
-    - {{ clang_format }}
-    - clang-tools
+    - black {{ black }}
+    - clang-format {{ clang_format }}
+    - clang-tools {{ clang_tools }}
+    - coverage {{ coverage }}
     - deepdiff
     - git-lfs
     - gitpython
@@ -38,12 +38,14 @@ requirements:
     - livereload
     - lxml
     - mako
-    - matplotlib-base !=3.9.0
+    - matplotlib-base
     - mock
     - numpy
     - packaging
     - pandas
     - paramiko
+    - plotly
+    - psutil
     - psycopg2
     - pyarrow
     - pybtex
@@ -51,25 +53,32 @@ requirements:
     - pyflakes
     - pylatexenc
     - pylint
+    - pymongo
+    - pytest
+    - pytest-cov
     - python
     - pyyaml
     - requests
+    - ruff {{ ruff }}
     - scikit-image
     - setuptools
     - sympy
     - tabulate
     - uncertainties
-    - xmltodict
+    - xmltodict {{ xmltodict }}
     - yaml
 test:
   commands:
+    - black --version
     - clang-format --version
     - dot -V
     - git-lfs --version
     - pg_config --help
+    - ruff --version
   imports:
     - bs4
     - deepdiff
+    - coverage
     - git
     - jinja2
     - livereload
@@ -85,6 +94,8 @@ test:
     - pyflakes
     - pylatexenc
     - pylint
+    - pymongo
+    - pytest
     - requests
     - skimage
     - sympy
@@ -93,7 +104,7 @@ test:
     - yaml
 
 about:
-  home: https://mooseframework.org/
+  home: https://mooseframework.inl.gov/
   license: LGPL 2.1
   summary: >
     This superficial module (moose-tools) acts as a top-level module designed to provide all
@@ -102,6 +113,5 @@ about:
 
 extra:
   recipe-maintainers:
-    - milljm
     - cticenhour
     - loganharbour

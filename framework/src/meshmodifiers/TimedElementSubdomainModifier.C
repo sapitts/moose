@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -25,6 +25,9 @@ TimedElementSubdomainModifier::TimedElementSubdomainModifier(const InputParamete
 void
 TimedElementSubdomainModifier::initialize()
 {
+  // clear number of moved elements
+  ElementSubdomainModifier::initialize();
+
   // ask for all times (must NOT be sorted)
   const auto times = getTimes();
 

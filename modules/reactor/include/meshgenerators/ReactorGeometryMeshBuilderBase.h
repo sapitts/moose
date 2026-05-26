@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -33,6 +33,9 @@ static const std::string pin_region_id_map = "pin_region_id_map";
 static const std::string pin_block_name_map = "pin_block_name_map";
 static const std::string flexible_assembly_stitching = "flexible_assembly_stitching";
 static const std::string num_sectors_flexible_stitching = "num_sectors_flexible_stitching";
+static const std::string is_control_drum = "is_control_drum";
+static const std::string drum_region_ids = "drum_region_ids";
+static const std::string drum_block_names = "drum_block_names";
 
 // Geometrical quantities
 static const std::string pitch = "pitch";
@@ -42,6 +45,8 @@ static const std::string duct_halfpitches = "duct_halfpitches";
 static const std::string peripheral_ring_radius = "peripheral_ring_radius";
 static const std::string pin_lattice = "pin_lattice";
 static const std::string assembly_lattice = "assembly_lattice";
+static const std::string drum_pad_angles = "drum_pad_angles";
+static const std::string drum_radii = "drum_radii";
 
 // Quantities related to region ids, type ids, and block names
 static const std::string pin_type = "pin_type";
@@ -60,12 +65,43 @@ static const std::string region_id_as_block_name = "region_id_as_block_name";
 // only generating the mesh metadata
 static const std::string bypass_meshgen = "bypass_meshgen";
 
-// Default values for setting block IDs of RGMB regions
-const subdomain_id_type PIN_BLOCK_ID_START = 10000;
-const subdomain_id_type PIN_BLOCK_ID_TRI = 9999;
+// Default values for setting block IDs and region IDs of RGMB regions
 const subdomain_id_type PIN_BLOCK_ID_TRI_FLEXIBLE = 9998;
-const subdomain_id_type ASSEMBLY_BLOCK_ID_START = 20000;
+const subdomain_id_type PIN_BLOCK_ID_TRI = 9999;
+const subdomain_id_type PIN_BLOCK_ID_START = 10000;
+
+const subdomain_id_type CONTROL_DRUM_BLOCK_ID_INNER_TRI = 19995;
+const subdomain_id_type CONTROL_DRUM_BLOCK_ID_INNER = 19996;
+const subdomain_id_type CONTROL_DRUM_BLOCK_ID_PAD = 19997;
+const subdomain_id_type CONTROL_DRUM_BLOCK_ID_OUTER = 19998;
+
 const subdomain_id_type ASSEMBLY_BLOCK_ID_TRI_FLEXIBLE = 19999;
+const subdomain_id_type ASSEMBLY_BLOCK_ID_START = 20000;
+
+const subdomain_id_type DUMMY_ASSEMBLY_BLOCK_ID = (UINT16_MAX / 2) - 1;
+const subdomain_id_type PERIPHERAL_RING_BLOCK_ID = 25000;
+
+const subdomain_id_type MAX_PIN_TYPE_ID = (UINT16_MAX / 2) - 1;
+
+// Default values for setting block names of RGMB regions
+const SubdomainName PIN_BLOCK_NAME_PREFIX = "RGMB_PIN";
+const SubdomainName ASSEMBLY_BLOCK_NAME_PREFIX = "RGMB_ASSEMBLY";
+const SubdomainName DRUM_BLOCK_NAME_PREFIX = "RGMB_DRUM";
+const SubdomainName CORE_BLOCK_NAME_PREFIX = "RGMB_CORE";
+const SubdomainName TRI_BLOCK_NAME_SUFFIX = "_TRI";
+const SubdomainName PERIPHERAL_RING_BLOCK_NAME = "PERIPHERY_GENERATED";
+
+// Default values for setting boundary ids of RGMB regions
+static constexpr boundary_id_type PIN_BOUNDARY_ID_START = 20000;
+static constexpr boundary_id_type ASSEMBLY_BOUNDARY_ID_START = 2000;
+
+// Default values for setting boundary names of RGMB regions
+const BoundaryName PIN_BOUNDARY_NAME_PREFIX = "outer_pin_";
+const BoundaryName ASSEMBLY_BOUNDARY_NAME_PREFIX = "outer_assembly_";
+const BoundaryName CORE_BOUNDARY_NAME = "outer_core";
+
+// Default values for setting names of CSG surfaces
+static const std::string CSG_AXIAL_PLANE_PREFIX = "rgmb_axial_plane_";
 }
 
 /**
@@ -167,7 +203,18 @@ protected:
    * that requests them. In our case, we move it into this MeshGenerator and then
    * release (delete) it.
    */
-  void freeReactorMeshParams();
+  void freeReactorParamsMesh();
+
+  /**
+   * Releases the CSG base object obtained in _reactor_params_csg.
+   *
+   * This _must_ be called in any object that derives from this one, because
+   * the MeshGenerator system requires that all meshes that are requested from
+   * the system are moved out of the MeshGenerator system and into the MeshGenerator
+   * that requests them. In our case, we move it into this MeshGenerator and then
+   * release (delete) it.
+   */
+  void freeReactorParamsCSG();
 
   /**
    * Checks whether parameter is defined in ReactorMeshParams metadata
@@ -202,6 +249,14 @@ protected:
                                 std::string elem_block_name,
                                 SubdomainID & next_free_id);
 
+  /**
+   * Calls mesh subgenerators related to extrusion, renaming of top / bottom boundaries, and
+   * defining plane IDs
+   * @param input_mesh_name name of input 2D mesh generator to extrude
+   * @return name of final output 3D mesh generator
+   */
+  MeshGeneratorName callExtrusionMeshSubgenerators(const MeshGeneratorName input_mesh_name);
+
   ///The ReactorMeshParams object that is storing the reactor global information for this reactor geometry mesh
   MeshGeneratorName _reactor_params;
   /// specify the depletion id is generated at which reactor generation level
@@ -209,6 +264,7 @@ protected:
   {
     Pin,
     Assembly,
+    Drum,
     Core
   };
 
@@ -225,9 +281,29 @@ protected:
                       const DepletionIDGenerationLevel generation_level,
                       const bool extrude);
 
+  /**
+   * Get CSGSurfaces corresponding to hexagonal or square region with given halfpitch and centered
+   * around (0, 0, 0)
+   * @param radial_index Radial index of hex / square region, for surface naming
+   * @param halfpitch Halfpitch of square or hexagon
+   * @param csg_obj Reference to CSGBase object for adding defined surfaces to
+   * @return vector of surfaces that correspond to hexagonal or square region
+   */
+  std::vector<std::reference_wrapper<const CSG::CSGSurface>> getOuterRadialSurfacesForUnitCell(
+      unsigned int radial_index, Real halfpitch, CSG::CSGBase & csg_obj);
+
+  /**
+   * Get CSGSurfaces corresponding to axial planes of the extruded RGMB mesh
+   * @param csg_obj Reference to CSGBase object for adding defined surfaces to
+   * @return vector of surfaces that correspond to axial planes of extruded RGMB mesh
+   */
+  std::vector<std::reference_wrapper<const CSG::CSGSurface>>
+  getAxialPlaneSurfaces(CSG::CSGBase & csg_obj);
+
 private:
   /// The dummy param mesh that we need to clear once we've generated (in freeReactorMeshParams)
   std::unique_ptr<MeshBase> * _reactor_params_mesh;
+  std::unique_ptr<CSG::CSGBase> * _reactor_params_csg;
 };
 
 template <typename T>

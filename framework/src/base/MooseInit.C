@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -23,6 +23,10 @@
 #include <omp.h>
 #endif
 
+#ifdef MOOSE_LIBTORCH_ENABLED
+#include <ATen/Parallel.h>
+#endif
+
 #include <unistd.h>
 #include <signal.h>
 
@@ -42,12 +46,16 @@ RegisterSigHandler()
 MooseInit::MooseInit(int argc, char * argv[], MPI_Comm COMM_WORLD_IN)
   : LibMeshInit(argc, argv, COMM_WORLD_IN)
 {
-  auto ierr = PetscPopSignalHandler(); // get rid of PETSc error handler
-  LIBMESH_CHKERR(ierr);
+  LibmeshPetscCallA(COMM_WORLD_IN, PetscPopSignalHandler()); // get rid of PETSc error handler
 
 // Set the number of OpenMP threads to the same as the number of threads libMesh is going to use
 #ifdef LIBMESH_HAVE_OPENMP
   omp_set_num_threads(libMesh::n_threads());
+#endif
+
+#ifdef MOOSE_LIBTORCH_ENABLED
+  at::set_num_threads(libMesh::n_threads());
+  at::set_num_interop_threads(libMesh::n_threads());
 #endif
 
   ParallelUniqueId::initialize();
@@ -56,4 +64,8 @@ MooseInit::MooseInit(int argc, char * argv[], MPI_Comm COMM_WORLD_IN)
   MooseRandom::seed(0);
 
   RegisterSigHandler();
+
+#ifdef MOOSE_KOKKOS_ENABLED
+  initKokkos();
+#endif
 }

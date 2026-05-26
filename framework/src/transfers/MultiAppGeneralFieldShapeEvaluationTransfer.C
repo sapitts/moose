@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -70,7 +70,7 @@ MultiAppGeneralFieldShapeEvaluationTransfer::prepareEvaluationOfInterpValues(
 
 void
 MultiAppGeneralFieldShapeEvaluationTransfer::buildMeshFunctions(
-    const unsigned int var_index, std::vector<MeshFunction> & local_meshfuns)
+    const unsigned int var_index, std::vector<libMesh::MeshFunction> & local_meshfuns)
 {
   local_meshfuns.reserve(_from_problems.size());
 
@@ -92,12 +92,13 @@ MultiAppGeneralFieldShapeEvaluationTransfer::buildMeshFunctions(
                                 from_sys.get_dof_map(),
                                 from_var_num);
     local_meshfuns.back().init();
-    local_meshfuns.back().enable_out_of_mesh_mode(GeneralFieldTransfer::BetterOutOfMeshValue);
+    local_meshfuns.back().enable_out_of_mesh_mode(GeneralFieldTransfer::OutOfMeshValue);
   }
 }
 
 void
 MultiAppGeneralFieldShapeEvaluationTransfer::evaluateInterpValues(
+    const unsigned int /*var_index*/,
     const std::vector<std::pair<Point, unsigned int>> & incoming_points,
     std::vector<std::pair<Real, Real>> & outgoing_vals)
 {
@@ -108,7 +109,7 @@ MultiAppGeneralFieldShapeEvaluationTransfer::evaluateInterpValues(
 void
 MultiAppGeneralFieldShapeEvaluationTransfer::evaluateInterpValuesWithMeshFunctions(
     const std::vector<BoundingBox> & local_bboxes,
-    std::vector<MeshFunction> & local_meshfuns,
+    std::vector<libMesh::MeshFunction> & local_meshfuns,
     const std::vector<std::pair<Point, unsigned int>> & incoming_points,
     std::vector<std::pair<Real, Real>> & outgoing_vals)
 {
@@ -116,7 +117,7 @@ MultiAppGeneralFieldShapeEvaluationTransfer::evaluateInterpValuesWithMeshFunctio
   for (auto & [pt, mesh_div] : incoming_points)
   {
     bool point_found = false;
-    outgoing_vals[i_pt].second = GeneralFieldTransfer::BetterOutOfMeshValue;
+    outgoing_vals[i_pt].second = GeneralFieldTransfer::OutOfMeshValue;
 
     // Loop on all local origin problems until:
     // - we've found the point in an app and the value at that point is valid
@@ -134,8 +135,7 @@ MultiAppGeneralFieldShapeEvaluationTransfer::evaluateInterpValuesWithMeshFunctio
       else
       {
         // Use mesh function to compute interpolation values
-        const auto from_global_num = getGlobalSourceAppIndex(i_from);
-        const auto local_pt = _from_transforms[from_global_num]->mapBack(pt);
+        const auto local_pt = getPointInSourceAppFrame(pt, i_from, "Shape function evaluation");
         auto val = (local_meshfuns[i_from])(local_pt);
 
         // Look for overlaps. The check is not active outside of overlap search because in that
@@ -143,10 +143,16 @@ MultiAppGeneralFieldShapeEvaluationTransfer::evaluateInterpValuesWithMeshFunctio
         // NOTE: There is no guarantee this will be the final value used among all problems
         //       but for shape evaluation we really do expect only one value to even be valid
         if (detectConflict(val, outgoing_vals[i_pt].first, distance, outgoing_vals[i_pt].second))
-          registerConflict(i_from, 0, local_pt, distance, true);
+        {
+          // In the nearest-position/app mode, we save conflicts in the reference frame
+          if (_nearest_positions_obj)
+            registerConflict(i_from, 0, pt, distance, true);
+          else
+            registerConflict(i_from, 0, local_pt, distance, true);
+        }
 
         // No need to consider decision factors if value is invalid
-        if (val == GeneralFieldTransfer::BetterOutOfMeshValue)
+        if (val == GeneralFieldTransfer::OutOfMeshValue)
           continue;
         else
           point_found = true;
@@ -164,8 +170,8 @@ MultiAppGeneralFieldShapeEvaluationTransfer::evaluateInterpValuesWithMeshFunctio
     }
 
     if (!point_found)
-      outgoing_vals[i_pt] = {GeneralFieldTransfer::BetterOutOfMeshValue,
-                             GeneralFieldTransfer::BetterOutOfMeshValue};
+      outgoing_vals[i_pt] = {GeneralFieldTransfer::OutOfMeshValue,
+                             GeneralFieldTransfer::OutOfMeshValue};
 
     // Move to next point
     i_pt++;

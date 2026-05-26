@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -32,6 +32,9 @@ protected:
   /// Variables to output
   std::vector<VariableName> _variables;
 
+  /// Indices of the variables in their systems
+  std::vector<unsigned int> _var_numbers;
+
   /// Vector of outputs, where each entry is the vector of average values for single variable at the selected points along the axis
   std::vector<VectorPostprocessorValue *> _output_vector;
 
@@ -46,6 +49,12 @@ protected:
 
   /// Axial positions along the component at which average values are computed
   std::vector<Real> _positions;
+
+  /// Whether a symmetry plane has been defined by the user
+  const bool _have_symmetry_plane;
+
+  /// Vector normal to a symmetry plane, optionally defined if the section has a symmetry plane
+  RealVectorValue _symmetry_plane;
 
   /// Whether to automatically locate positions along section for averaging field values
   const bool _automatically_locate_positions;

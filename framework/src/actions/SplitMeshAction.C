@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -31,7 +31,13 @@ void
 SplitMeshAction::act()
 {
   auto mesh = _app.actionWarehouse().mesh();
-  auto split_file_arg = _app.parameters().get<std::string>("split_file");
+
+  // Keep the mesh unpartitioned until right before the split
+  mesh->getMesh().skip_partitioning(false);
+
+  const std::string split_file_arg = _app.parameters().isParamSetByUser("split_file")
+                                         ? _app.parameters().get<std::string>("split_file")
+                                         : "";
 
   if (mesh->getFileName() == "" && split_file_arg == "")
     mooseError("Output mesh file name must be specified (with --split-file) when splitting "

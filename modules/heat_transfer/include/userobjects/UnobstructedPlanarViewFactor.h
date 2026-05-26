@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -10,8 +10,6 @@
 #pragma once
 
 #include "ViewFactorBase.h"
-
-// Forward Declarations
 
 /**
  * Computes the view factors for planar faces in unobstructed radiative heat transfer
@@ -38,7 +36,7 @@ protected:
 
   ///@{ data of the to_elem side being initialized
   std::unique_ptr<const Elem> _current_remote_side;
-  std::unique_ptr<FEBase> _current_remote_fe;
+  std::unique_ptr<libMesh::FEBase> _current_remote_fe;
   Real _current_remote_side_volume;
   const std::vector<Real> * _current_remote_JxW;
   const std::vector<Point> * _current_remote_xyz;

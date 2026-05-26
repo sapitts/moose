@@ -1,22 +1,34 @@
 #!/bin/bash
-set -eu
+set -eux
 export PATH=/bin:$PATH
 
-rm -rf build; mkdir build; cd build
-WASP_OPTIONS="-D CMAKE_INSTALL_PREFIX:STRING=${PREFIX}/wasp"
-source $SRC_DIR/configure_wasp.sh
-configure_wasp "$WASP_OPTIONS" ../
+function do_build(){
+    rm -rf "${SRC_DIR:?}/build"
+    mkdir "${SRC_DIR:?}/build" || exit 1
+    cd "${SRC_DIR:?}/build" || exit 1
 
-CORES=${MOOSE_JOBS:-2}
-make -j $CORES install
+    # shellcheck disable=SC1091  # made available through meta.yaml src path
+    source "${SRC_DIR}/configure_wasp.sh"
+    configure_wasp \
+        $CMAKE_ARGS \
+        -GNinja \
+        ../ || return 1
+    cmake --build . --parallel "${MOOSE_JOBS:-2}" || return 1
+    cmake --install . || return 1
+}
+
+# shellcheck disable=SC1091  # made available through meta.yaml src path
+source "${SRC_DIR:?}/retry_build.sh"
+
+# Sets up retry functions and calls do_build. Blocking until success
+# or 3 failed attempts, or 1 unknown/unhandled failure
+retry_build
 
 # Set WASP_DIR environment variable(s)
 mkdir -p "${PREFIX}/etc/conda/activate.d" "${PREFIX}/etc/conda/deactivate.d"
 cat <<EOF > "${PREFIX}/etc/conda/activate.d/activate_${PKG_NAME}.sh"
-export WASP_DIR=${PREFIX}/wasp
-export PATH=\${PATH}:${PREFIX}/wasp/bin
+export WASP_DIR=${PREFIX}
 EOF
 cat <<EOF > "${PREFIX}/etc/conda/deactivate.d/deactivate_${PKG_NAME}.sh"
 unset WASP_DIR
-export PATH=\${PATH%":${PREFIX}/wasp/bin"}
 EOF

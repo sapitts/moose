@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -41,6 +41,11 @@ MeshRepairGenerator::validParams()
                         false,
                         "Merge boundaries if they have the same name but different boundary IDs");
 
+  params.addParam<bool>(
+      "renumber_contiguously",
+      false,
+      "Whether to renumber the elements of the mesh so the numbering is contiguous");
+
   return params;
 }
 
@@ -54,7 +59,7 @@ MeshRepairGenerator::MeshRepairGenerator(const InputParameters & parameters)
     _boundary_id_merge(getParam<bool>("merge_boundary_ids_with_same_name"))
 {
   if (!_fix_overlapping_nodes && !_fix_element_orientation && !_elem_type_separation &&
-      !_boundary_id_merge)
+      !_boundary_id_merge && !getParam<bool>("renumber_contiguously"))
     mooseError("No specific item to fix. Are any of the parameters misspelled?");
 }
 
@@ -62,6 +67,10 @@ std::unique_ptr<MeshBase>
 MeshRepairGenerator::generate()
 {
   std::unique_ptr<MeshBase> mesh = std::move(_input);
+
+  // We're trying to repair a potentially broken mesh; we'll just
+  // start with a full prepare rather than trying to be efficient and
+  // risking missing something.
   mesh->prepare_for_use();
 
   // Blanket ban on distributed. This can be relaxed for some operations if needed
@@ -83,7 +92,16 @@ MeshRepairGenerator::generate()
   if (_boundary_id_merge)
     MooseMeshUtils::mergeBoundaryIDsWithSameName(*mesh);
 
-  mesh->set_isnt_prepared();
+  // Renumber the mesh despite any mesh flag
+  if (getParam<bool>("renumber_contiguously"))
+  {
+    const auto prev_status = mesh->allow_renumbering();
+    mesh->allow_renumbering(true);
+    mesh->renumber_nodes_and_elements();
+    mesh->allow_renumbering(prev_status);
+  }
+
+  mesh->unset_is_prepared();
   return mesh;
 }
 
@@ -146,7 +164,7 @@ MeshRepairGenerator::fixOverlappingNodes(std::unique_ptr<MeshBase> & mesh) const
 
             // Coordinates are the same but it's not the same node
             // Replace the node in the element
-            const_cast<Elem *>(elem)->set_node(elem->get_node_index(&elem_node)) = node;
+            const_cast<Elem *>(elem)->set_node(elem->get_node_index(&elem_node), node);
             nodes_removed.insert(elem_node.id());
 
             num_fixed_nodes++;

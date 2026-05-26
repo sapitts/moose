@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -28,7 +28,7 @@ ExternalPetscSolverApp::validParams()
   return params;
 }
 
-ExternalPetscSolverApp::ExternalPetscSolverApp(InputParameters parameters)
+ExternalPetscSolverApp::ExternalPetscSolverApp(const InputParameters & parameters)
   : MooseApp(parameters), _ts(nullptr), _is_petsc_app(false)
 {
   ExternalPetscSolverApp::registerAll(_factory, _action_factory, _syntax);
@@ -40,8 +40,7 @@ ExternalPetscSolverApp::getPetscTS()
   if (!_ts)
   {
     // Create an external PETSc solver
-    auto ierr = PETScExternalSolverCreate(_comm->get(), &_ts);
-    LIBMESH_CHKERR(ierr);
+    LibmeshPetscCall(PETScExternalSolverCreate(_comm->get(), &_ts));
     _is_petsc_app = true;
   }
   return _ts;

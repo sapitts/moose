@@ -11,12 +11,14 @@ Heat fluxes are computed at each quadrature point of each face on the 3D heat
 structure boundary. These heat fluxes then make contributions to the 2D heat structure side:
 
 !equation
-q_z = -\frac{1}{A_z} \sum\limits_\theta q_{z,\theta} A_{z,\theta} \,,
+q_z = -\frac{f}{A_z} \sum\limits_\theta q_{z,\theta} A_{z,\theta} \,,
 
 where
 
 - $q_z$ is the heat flux on the 2D heat structure boundary at the
   quadrature point at the axial level $z$,
+- $f$ is the symmetry factor, which is 1 for a full 360 degree 3D mesh
+  and is $2\pi / \Delta \theta$ for a sector model with azimuthal extent $\Delta \theta$,
 - $q_{z,\theta}$ is the heat flux on the 3D heat structure boundary at
   a quadrature point at the same axial level $z$ and having an azimuthal position
   $\theta$,
@@ -145,6 +147,9 @@ The parameters [!param](/Components/HSCoupler2D3D/heat_structure_2d) and
 and [!param](/Components/HSCoupler2D3D/boundary_3d) specify a single boundary
 corresponding to each heat structure, at which the heat exchange occurs.
 
+The parameter [!param](/Components/HSCoupler2D3D/symmetry_factor) specifies the symmetry
+factor $f$ used in the heat flux calculation.
+
 The parameters [!param](/Components/HSCoupler2D3D/emissivity_2d),
 [!param](/Components/HSCoupler2D3D/emissivity_3d),
 [!param](/Components/HSCoupler2D3D/gap_thickness),
@@ -176,7 +181,7 @@ of the 3D surface. This component uses [automatic differentiation](automatic_dif
 to compute the Jacobian matrix contributions used in Newton's method for solving
 the nonlinear system. For performance flexibility, MOOSE has a maximum AD container size,
 which currently by default is set to 53, which means that if a term like the
-2D boundary heat flux $q_z$ depends on more that 53 degrees of freedom, then
+2D boundary heat flux $q_z$ depends on more than 53 degrees of freedom, then
 an error occurs. This maximum AD container size can be increased by configuring
 MOOSE and recompiling your application. See [automatic_differentiation/index.md#max_container_size]
 for more information.

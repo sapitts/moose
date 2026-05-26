@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -17,6 +17,8 @@ InputParameters
 EBSDReaderAvgDataAux::validParams()
 {
   InputParameters params = AuxKernel::validParams();
+  params.addClassDescription("Outputs the requested EBSD reader average data, for a given phase if "
+                             "specified, for the grain at the local node/element.");
   params.addParam<unsigned int>("phase", "The phase to use for all queries.");
   params.addRequiredParam<UserObjectName>("ebsd_reader", "The EBSDReader GeneralUserObject");
   params.addRequiredParam<UserObjectName>("grain_tracker", "The GrainTracker UserObject");
@@ -33,7 +35,7 @@ EBSDReaderAvgDataAux::EBSDReaderAvgDataAux(const InputParameters & parameters)
   : AuxKernel(parameters),
     _phase(isParamValid("phase") ? getParam<unsigned int>("phase") : libMesh::invalid_uint),
     _ebsd_reader(getUserObject<EBSDReader>("ebsd_reader")),
-    _grain_tracker(dynamic_cast<const GrainTrackerInterface &>(getUserObjectBase("grain_tracker"))),
+    _grain_tracker(getUserObject<GrainTrackerInterface>("grain_tracker")),
     _data_name(getParam<MooseEnum>("data_name")),
     _val(_ebsd_reader.getAvgDataAccessFunctor(_data_name)),
     _invalid(getParam<Real>("invalid"))

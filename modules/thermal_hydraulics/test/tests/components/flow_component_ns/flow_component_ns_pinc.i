@@ -30,14 +30,14 @@ p_outlet = 0
 
         inlet_boundaries = 'comp1:left comp2:left'
         momentum_inlet_types = 'fixed-velocity fixed-velocity'
-        momentum_inlet_function = '${u_inlet} 0; ${u_inlet} 0'
+        momentum_inlet_functors = '${u_inlet} 0; ${u_inlet} 0'
 
         wall_boundaries = 'comp1:top comp1:bottom comp2:top comp2:bottom'
         momentum_wall_types = 'noslip symmetry noslip symmetry'
 
         outlet_boundaries = 'comp1:right comp2:right'
         momentum_outlet_types = 'fixed-pressure fixed-pressure'
-        pressure_function = '${p_outlet} ${p_outlet}'
+        pressure_functors = '${p_outlet} ${p_outlet}'
       []
     []
   []

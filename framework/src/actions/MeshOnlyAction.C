@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -21,6 +21,8 @@
 #include "libmesh/exodusII_io_helper.h"
 #include "libmesh/checkpoint_io.h"
 
+using namespace libMesh;
+
 registerMooseAction("MooseApp", MeshOnlyAction, "mesh_only");
 
 InputParameters
@@ -34,28 +36,18 @@ MeshOnlyAction::MeshOnlyAction(const InputParameters & params) : Action(params) 
 void
 MeshOnlyAction::act()
 {
+  // Run error checking on input file first before trying to generate a mesh
+  bool warn = _app.unusedFlagIsWarning();
+  bool err = _app.unusedFlagIsError();
+  _app.builder().errorCheck(comm(), warn, err);
+
   std::string mesh_file = _app.parameters().get<std::string>("mesh_only");
   auto & mesh_ptr = _app.actionWarehouse().mesh();
 
   // Print information about the mesh
   _console << mesh_ptr->getMesh().get_info(/* verbosity = */ 2) << std::endl;
 
-  bool should_generate = false;
-
-  // If no argument specified or if the argument following --mesh-only starts
-  // with a dash, try to build an output filename based on the input mesh filename.
-  if (mesh_file.empty() || (mesh_file[0] == '-'))
-    should_generate = true;
-  // There's something following the --mesh-only flag, let's make an attempt to validate it.
-  // If we don't find a '.' or we DO find an equals sign, chances are this is not a file!
-  else if ((mesh_file.find('.') == std::string::npos || mesh_file.find('=') != std::string::npos))
-  {
-    mooseWarning("The --mesh-only option should be followed by a file name. Move it to the end of "
-                 "your CLI args or follow it by another \"-\" argument.");
-    should_generate = true;
-  }
-
-  if (should_generate)
+  if (mesh_file.empty())
   {
     mesh_file = _app.builder().getPrimaryFileName();
     size_t pos = mesh_file.find_last_of('.');
@@ -76,6 +68,30 @@ MeshOnlyAction::act()
     auto & output_mesh = mesh_ptr->getMesh();
     ExodusII_IO exio(output_mesh);
 
+    // Default to the maximum name length allowed by libMesh ExodusII
+    exio.set_max_name_length(80);
+
+    // Extract the Output action to look for a non-default name
+    // length, e.g. truncation to 32 to match gold files
+    const auto & output_actions = _app.actionWarehouse().getActionListByName("add_output");
+    for (const auto & act : output_actions)
+    {
+      AddOutputAction * action = dynamic_cast<AddOutputAction *>(act);
+      if (!action)
+        continue;
+
+      InputParameters & params = action->getObjectParams();
+      if (params.isParamSetByUser("max_output_name_length"))
+      {
+        const int max_output_name_length =
+            action->getObjectParams().get<unsigned int>("max_output_name_length");
+
+        exio.set_max_name_length(max_output_name_length);
+
+        break;
+      }
+    }
+
     Exodus::setOutputDimensionInExodusWriter(exio, *mesh_ptr);
 
     // Default to non-HDF5 output for wider compatibility
@@ -88,7 +104,7 @@ MeshOnlyAction::act()
 
     // Iterate through all actions and see if `Outputs/output_extra_element_ids = true` in input
     // file
-    const auto & output_actions = _app.actionWarehouse().getActionListByName("add_output");
+
     // Truth of whether to output extra element ids is initially determined by whether
     // there are extra element ids defined on the mesh
     bool output_extra_ids = (n_eeid > 0);

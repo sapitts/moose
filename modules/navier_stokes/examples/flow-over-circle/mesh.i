@@ -19,14 +19,14 @@
     paired_block = 1
     new_boundary = 'circle'
   []
-  [delete]
+  [delete_circle]
     type = BlockDeletionGenerator
     input = in_between
     block = '1'
   []
   [final_ccmg]
     type = RenameBlockGenerator
-    input = delete
+    input = delete_circle
     old_block = '2 3'
     new_block = '0 0'
   []
@@ -213,5 +213,10 @@
     combinatorial_geometry = 'x > ${fparse x_max-rundoff}'
     normal = '1 0 0'
     new_sideset_name = 'right_boundary'
+  []
+  [sideset_removal]
+    input = create_fused_right_sideset
+    type = BoundaryDeletionGenerator
+    boundary_names = 'bottom top left right middle_bottom middle_top bottom_top top_bottom'
   []
 []

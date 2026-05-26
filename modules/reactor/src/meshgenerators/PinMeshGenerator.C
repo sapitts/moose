@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -14,6 +14,10 @@
 #include "MooseApp.h"
 #include "MooseMeshUtils.h"
 #include "Factory.h"
+#include "CSGZCylinder.h"
+#include "CSGPlane.h"
+#include "CSGRegion.h"
+#include "CSGUtils.h"
 #include "libmesh/elem.h"
 
 registerMooseObject("ReactorApp", PinMeshGenerator);
@@ -90,6 +94,9 @@ PinMeshGenerator::validParams()
                              "radial pin regions, the single bridging background region, and the "
                              "square or hexagonal ducts regions.");
 
+  // Declare that this generator has a generateCSG method
+  MeshGenerator::setHasGenerateCSG(params);
+
   return params;
 }
 
@@ -114,7 +121,7 @@ PinMeshGenerator::PinMeshGenerator(const InputParameters & parameters)
   // Initialize ReactorMeshParams object
   initializeReactorMeshParams(getParam<MeshGeneratorName>("reactor_params"));
 
-  _mesh_dimensions = getReactorParam<int>(RGMB::mesh_dimensions);
+  _mesh_dimensions = getReactorParam<unsigned int>(RGMB::mesh_dimensions);
   _mesh_geometry = getReactorParam<std::string>(RGMB::mesh_geometry);
 
   if (_is_assembly)
@@ -126,8 +133,8 @@ PinMeshGenerator::PinMeshGenerator(const InputParameters & parameters)
   }
 
   if (_extrude && _mesh_dimensions != 3)
-    mooseError("This is a 2 dimensional mesh, you cannot extrude it. Check your ReactorMeshParams "
-               "inputs\n");
+    paramError("extrude",
+               "In order to extrude this mesh, ReactorMeshParams/dim needs to be set to 3\n");
   if (_extrude && (!hasReactorParam<boundary_id_type>(RGMB::top_boundary_id) ||
                    !hasReactorParam<boundary_id_type>(RGMB::bottom_boundary_id)))
     mooseError("Both top_boundary_id and bottom_boundary_id must be provided in ReactorMeshParams "
@@ -206,16 +213,18 @@ PinMeshGenerator::PinMeshGenerator(const InputParameters & parameters)
       auto params = _app.getFactory().getValidParams("SimpleHexagonGenerator");
 
       params.set<Real>("hexagon_size") = _pitch / 2.0;
-      params.set<boundary_id_type>("external_boundary_id") = 20000 + _pin_type;
-      const auto boundary_name = _is_assembly ? "outer_assembly_" + std::to_string(_pin_type)
-                                              : "outer_pin_" + std::to_string(_pin_type);
-      params.set<std::string>("external_boundary_name") = boundary_name;
+      params.set<boundary_id_type>("external_boundary_id") =
+          RGMB::PIN_BOUNDARY_ID_START + _pin_type;
+      const auto boundary_name =
+          (_is_assembly ? RGMB::ASSEMBLY_BOUNDARY_NAME_PREFIX : RGMB::PIN_BOUNDARY_NAME_PREFIX) +
+          std::to_string(_pin_type);
+      params.set<BoundaryName>("external_boundary_name") = boundary_name;
       params.set<std::vector<subdomain_id_type>>("block_id") = {
           _quad_center ? RGMB::PIN_BLOCK_ID_START : RGMB::PIN_BLOCK_ID_TRI};
       params.set<MooseEnum>("element_type") = _quad_center ? "QUAD" : "TRI";
-      auto block_name = "RGMB_PIN" + std::to_string(_pin_type) + "_R0";
+      auto block_name = RGMB::PIN_BLOCK_NAME_PREFIX + std::to_string(_pin_type) + "_R0";
       if (!_quad_center)
-        block_name += "_TRI";
+        block_name += RGMB::TRI_BLOCK_NAME_SUFFIX;
       params.set<std::vector<SubdomainName>>("block_name") = {block_name};
 
       if (!skip_assembly_generation)
@@ -239,7 +248,8 @@ PinMeshGenerator::PinMeshGenerator(const InputParameters & parameters)
 
       for (const auto i : index_range(_intervals))
       {
-        const auto block_name = "RGMB_PIN" + std::to_string(_pin_type) + "_R" + std::to_string(i);
+        const auto block_name =
+            RGMB::PIN_BLOCK_NAME_PREFIX + std::to_string(_pin_type) + "_R" + std::to_string(i);
         const auto block_id = RGMB::PIN_BLOCK_ID_START + i;
 
         if (i < _ring_radii.size())
@@ -266,7 +276,7 @@ PinMeshGenerator::PinMeshGenerator(const InputParameters & parameters)
         if (ring_intervals.front() != 1)
         {
           // If quad center elements, copy element at beginning of block names and
-          // block ids. Otherwise add "_TRI" suffix to block names and generate new
+          // block ids. Otherwise add RGMB::TRI_BLOCK_NAME_SUFFIX to block names and generate new
           // block id
           if (_quad_center)
           {
@@ -275,17 +285,17 @@ PinMeshGenerator::PinMeshGenerator(const InputParameters & parameters)
           }
           else
           {
-            const auto block_name = ring_blk_names.front() + "_TRI";
+            const auto block_name = ring_blk_names.front() + RGMB::TRI_BLOCK_NAME_SUFFIX;
             const auto block_id = RGMB::PIN_BLOCK_ID_TRI;
             ring_blk_ids.insert(ring_blk_ids.begin(), block_id);
             ring_blk_names.insert(ring_blk_names.begin(), block_name);
           }
         }
-        // Add _TRI suffix if only one radial region and tri center elements
+        // Add RGMB::TRI_BLOCK_NAME_SUFFIX if only one radial region and tri center elements
         else if (!_quad_center)
         {
           ring_blk_ids[0] = RGMB::PIN_BLOCK_ID_TRI;
-          ring_blk_names[0] += "_TRI";
+          ring_blk_names[0] += RGMB::TRI_BLOCK_NAME_SUFFIX;
         }
       }
       else
@@ -293,7 +303,7 @@ PinMeshGenerator::PinMeshGenerator(const InputParameters & parameters)
         if (background_intervals > 1)
         {
           // If quad center elements, copy element at beginning of block names and
-          // block ids. Otherwise add "_TRI" suffix to block names and generate new
+          // block ids. Otherwise add RGMB::TRI_BLOCK_NAME_SUFFIX to block names and generate new
           // block id
           if (_quad_center)
           {
@@ -302,18 +312,18 @@ PinMeshGenerator::PinMeshGenerator(const InputParameters & parameters)
           }
           else
           {
-            const auto block_name = background_blk_names.front() + "_TRI";
+            const auto block_name = background_blk_names.front() + RGMB::TRI_BLOCK_NAME_SUFFIX;
             const auto block_id = RGMB::PIN_BLOCK_ID_TRI;
             background_blk_ids.insert(background_blk_ids.begin(), block_id);
             background_blk_names.insert(background_blk_names.begin(), block_name);
           }
         }
-        // Add _TRI suffix if only one background region and tri center elements
+        // Add RGMB::TRI_BLOCK_NAME_SUFFIX if only one background region and tri center elements
         // and no ring regions
         else if (!_quad_center)
         {
           background_blk_ids[0] = RGMB::PIN_BLOCK_ID_TRI;
-          background_blk_names[0] += "_TRI";
+          background_blk_names[0] += RGMB::TRI_BLOCK_NAME_SUFFIX;
         }
       }
 
@@ -334,10 +344,12 @@ PinMeshGenerator::PinMeshGenerator(const InputParameters & parameters)
           params.set<bool>("quad_center_elements") = _quad_center;
           params.set<MooseEnum>("polygon_size_style") = "apothem";
           params.set<Real>("polygon_size") = _pitch / 2.0;
-          params.set<boundary_id_type>("external_boundary_id") = 20000 + _pin_type;
-          const auto boundary_name = _is_assembly ? "outer_assembly_" + std::to_string(_pin_type)
-                                                  : "outer_pin_" + std::to_string(_pin_type);
-          params.set<std::string>("external_boundary_name") = boundary_name;
+          params.set<boundary_id_type>("external_boundary_id") =
+              RGMB::PIN_BOUNDARY_ID_START + _pin_type;
+          const auto boundary_name = (_is_assembly ? RGMB::ASSEMBLY_BOUNDARY_NAME_PREFIX
+                                                   : RGMB::PIN_BOUNDARY_NAME_PREFIX) +
+                                     std::to_string(_pin_type);
+          params.set<BoundaryName>("external_boundary_name") = boundary_name;
           bool flat_side_up = (_mesh_geometry == "Square");
           params.set<bool>("flat_side_up") = flat_side_up;
           params.set<bool>("create_outward_interface_boundaries") = false;
@@ -416,54 +428,9 @@ PinMeshGenerator::PinMeshGenerator(const InputParameters & parameters)
       copyMeshProperty<Real>("pattern_pitch_meta", name() + "_2D");
     declareMeshProperty("is_control_drum_meta", false);
 
-    if (_extrude && _mesh_dimensions == 3)
-    {
-      std::vector<Real> axial_boundaries =
-          getReactorParam<std::vector<Real>>(RGMB::axial_mesh_sizes);
-      const auto top_boundary = getReactorParam<boundary_id_type>(RGMB::top_boundary_id);
-      const auto bottom_boundary = getReactorParam<boundary_id_type>(RGMB::bottom_boundary_id);
-      {
-        auto params = _app.getFactory().getValidParams("AdvancedExtruderGenerator");
+    if (_extrude)
+      build_mesh_name = callExtrusionMeshSubgenerators(build_mesh_name);
 
-        params.set<MeshGeneratorName>("input") = build_mesh_name;
-        params.set<Point>("direction") = Point(0, 0, 1);
-        params.set<std::vector<unsigned int>>("num_layers") =
-            getReactorParam<std::vector<unsigned int>>(RGMB::axial_mesh_intervals);
-        params.set<std::vector<Real>>("heights") = axial_boundaries;
-        params.set<boundary_id_type>("bottom_boundary") = bottom_boundary;
-        params.set<boundary_id_type>("top_boundary") = top_boundary;
-        addMeshSubgenerator("AdvancedExtruderGenerator", name() + "_extruded", params);
-      }
-
-      {
-        auto params = _app.getFactory().getValidParams("RenameBoundaryGenerator");
-
-        params.set<MeshGeneratorName>("input") = name() + "_extruded";
-        params.set<std::vector<BoundaryName>>("old_boundary") = {
-            std::to_string(top_boundary),
-            std::to_string(bottom_boundary)}; // hard coded boundary IDs in patterned mesh generator
-        params.set<std::vector<BoundaryName>>("new_boundary") = {"top", "bottom"};
-        addMeshSubgenerator("RenameBoundaryGenerator", name() + "_change_plane_name", params);
-      }
-
-      {
-        auto params = _app.getFactory().getValidParams("PlaneIDMeshGenerator");
-
-        params.set<MeshGeneratorName>("input") = name() + "_change_plane_name";
-
-        std::vector<Real> plane_heights{0};
-        for (Real z : axial_boundaries)
-          plane_heights.push_back(z + plane_heights.back());
-
-        params.set<std::vector<Real>>("plane_coordinates") = plane_heights;
-
-        std::string plane_id_name = "plane_id";
-        params.set<std::string>("id_name") = "plane_id";
-
-        build_mesh_name = name() + "_extrudedIDs";
-        addMeshSubgenerator("PlaneIDMeshGenerator", build_mesh_name, params);
-      }
-    }
     // Store final mesh subgenerator
     _build_mesh = &getMeshByName(build_mesh_name);
   }
@@ -481,13 +448,13 @@ PinMeshGenerator::generateFlexibleAssemblyBoundaries()
   // the assembly only has a single region. Otherwise, determine the outermost region for deletion
   if (_homogenized || (_intervals.size() == 1))
   {
-    outermost_block_name = "RGMB_PIN" + std::to_string(_pin_type) + "_R0";
+    outermost_block_name = RGMB::PIN_BLOCK_NAME_PREFIX + std::to_string(_pin_type) + "_R0";
     has_single_mesh_interval = true;
   }
   else
   {
-    outermost_block_name =
-        "RGMB_PIN" + std::to_string(_pin_type) + "_R" + std::to_string(_intervals.size() - 1);
+    outermost_block_name = RGMB::PIN_BLOCK_NAME_PREFIX + std::to_string(_pin_type) + "_R" +
+                           std::to_string(_intervals.size() - 1);
     has_single_mesh_interval = false;
 
     // Invoke BlockDeletionGenerator to delete outermost mesh interval of assembly
@@ -517,10 +484,11 @@ PinMeshGenerator::generateFlexibleAssemblyBoundaries()
     params.set<unsigned int>("boundary_sectors") =
         getReactorParam<unsigned int>(RGMB::num_sectors_flexible_stitching);
     params.set<Real>("boundary_size") = getReactorParam<Real>(RGMB::assembly_pitch);
-    params.set<boundary_id_type>("external_boundary_id") = 20000 + _pin_type;
+    params.set<boundary_id_type>("external_boundary_id") = RGMB::PIN_BOUNDARY_ID_START + _pin_type;
     params.set<BoundaryName>("external_boundary_name") =
-        "outer_assembly_" + std::to_string(_pin_type);
-    params.set<SubdomainName>("background_subdomain_name") = outermost_block_name + "_TRI";
+        RGMB::ASSEMBLY_BOUNDARY_NAME_PREFIX + std::to_string(_pin_type);
+    params.set<SubdomainName>("background_subdomain_name") =
+        outermost_block_name + RGMB::TRI_BLOCK_NAME_SUFFIX;
     params.set<unsigned short>("background_subdomain_id") = RGMB::PIN_BLOCK_ID_TRI_FLEXIBLE;
 
     addMeshSubgenerator("FlexiblePatternGenerator", name() + "_fpg", params);
@@ -554,6 +522,7 @@ PinMeshGenerator::generateMetadata()
     declareMeshProperty(RGMB::background_block_name, std::vector<std::string>());
     declareMeshProperty(RGMB::duct_block_names, std::vector<std::vector<std::string>>());
     declareMeshProperty(RGMB::is_single_pin, _is_assembly);
+    declareMeshProperty(RGMB::is_control_drum, false);
     // Following metadata is only relevant if an output mesh is generated by RGMB
     // because it pertains to region & block ids of elements in the output mesh
     if (!getReactorParam<bool>(RGMB::bypass_meshgen))
@@ -582,7 +551,7 @@ PinMeshGenerator::generateMetadata()
   declareMeshProperty(RGMB::is_homogenized, _homogenized);
   declareMeshProperty(RGMB::ring_radii, _ring_radii);
   declareMeshProperty(RGMB::duct_halfpitches, _duct_halfpitch);
-  declareMeshProperty(RGMB::extruded, _extrude && _mesh_dimensions == 3);
+  declareMeshProperty(RGMB::extruded, _extrude);
 
   unsigned int n_axial_levels =
       (_mesh_dimensions == 3)
@@ -612,19 +581,13 @@ PinMeshGenerator::generateMetadata()
   declareMeshProperty(RGMB::ring_region_ids, ring_region_ids);
   declareMeshProperty(RGMB::background_region_id, background_region_ids);
   declareMeshProperty(RGMB::duct_region_ids, duct_region_ids);
-
-  if (getParam<bool>("show_rgmb_metadata"))
-  {
-    std::string mg_struct = _is_assembly ? "assembly" : "pin";
-    printReactorMetadata(mg_struct, name());
-  }
 }
 
 std::unique_ptr<MeshBase>
 PinMeshGenerator::generate()
 {
   // Must be called to free the ReactorMeshParams mesh
-  freeReactorMeshParams();
+  freeReactorParamsMesh();
 
   // If bypass_mesh is true, return a null mesh. In this mode, an output mesh is not
   // generated and only metadata is defined on the generator, so logic related to
@@ -667,7 +630,7 @@ PinMeshGenerator::generate()
   std::string plane_id_name = "plane_id";
   std::string radial_id_name = "radial_id";
   const std::string default_block_name =
-      std::string("RGMB_") + (_is_assembly ? std::string("ASSEMBLY") : std::string("PIN")) +
+      (_is_assembly ? RGMB::ASSEMBLY_BLOCK_NAME_PREFIX : RGMB::PIN_BLOCK_NAME_PREFIX) +
       std::to_string(_pin_type);
 
   auto region_id_int = getElemIntegerFromMesh(*(*_build_mesh), region_id_name);
@@ -693,14 +656,14 @@ PinMeshGenerator::generate()
     const auto base_block_name = (*_build_mesh)->subdomain_name(base_block_id);
 
     // Check if block name has correct prefix
-    std::string prefix = "RGMB_PIN" + std::to_string(_pin_type) + "_R";
+    std::string prefix = RGMB::PIN_BLOCK_NAME_PREFIX + std::to_string(_pin_type) + "_R";
     if (!(base_block_name.find(prefix, 0) == 0))
       continue;
     // Radial index is integer value of substring after prefix
     std::string radial_str = base_block_name.substr(prefix.length());
 
-    // Filter out _TRI suffix if needed
-    const std::string suffix = "_TRI";
+    // Filter out RGMB::TRI_BLOCK_NAME_SUFFIX if needed
+    const std::string suffix = RGMB::TRI_BLOCK_NAME_SUFFIX;
     const std::size_t found = radial_str.find(suffix);
     if (found != std::string::npos)
       radial_str.replace(found, suffix.length(), "");
@@ -724,11 +687,145 @@ PinMeshGenerator::generate()
     else if (getReactorParam<bool>(RGMB::region_id_as_block_name))
       elem_block_name += "_REG" + std::to_string(elem_region_id);
     if (elem->type() == TRI3 || elem->type() == PRISM6)
-      elem_block_name += "_TRI";
+      elem_block_name += RGMB::TRI_BLOCK_NAME_SUFFIX;
     updateElementBlockNameId(
         *(*_build_mesh), elem, rgmb_name_id_map, elem_block_name, next_block_id);
   }
 
-  (*_build_mesh)->set_isnt_prepared();
+  // Mark mesh as not prepared, as block IDs were re-assigned in this method
+  (*_build_mesh)->unset_is_prepared();
+
   return std::move(*_build_mesh);
+}
+
+std::unique_ptr<CSG::CSGBase>
+PinMeshGenerator::generateCSG()
+{
+  // Must be called to free the ReactorMeshParams CSGBase object
+  freeReactorParamsCSG();
+
+  auto csg_obj = std::make_unique<CSG::CSGBase>();
+
+  unsigned int radial_index = 0;
+  std::vector<std::vector<std::reference_wrapper<const CSG::CSGSurface>>> surfaces_by_radial_region;
+
+  // Add surfaces corresponding to pin rings
+  for (const auto & radius : _ring_radii)
+  {
+    const auto surf_name = name() + "_radial_ring_" + std::to_string(radial_index);
+    std::unique_ptr<CSG::CSGSurface> ring_surf_ptr =
+        std::make_unique<CSG::CSGZCylinder>(surf_name, 0, 0, radius);
+    const auto & ring_surf = csg_obj->addSurface(std::move(ring_surf_ptr));
+    surfaces_by_radial_region.push_back({ring_surf});
+    ++radial_index;
+  }
+
+  // Add surfaces corresponding to pin ducts
+  for (const auto & duct_halfpitch : _duct_halfpitch)
+  {
+    const auto & duct_surfaces =
+        getOuterRadialSurfacesForUnitCell(radial_index, duct_halfpitch, *csg_obj);
+    surfaces_by_radial_region.push_back(duct_surfaces);
+    ++radial_index;
+  }
+
+  // Add surfaces corresponding to outer pin boundary
+  const auto & duct_surfaces =
+      getOuterRadialSurfacesForUnitCell(radial_index, _pitch / 2., *csg_obj);
+  surfaces_by_radial_region.push_back(duct_surfaces);
+
+  // Define all radial regions
+  std::vector<CSG::CSGRegion> radial_regions;
+  CSG::CSGRegion inner_region, outer_region;
+  for (const auto i : index_range(surfaces_by_radial_region))
+  {
+    const auto & radial_surfaces = surfaces_by_radial_region[i];
+    CSG::CSGRegion radial_region;
+    bool is_last_radial_region = i == surfaces_by_radial_region.size() - 1;
+    if (inner_region.getRegionType() == CSG::CSGRegion::RegionType::EMPTY)
+    {
+      if (!is_last_radial_region)
+      {
+        // We are in the innermost radial region, the radial region is inner_region
+        inner_region = CSGUtils::getInnerRegion(radial_surfaces, Point(0, 0, 0));
+        radial_region = inner_region;
+      }
+    }
+    else
+    {
+      // For all other regions, the radial region is the intersection of inner_region and
+      // outer_region
+      outer_region = ~inner_region;
+      inner_region = CSGUtils::getInnerRegion(radial_surfaces, Point(0, 0, 0));
+      radial_region = is_last_radial_region ? outer_region : (inner_region & outer_region);
+    }
+    radial_regions.push_back(radial_region);
+  }
+
+  // Define all axial surfaces and regions
+  std::vector<CSG::CSGRegion> axial_regions;
+  std::vector<std::reference_wrapper<const CSG::CSGSurface>> surfaces_by_axial_region;
+  const auto extruded_pin = _mesh_dimensions == 3;
+  if (extruded_pin)
+  {
+    surfaces_by_axial_region = getAxialPlaneSurfaces(*csg_obj);
+    for (const auto i : make_range(surfaces_by_axial_region.size()))
+      if (i != 0)
+      {
+        CSG::CSGRegion axial_region;
+        const auto & lower_surf = surfaces_by_axial_region[i - 1].get();
+        if (lower_surf != surfaces_by_axial_region.front())
+          axial_region = +lower_surf;
+        const auto & upper_surf = surfaces_by_axial_region[i].get();
+        if (upper_surf != surfaces_by_axial_region.back())
+        {
+          if (axial_region.getRegionType() == CSG::CSGRegion::RegionType::EMPTY)
+            axial_region = -upper_surf;
+          else
+            axial_region &= -upper_surf;
+        }
+        axial_regions.push_back(axial_region);
+      }
+  }
+
+  // Define all cells within pin domain and add to separate universe
+  const auto & pin_univ = csg_obj->createUniverse(name() + "_univ");
+  for (const auto i : index_range(radial_regions))
+  {
+    for (const auto j : make_range(extruded_pin ? axial_regions.size() : 1))
+    {
+      auto cell_region = radial_regions[i];
+      auto cell_name = name() + "_cell_radial_" + std::to_string(i);
+      const auto region_id = _region_ids[j][i];
+      const auto mat_name = "rgmb_region_" + std::to_string(region_id);
+      if (extruded_pin)
+      {
+        // update name and region with axial info only if extruded
+        const auto axial_region = axial_regions[j];
+        if (axial_region.getRegionType() != CSG::CSGRegion::RegionType::EMPTY)
+        {
+          if (cell_region.getRegionType() != CSG::CSGRegion::RegionType::EMPTY)
+            cell_region &= axial_region;
+          else
+            cell_region = axial_region;
+        }
+        cell_name += "_axial_" + std::to_string(j);
+      }
+      csg_obj->createCell(cell_name, mat_name, cell_region, &pin_univ);
+    }
+  }
+
+  // Create new cell to bound universe based on pin outer boundaries and add this cell to the root
+  // universe
+  auto pin_region = CSGUtils::getInnerRegion(surfaces_by_radial_region.back(), Point(0, 0, 0));
+  if (extruded_pin)
+  {
+    const auto & lowest_axial_surf = surfaces_by_axial_region.front().get();
+    const auto & highest_axial_surf = surfaces_by_axial_region.back().get();
+    auto axial_region = +lowest_axial_surf & -highest_axial_surf;
+    pin_region &= axial_region;
+  }
+  csg_obj->createCell(name() + "_root_cell", pin_univ, pin_region);
+
+  return csg_obj;
 }

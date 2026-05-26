@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -66,9 +66,12 @@ protected:
   // Production Limiter Constant
   const Real _C_pl;
 
+  /// For Newton solves we want to add extra zero-valued terms regardless of y-plus to avoid sparsity pattern changes as y-plus changes near the walls
+  const bool _newton_solve;
+
   ///@{
   /// Maps for wall treatement
-  std::map<const Elem *, bool> _wall_bounded;
+  std::unordered_set<const Elem *> _wall_bounded;
   std::map<const Elem *, std::vector<Real>> _dist;
   std::map<const Elem *, std::vector<const FaceInfo *>> _face_infos;
   ///@}

@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -11,6 +11,7 @@
 
 #include <string>
 #include "MathUtils.h"
+#include "MooseUtils.h"
 #include "MooseTypes.h"
 #include "libmesh/vector_value.h"
 #include "HeatConductionNames.h"
@@ -54,6 +55,8 @@ static const std::string superficial_velocity = "superficial_velocity";
 static const std::string superficial_velocity_vector[3] = {
     superficial_velocity_x, superficial_velocity_y, superficial_velocity_z};
 static const std::string pressure = "pressure";
+// Starting variable name with pressure so it is displayed next to pressure in outputs
+static const std::string total_pressure = "pressure_total";
 static const std::string temperature = "temperature";
 
 static const std::string internal_energy = "internal_energy";
@@ -94,7 +97,10 @@ grad(const std::string & var)
 inline std::string
 time_deriv(const std::string & var)
 {
-  return MathUtils::timeDerivName(var);
+  if (MooseUtils::isFloat(var))
+    return "0";
+  else
+    return MathUtils::timeDerivName(var);
 }
 
 // Navier-Stokes Variables
@@ -113,20 +119,27 @@ static const std::string drhos_dTs = "drhos_dTs";
 static const std::string dks_dTs = "dks_dTs";
 static const std::string kappa = "kappa";
 static const std::string kappa_s = "kappa_s";
-static const std::string mu_eff = "mu_eff";
 static const std::string rho_s = "rho_s";
 static const std::string cp_s = "cp_s";
 static const std::string k_s = "k_s";
 static const std::string cp = "cp";
 static const std::string cv = "cv";
 static const std::string mu = "mu";
+// Turbulent dynamic viscosity
 static const std::string mu_t = "mu_t";
+// Turbulent dynamic scalar viscosity
+static const std::string mu_t_passive_scalar = "mu_t_passive_scalar";
+// Effective viscosity = sum of viscosities
+static const std::string mu_eff = "mu_eff";
 static const std::string k = "k";
+// Turbulence 'conductivity'
+static const std::string k_t = "k_t";
 static const std::string thermal_diffusivity = "thermal_diffusivity";
 static const std::string alpha = "alpha";
 static const std::string alpha_wall = "alpha_wall";
 static const std::string solid = "solid";
 static const std::string Prandtl = "Pr";
+static const std::string turbulent_Prandtl = "Pr_t";
 static const std::string Reynolds = "Re";
 static const std::string Reynolds_hydraulic = "Re_h";
 static const std::string Reynolds_interstitial = "Re_i";
@@ -161,10 +174,10 @@ static const std::string Z = "Z";
 static const std::string K = "K";
 static const std::string mass_flux = "mass_flux";
 
-// Turbuelnce
+// Turbulence
 
 // Turbulence variables
-static const std::string TKE = "k";
+static const std::string TKE = "tke";
 static const std::string TKED = "epsilon";
 
 /**
@@ -178,11 +191,34 @@ enum class WallTreatmentEnum
   NEQ = 3
 };
 
+/**
+ * CHT side options, we want to make sure these can be used as integers
+ * so we are avoiding the enum class here.
+ */
+enum CHTSide
+{
+  SOLID = 0,
+  FLUID = 1
+};
+
 // Turbulence constants
 static constexpr Real von_karman_constant = 0.4187;
 static constexpr Real E_turb_constant = 9.793;
 // Lower limit for mu_t
 static constexpr Real mu_t_low_limit = 1.0e-8;
+// Lower limit for epsilon in the k-epsilon
+static constexpr Real epsilon_low_limit = 1.0e-8;
+// Lower limit for y_plus
+static constexpr Real min_y_plus = 1e-10;
+
+// Boundary condition types
+enum class MomentumInletTypes
+{
+  FIXED_VELOCITY = 0,
+  FLUX_VELOCITY = 1,
+  FLUX_MASS = 2,
+  FIXED_PRESSURE = 3
+};
 }
 
 namespace NS_DEFAULT_VALUES

@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "MultiAppGeneralFieldTransfer.h"
+#include "MultiAppGeneralFieldKDTreeTransferBase.h"
 #include "KDTree.h"
 #include "SolutionInvalidInterface.h"
 
@@ -17,8 +17,7 @@
  * Performs a geometric interpolation based on the values at the nearest nodes to a target location
  * in the origin mesh.
  */
-class MultiAppGeneralFieldNearestLocationTransfer : public MultiAppGeneralFieldTransfer,
-                                                    public SolutionInvalidInterface
+class MultiAppGeneralFieldNearestLocationTransfer : public MultiAppGeneralFieldKDTreeTransferBase
 
 {
 public:
@@ -29,27 +28,13 @@ public:
   void initialSetup() override;
 
 protected:
-  virtual void prepareEvaluationOfInterpValues(const unsigned int var_index) override;
-
   virtual void
-  evaluateInterpValues(const std::vector<std::pair<Point, unsigned int>> & incoming_points,
+  evaluateInterpValues(const unsigned int /*var_index*/,
+                       const std::vector<std::pair<Point, unsigned int>> & incoming_points,
                        std::vector<std::pair<Real, Real>> & outgoing_vals) override;
 
-  using MultiAppGeneralFieldTransfer::inBlocks;
-  bool inBlocks(const std::set<SubdomainID> & blocks,
-                const MooseMesh & mesh,
-                const Elem * elem) const override;
-
 private:
-  bool usesMooseAppCoordTransform() const override { return true; }
-  /*
-   * Build KD-Trees for each local app
-   * @param var_index the index of the variable being transferred
-   * @details fills _local_kdtrees, _local_points and _local_values
-   *          Indexing is: local apps (outer-indexing) OR positions (if using nearest_positions),
-   *          local nodes (inner-indexing)
-   */
-  void buildKDTrees(const unsigned int var_index);
+  void buildKDTrees(const unsigned int var_index) override;
 
   /*
    * Evaluate interpolation values for incoming points
@@ -59,48 +44,6 @@ private:
   void evaluateInterpValuesNearestNode(
       const std::vector<std::pair<Point, unsigned int>> & incoming_points,
       std::vector<std::pair<Real, Real>> & outgoing_vals);
-
-  /// Number of KDTrees used to hold the locations and variable value data
-  unsigned int getNumSources() const;
-
-  /// Transform a point towards the local frame
-  Point getPointInLocalSourceFrame(unsigned int i_from, const Point & pt) const;
-
-  /// Number of applications which contributed nearest-locations to each KD-tree
-  unsigned int getNumAppsPerTree() const;
-
-  /// Number of divisions (nearest-positions or source mesh divisions) used when building KD-Trees
-  unsigned int getNumDivisions() const;
-
-  /**
-   * @brief Examine all spatial restrictions that could preclude this source from being
-   *        a valid source for this point
-   * @param pt point of interest
-   * @param valid_mesh_div if using source mesh divisions in a 'matching' mode, the point can only
-   * be used if coming from the relevant match
-   * @param i_from index of the source (KDTree+values) of interest
-   */
-  bool checkRestrictionsForSource(const Point & pt,
-                                  const unsigned int valid_mesh_div,
-                                  const unsigned int i_from) const;
-
-  /// KD-Trees for all the local source apps
-  std::vector<std::shared_ptr<KDTree>> _local_kdtrees;
-
-  /// KD-Trees for nodes nearest to a given position on each local source app
-  std::vector<std::vector<std::shared_ptr<KDTree>>> _local_positions_kdtrees;
-
-  /// All the nodes that meet the spatial restrictions in all the local source apps
-  std::vector<std::vector<Point>> _local_points;
-
-  /// Values of the variable being transferred at all the points in _local_points
-  std::vector<std::vector<Real>> _local_values;
-
-  /// Number of points to consider
-  unsigned int _num_nearest_points;
-
-  /// Whether to group data when creating the nearest-point regions
-  const bool _group_subapps;
 
   /// Whether the source of the values is at nodes (true) or centroids (false) for each variable
   std::vector<bool> _source_is_nodes;

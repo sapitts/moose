@@ -119,7 +119,7 @@
   []
 []
 
-[Modules/TensorMechanics/Master]
+[Physics/SolidMechanics/QuasiStatic]
   [all]
     strain = FINITE
     incremental = true
@@ -266,9 +266,10 @@
 []
 
 [Outputs]
-  exodus = false
-  csv = true
-  execute_on = 'FINAL'
+  [out]
+    type = CSV
+    execute_on = 'FINAL'
+  []
 []
 
 [VectorPostprocessors]

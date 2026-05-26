@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -17,8 +17,9 @@
 #include "MooseVariableFE.h"
 #include "MeshDivision.h"
 #include "Positions.h"
-#include "MultiAppPositions.h" // remove after use_nearest_app deprecation
+#include "Factory.h"
 #include "MooseAppCoordTransform.h"
+#include "MultiAppGeneralFieldFunctorTransfer.h"
 
 // libmesh includes
 #include "libmesh/point_locator_base.h"
@@ -28,9 +29,11 @@
 #include "timpi/communicator.h"
 #include "timpi/parallel_sync.h"
 
+using namespace libMesh;
+
 namespace GeneralFieldTransfer
 {
-Number BetterOutOfMeshValue = std::numeric_limits<Real>::infinity();
+Number OutOfMeshValue = std::numeric_limits<Real>::infinity();
 }
 
 InputParameters
@@ -53,6 +56,10 @@ MultiAppGeneralFieldTransfer::validParams()
       "extrapolation_constant",
       0,
       "Constant to use when no source app can provide a valid value for a target location.");
+  MooseEnum extrap_options("none nearest-valid-target", "none");
+  params.addParam<MooseEnum>("post_transfer_extrapolation",
+                             extrap_options,
+                             "Post treatment to apply to the field after the transfer");
 
   // Block restrictions
   params.addParam<std::vector<SubdomainName>>(
@@ -107,7 +114,7 @@ MultiAppGeneralFieldTransfer::validParams()
       "The code will be slow if this flag is on but it will give a better solution.");
   params.addParam<bool>(
       "error_on_miss",
-      false,
+      true,
       "Whether or not to error in the case that a target point is not found in the source domain.");
   params.addParam<bool>("use_bounding_boxes",
                         true,
@@ -123,7 +130,7 @@ MultiAppGeneralFieldTransfer::validParams()
       "use_nearest_position",
       "Name of the the Positions object (in main app) such that transfers to/from a child "
       "application will work by finding the nearest position to a target and query only the "
-      "app / points closer to this position than any other position for the value to transfer.");
+      "app / points closer to this position than to any other position for the value to transfer.");
   params.addParam<bool>(
       "from_app_must_contain_point",
       false,
@@ -131,7 +138,7 @@ MultiAppGeneralFieldTransfer::validParams()
       "allows for interpolation between origin app meshes. Origin app bounding boxes are still "
       "considered so you may want to increase them with 'fixed_bounding_box_size'");
   params.addParam<bool>("search_value_conflicts",
-                        true,
+                        false,
                         "Whether to look for potential conflicts between two valid and different "
                         "source values for any target point");
   params.addParam<unsigned int>(
@@ -151,6 +158,21 @@ MultiAppGeneralFieldTransfer::validParams()
   params.addParamNamesToGroup("error_on_miss from_app_must_contain_point extrapolation_constant",
                               "Extrapolation behavior");
   params.addParamNamesToGroup("bbox_factor fixed_bounding_box_size", "Source app bounding box");
+
+  // We need a level of ghosting to move elemental value one layer out when using post transfer
+  // extrapolation. We need geometric for the element vertex average, and algebraic for the dof
+  // value NOTE: we need this on the target mesh!
+  params.addRelationshipManager(
+      "ElementSideNeighborLayers",
+      Moose::RelationshipManagerType::GEOMETRIC | Moose::RelationshipManagerType::ALGEBRAIC,
+      [](const InputParameters & obj_params, InputParameters & rm_params)
+      {
+        if (!obj_params.isParamValid("from_multi_app") &&
+            obj_params.get<MooseEnum>("post_transfer_extrapolation") == "nearest-valid-target")
+          rm_params.set<unsigned short>("layers") = 2;
+        rm_params.set<bool>("use_displaced_mesh") = obj_params.get<bool>("displaced_target_mesh");
+      });
+
   return params;
 }
 
@@ -173,6 +195,7 @@ MultiAppGeneralFieldTransfer::MultiAppGeneralFieldTransfer(const InputParameters
     _search_value_conflicts(getParam<bool>("search_value_conflicts")),
     _already_output_search_value_conflicts(false),
     _search_value_conflicts_max_log(getParam<unsigned int>("value_conflicts_output")),
+    _post_transfer_extrapolation(getParam<MooseEnum>("post_transfer_extrapolation")),
     _error_on_miss(getParam<bool>("error_on_miss")),
     _default_extrapolation_value(getParam<Real>("extrapolation_constant")),
     _bbox_factor(getParam<Real>("bbox_factor")),
@@ -200,16 +223,14 @@ MultiAppGeneralFieldTransfer::MultiAppGeneralFieldTransfer(const InputParameters
     if (!hasFromMultiApp())
       paramError("use_nearest_app",
                  "Should have a 'from_multiapp' when using the nearest-app informed search");
-    auto pos_params = MultiAppPositions::validParams();
-    pos_params.set<std::vector<MultiAppName>>("multiapps") = {getMultiApp()->name()};
-    pos_params.set<MooseApp *>("_moose_app") =
-        parameters.getCheckedPointerParam<MooseApp *>("_moose_app");
+    auto pos_params = _app.getFactory().getValidParams("MultiAppPositions");
+    pos_params.set<std::vector<MultiAppName>>("multiapps") = {getFromMultiApp()->name()};
     _fe_problem.addReporter("MultiAppPositions", "_created_for_" + name(), pos_params);
     _nearest_positions_obj = &_fe_problem.getPositionsObject("_created_for_" + name());
   }
 
   // Dont let users get wrecked by bounding boxes if it looks like they are trying to extrapolate
-  if (!_source_app_must_contain_point &&
+  if (!_source_app_must_contain_point && _use_bounding_boxes &&
       (_nearest_positions_obj || isParamSetByUser("from_app_must_contain_point")))
     if (!isParamSetByUser("bbox_factor") && !isParamSetByUser("fixed_bounding_box_size"))
       mooseWarning(
@@ -235,20 +256,31 @@ MultiAppGeneralFieldTransfer::initialSetup()
     const auto & from_moose_mesh = _from_problems[i_from]->mesh(_displaced_source_mesh);
     if (isParamValid("from_blocks"))
     {
-      auto & blocks = getParam<std::vector<SubdomainName>>("from_blocks");
-      std::vector<SubdomainID> ids = from_moose_mesh.getSubdomainIDs(blocks);
-      _from_blocks.insert(ids.begin(), ids.end());
-      if (_from_blocks.size() != blocks.size())
-        paramError("from_blocks", "Some blocks were not found in the mesh");
+      const auto & block_names = getParam<std::vector<SubdomainName>>("from_blocks");
+
+      for (const auto & b : block_names)
+        if (!MooseMeshUtils::hasSubdomainName(from_moose_mesh.getMesh(), b))
+          paramError("from_blocks", "The block '", b, "' was not found in the mesh");
+
+      if (!block_names.empty())
+      {
+        const auto ids = from_moose_mesh.getSubdomainIDs(block_names);
+        _from_blocks.insert(ids.begin(), ids.end());
+      }
     }
 
     if (isParamValid("from_boundaries"))
     {
-      auto & boundary_names = getParam<std::vector<BoundaryName>>("from_boundaries");
-      std::vector<BoundaryID> boundary_ids = from_moose_mesh.getBoundaryIDs(boundary_names);
-      _from_boundaries.insert(boundary_ids.begin(), boundary_ids.end());
-      if (_from_boundaries.size() != boundary_names.size())
-        paramError("from_boundaries", "Some boundaries were not found in the mesh");
+      const auto & boundary_names = getParam<std::vector<BoundaryName>>("from_boundaries");
+      for (const auto & bn : boundary_names)
+        if (!MooseMeshUtils::hasBoundaryName(from_moose_mesh.getMesh(), bn))
+          paramError("from_boundaries", "The boundary '", bn, "' was not found in the mesh");
+
+      if (!boundary_names.empty())
+      {
+        const auto boundary_ids = from_moose_mesh.getBoundaryIDs(boundary_names);
+        _from_boundaries.insert(boundary_ids.begin(), boundary_ids.end());
+      }
     }
 
     if (isParamValid("from_mesh_division"))
@@ -304,20 +336,30 @@ MultiAppGeneralFieldTransfer::initialSetup()
     const auto & to_moose_mesh = _to_problems[i_to]->mesh(_displaced_target_mesh);
     if (isParamValid("to_blocks"))
     {
-      auto & blocks = getParam<std::vector<SubdomainName>>("to_blocks");
-      std::vector<SubdomainID> ids = to_moose_mesh.getSubdomainIDs(blocks);
-      _to_blocks.insert(ids.begin(), ids.end());
-      if (_to_blocks.size() != blocks.size())
-        paramError("to_blocks", "Some blocks were not found in the mesh");
+      const auto & block_names = getParam<std::vector<SubdomainName>>("to_blocks");
+      for (const auto & b : block_names)
+        if (!MooseMeshUtils::hasSubdomainName(to_moose_mesh.getMesh(), b))
+          paramError("to_blocks", "The block '", b, "' was not found in the mesh");
+
+      if (!block_names.empty())
+      {
+        const auto ids = to_moose_mesh.getSubdomainIDs(block_names);
+        _to_blocks.insert(ids.begin(), ids.end());
+      }
     }
 
     if (isParamValid("to_boundaries"))
     {
-      auto & boundary_names = getParam<std::vector<BoundaryName>>("to_boundaries");
-      std::vector<BoundaryID> boundary_ids = to_moose_mesh.getBoundaryIDs(boundary_names);
-      _to_boundaries.insert(boundary_ids.begin(), boundary_ids.end());
-      if (_to_boundaries.size() != boundary_names.size())
-        paramError("to_boundaries", "Some boundaries were not found in the mesh");
+      const auto & boundary_names = getParam<std::vector<BoundaryName>>("to_boundaries");
+      for (const auto & bn : boundary_names)
+        if (!MooseMeshUtils::hasBoundaryName(to_moose_mesh.getMesh(), bn))
+          paramError("to_boundaries", "The boundary '", bn, "' was not found in the mesh");
+
+      if (!boundary_names.empty())
+      {
+        const auto boundary_ids = to_moose_mesh.getBoundaryIDs(boundary_names);
+        _to_boundaries.insert(boundary_ids.begin(), boundary_ids.end());
+      }
     }
 
     if (isParamValid("to_mesh_division"))
@@ -437,6 +479,8 @@ MultiAppGeneralFieldTransfer::getAppInfo()
 void
 MultiAppGeneralFieldTransfer::execute()
 {
+  TIME_SECTION(
+      "MultiAppGeneralFieldTransfer::execute()_" + name(), 5, "Transfer execution " + name());
   getAppInfo();
 
   // Set up bounding boxes, etc
@@ -495,7 +539,7 @@ MultiAppGeneralFieldTransfer::transferVariable(unsigned int i)
   ProcessorToPointVec outgoing_points;
   extractOutgoingPoints(i, outgoing_points);
 
-  if (_from_var_names.size())
+  if (_from_var_names.size() || dynamic_cast<MultiAppGeneralFieldFunctorTransfer *>(this))
     prepareEvaluationOfInterpValues(i);
   else
     prepareEvaluationOfInterpValues(-1);
@@ -503,15 +547,15 @@ MultiAppGeneralFieldTransfer::transferVariable(unsigned int i)
   // Fill values and app ids for incoming points
   // We are responsible to compute values for these incoming points
   auto gather_functor =
-      [this](processor_id_type /*pid*/,
-             const std::vector<std::pair<Point, unsigned int>> & incoming_locations,
-             std::vector<std::pair<Real, Real>> & outgoing_vals)
+      [this, &i](processor_id_type /*pid*/,
+                 const std::vector<std::pair<Point, unsigned int>> & incoming_locations,
+                 std::vector<std::pair<Real, Real>> & outgoing_vals)
   {
     outgoing_vals.resize(
         incoming_locations.size(),
-        {GeneralFieldTransfer::BetterOutOfMeshValue, GeneralFieldTransfer::BetterOutOfMeshValue});
+        {GeneralFieldTransfer::OutOfMeshValue, GeneralFieldTransfer::OutOfMeshValue});
     // Evaluate interpolation values for these incoming points
-    evaluateInterpValues(incoming_locations, outgoing_vals);
+    evaluateInterpValues(i, incoming_locations, outgoing_vals);
   };
 
   DofobjectToInterpValVec dofobject_to_valsvec(_to_problems.size());
@@ -549,6 +593,9 @@ MultiAppGeneralFieldTransfer::transferVariable(unsigned int i)
 
   // Set cached values into solution vector
   setSolutionVectorValues(i, dofobject_to_valsvec, interp_caches);
+
+  // Modify solution vector values (notably extrapolation options in functor transfer)
+  correctSolutionVectorValues(i, dofobject_to_valsvec, interp_caches);
 }
 
 void
@@ -560,20 +607,48 @@ MultiAppGeneralFieldTransfer::locatePointReceivers(const Point point,
   bool found = false;
 
   // Additional process-restriction techniques we could use (TODOs):
-  // - nearest_positions/_app could use its own heuristic
+  // - create a heuristic for using nearest-positions
   // - from_mesh_divisions could be polled for which divisions they possess on each
   //   process, depending on the behavior chosen. This could limit potential senders.
   //   This should be done ahead of this function call, for all points at once
 
-  // Select the method for determining the apps receiving points/sending values
-  if (_use_bounding_boxes)
+  // Determine the apps which will be receiving points (then sending values) using various
+  // heuristics
+  if (_use_nearest_app)
   {
-    // We examine all bounding boxes and find the maximum distance within a bounding box
-    // from the point. This creates a sphere around the point of interest. Any app with a bounding
-    // box that intersects this sphere (with a bboxMinDistance < nearest_max_distance) will be
-    // considered a potential source.
+    // Find the nearest position for the point
+    const bool initial = _fe_problem.getCurrentExecuteOnFlag() == EXEC_INITIAL;
+    // The apps form the nearest positions here, this is the index of the nearest app
+    const auto nearest_index = _nearest_positions_obj->getNearestPositionIndex(point, initial);
+
+    // Find the apps that are nearest to the same position
+    // Global search over all applications
+    for (processor_id_type i_proc = 0; i_proc < n_processors(); ++i_proc)
+    {
+      // We need i_from to correspond to the global app index
+      unsigned int from0 = _global_app_start_per_proc[i_proc];
+      for (unsigned int i_from = from0; i_from < from0 + _froms_per_proc[i_proc]; ++i_from)
+      {
+        if (_greedy_search || _search_value_conflicts || i_from == nearest_index)
+        {
+          processors.insert(i_proc);
+          found = true;
+        }
+        mooseAssert(i_from < getFromMultiApp()->numGlobalApps(), "We should not reach this");
+      }
+    }
+    mooseAssert((getFromMultiApp()->numGlobalApps() < n_processors() || processors.size() == 1) ||
+                    _greedy_search || _search_value_conflicts,
+                "Should only be one source processor when using more processors than source apps");
+  }
+  else if (_use_bounding_boxes)
+  {
+    // We examine all (global) bounding boxes and find the minimum of the maximum distances within a
+    // bounding box from the point. This creates a sphere around the point of interest. Any app
+    // with a bounding box that intersects this sphere (with a bboxMinDistance <
+    // nearest_max_distance) will be considered a potential source
     // NOTE: This is a heuristic. We could try others
-    // NOTE: from_bboxes are in the reference space, as is the point
+    // NOTE: from_bboxes are in the reference space, as is the point.
     Real nearest_max_distance = std::numeric_limits<Real>::max();
     for (const auto & bbox : _from_bboxes)
     {
@@ -585,6 +660,7 @@ MultiAppGeneralFieldTransfer::locatePointReceivers(const Point point,
     unsigned int from0 = 0;
     for (processor_id_type i_proc = 0; i_proc < n_processors();
          from0 += _froms_per_proc[i_proc], ++i_proc)
+      // i_from here is a hybrid index based on the cumulative sum of the apps per processor
       for (unsigned int i_from = from0; i_from < from0 + _froms_per_proc[i_proc]; ++i_from)
       {
         Real distance = bboxMinDistance(point, _from_bboxes[i_from]);
@@ -640,7 +716,15 @@ MultiAppGeneralFieldTransfer::locatePointReceivers(const Point point,
 
   // Error out if we could not find this point when ask us to do so
   if (!found && _error_on_miss)
-    mooseError("Cannot locate point ", point, " \n ", "mismatched meshes are used");
+    mooseError(
+        "Cannot find a source application to provide a value at point: ",
+        point,
+        " \n ",
+        "It must be that mismatched meshes, between the source and target application, are being "
+        "used.\nIf you are using the bounding boxes or nearest-app heuristics, or mesh-divisions, "
+        "please consider using the greedy_search to confirm. Then consider choosing a different "
+        "transfer type.\nThis check can be turned off by setting 'error_on_miss' to false. The "
+        "'extrapolation_constant' parameter will be used to set the local value at missed points.");
 }
 
 void
@@ -677,7 +761,7 @@ MultiAppGeneralFieldTransfer::cacheOutgoingPointInfo(const Point point,
     outgoing_points[pid].push_back(std::pair<Point, unsigned int>(point, required_source_division));
 
     // Store point information locally for processing received data
-    // We can use these information when insert values to solution vector
+    // We can use these information when inserting values into the solution vector
     PointInfo pointinfo;
     pointinfo.problem_id = problem_id;
     pointinfo.dof_object_id = dof_object_id;
@@ -824,8 +908,8 @@ MultiAppGeneralFieldTransfer::extractOutgoingPoints(const unsigned int var_index
                                i_to,
                                outgoing_points);
       } // for
-    }   // else
-  }     // for
+    } // else
+  } // for
 }
 
 void
@@ -886,12 +970,14 @@ MultiAppGeneralFieldTransfer::cacheIncomingInterpVals(
       // We should only have one closest value for each variable at any given point.
       // While there are shared Qps, on vertices for higher order variables usually,
       // the generic projector only queries each point once
-      if (_search_value_conflicts && !GeneralFieldTransfer::isBetterOutOfMeshValue(val) &&
+      if (_search_value_conflicts && !GeneralFieldTransfer::isOutOfMeshValue(val) &&
           value_cache.hasKey(p) != 0 && !MooseUtils::absoluteFuzzyEqual(value_cache[p], val) &&
           MooseUtils::absoluteFuzzyEqual(distance_cache[p], incoming_vals[val_offset].second))
         registerConflict(problem_id, dof_object_id, p, incoming_vals[val_offset].second, false);
 
-      if ((!GeneralFieldTransfer::isBetterOutOfMeshValue(val) || _use_nearest_app) &&
+      // if we use the nearest app, even if the value is bad we want to save the distance because
+      // it's the distance to the app, if that's the closest app then so be it with the bad value
+      if ((!GeneralFieldTransfer::isOutOfMeshValue(val) || _use_nearest_app) &&
           MooseUtils::absoluteFuzzyGreaterThan(distance_cache[p], incoming_vals[val_offset].second))
       {
         // NOTE: We store the distance as well as the value. We really only need the
@@ -962,10 +1048,13 @@ MultiAppGeneralFieldTransfer::cacheIncomingInterpVals(
         }
 
         // We adopt values that are, in order of priority
-        // - valid
+        // - valid (or from nearest app)
         // - closest distance
         // - the smallest rank with the same distance
-        if (!GeneralFieldTransfer::isBetterOutOfMeshValue(incoming_vals[val_offset].first) &&
+        // It is debatable whether we want invalid values from the nearest app. It could just be
+        // that the app position was closer but the extent of another child app was large enough
+        if ((!GeneralFieldTransfer::isOutOfMeshValue(incoming_vals[val_offset].first) ||
+             _use_nearest_app) &&
             (MooseUtils::absoluteFuzzyGreaterThan(val.distance, incoming_vals[val_offset].second) ||
              ((val.pid > pid) &&
               MooseUtils::absoluteFuzzyEqual(val.distance, incoming_vals[val_offset].second))))
@@ -1284,11 +1373,7 @@ MultiAppGeneralFieldTransfer::outputValueConflicts(
             "will not be output.\nIncrease 'search_value_conflicts_max_log' to output more.";
     }
     // Explicitly name source to give more context
-    std::string source_str = "unknown";
-    if (_from_var_names.size())
-      source_str = "variable '" + getFromVarName(var_index) + "'";
-    else if (isParamValid("source_user_object"))
-      source_str = "user object '" + getParam<UserObjectName>("source_user_object") + "'";
+    const std::string source_str = getDataSourceName(var_index);
 
     mooseWarning("On rank " + rank_str +
                  ", multiple valid values from equidistant points were "
@@ -1434,37 +1519,53 @@ MultiAppGeneralFieldTransfer::setSolutionVectorValues(
         const auto val = val_pair.second.interp;
 
         // This will happen if meshes are mismatched
-        if (_error_on_miss && GeneralFieldTransfer::isBetterOutOfMeshValue(val))
+        if (_error_on_miss && GeneralFieldTransfer::isOutOfMeshValue(val))
         {
           const auto target_location =
               hasToMultiApp()
                   ? " on target app " + std::to_string(getGlobalTargetAppIndex(problem_id))
-                  : " on parent app ";
+                  : " on parent app";
+          const auto info_msg = "\nThis check can be turned off by setting 'error_on_miss' to "
+                                "false. The 'extrapolation_constant' parameter will be used to set "
+                                "the local value at missed points.";
           if (is_nodal)
-            mooseError("No source value could be found for node ",
+            mooseError("No source value for node ",
                        dof_object_id,
                        target_location,
-                       "could not be located. Node details:\n",
-                       _to_meshes[problem_id]->nodePtr(dof_object_id)->get_info());
+                       " could be located. Node details:\n",
+                       _to_meshes[problem_id]->nodePtr(dof_object_id)->get_info(),
+                       "\n",
+                       info_msg);
           else
-            mooseError("No source value could be found for element ",
+            mooseError("No source value for element ",
                        dof_object_id,
                        target_location,
-                       "could not be located. Element details:\n",
-                       _to_meshes[problem_id]->elemPtr(dof_object_id)->get_info());
+                       " could be located. Element details:\n",
+                       _to_meshes[problem_id]->elemPtr(dof_object_id)->get_info(),
+                       "\n",
+                       info_msg);
         }
 
         // We should not put garbage into our solution vector
         // but it can be that we want to set it to a different value than what was already there
         // for example: the source app has been displaced and was sending an indicator of its
         // position
-        if (GeneralFieldTransfer::isBetterOutOfMeshValue(val))
+        if (GeneralFieldTransfer::isOutOfMeshValue(val))
         {
-          if (!GeneralFieldTransfer::isBetterOutOfMeshValue(_default_extrapolation_value))
-            to_sys->solution->set(dof, _default_extrapolation_value);
+          if (!GeneralFieldTransfer::isOutOfMeshValue(_default_extrapolation_value))
+          {
+            // For nearest-valid-target, keep the out-of-mesh sentinel in the solution so
+            // that correctSolutionVectorValues can reliably identify which DOFs still need
+            // extrapolation. Writing _default_extrapolation_value here instead would make it
+            // impossible to distinguish a legitimately-transferred value that happens to equal
+            // the extrapolation constant from a DOF that never received data.
+            const auto missing_value = _post_transfer_extrapolation == "nearest-valid-target"
+                                           ? GeneralFieldTransfer::OutOfMeshValue
+                                           : _default_extrapolation_value;
+            to_sys->solution->set(dof, missing_value);
+          }
           continue;
         }
-
         to_sys->solution->set(dof, val);
       }
     }
@@ -1488,7 +1589,8 @@ MultiAppGeneralFieldTransfer::acceptPointInOriginMesh(unsigned int i_from,
   {
     auto * pl = _from_point_locators[i_from].get();
     const auto from_global_num = getGlobalSourceAppIndex(i_from);
-    const auto transformed_pt = _from_transforms[from_global_num]->mapBack(pt);
+    const auto transformed_pt =
+        getPointInSourceAppFrame(pt, i_from, "Source point acceptance check");
 
     // Check point against source block restriction
     if (!_from_blocks.empty() && !inBlocks(_from_blocks, pl, transformed_pt))
@@ -1519,13 +1621,20 @@ MultiAppGeneralFieldTransfer::acceptPointInOriginMesh(unsigned int i_from,
           _from_transforms[from_global_num]->hasNonTranslationTransformation())
         mooseError("Rotation and scaling currently unsupported with nearest positions transfer.");
 
+      // Compute distance to nearest position and nearest position source
+      const Real distance_to_position_nearest_source = (pt - nearest_position_source).norm();
+      const Real distance_to_nearest_position = (pt - nearest_position).norm();
+
       // Source (usually app position) is not closest to the same positions as the target, dont
-      // send values
-      if (nearest_position != nearest_position_source)
+      // send values. We check the distance instead of the positions because if they are the same
+      // that means there's two equidistant positions and we would want to capture that as a "value
+      // conflict"
+      if (!MooseUtils::absoluteFuzzyEqual(distance_to_position_nearest_source,
+                                          distance_to_nearest_position))
         return false;
 
       // Set the distance as the distance from the nearest position to the target point
-      distance = (pt - nearest_position_source).norm();
+      distance = distance_to_position_nearest_source;
     }
 
     // Check that the app actually contains the origin point
@@ -1535,6 +1644,189 @@ MultiAppGeneralFieldTransfer::acceptPointInOriginMesh(unsigned int i_from,
       return false;
   }
   return true;
+}
+
+void
+MultiAppGeneralFieldTransfer::correctSolutionVectorValues(
+    const unsigned int var_index,
+    const DofobjectToInterpValVec & dofobject_to_valsvec,
+    const InterpCaches & /*interp_caches*/)
+{
+  // TODO: variable component support
+
+  // Get the variable name, with the accommodation for array/vector names
+  const auto & var_name = getToVarName(var_index);
+
+  for (const auto problem_id : index_range(_to_problems))
+  {
+    auto & dofobject_to_val = dofobject_to_valsvec[problem_id];
+
+    // libMesh EquationSystems
+    // NOTE: we would expect to set variables from the displaced equation system here
+    auto & es = getEquationSystem(*_to_problems[problem_id], false);
+
+    // libMesh system
+    System * to_sys = find_sys(es, var_name);
+
+    // libMesh mesh
+    const MeshBase & to_mesh = _to_problems[problem_id]->mesh(_displaced_target_mesh).getMesh();
+    auto var_num = to_sys->variable_number(var_name);
+    auto sys_num = to_sys->number();
+
+    auto & fe_type = getToVariable(var_index)->feType();
+    bool is_nodal = getToVariable(var_index)->isNodal();
+
+    // We might need the synchronization of values that update provides
+    // to find the nearest target value
+    // NOTE: we are checking the buffers still for the values transfered, so we actually don't gain
+    // anything from ghosting We have to still work with buffers, how else do we know the source
+    // (from transferred buffers) or target (from all the points listed in buffers) are met
+    if (_post_transfer_extrapolation == "nearest-valid-target")
+    {
+      if (fe_type.order > CONSTANT && !is_nodal)
+        paramError("post_transfer_extrapolation",
+                   "Nearest-valid-target is not implemented for higher order elemental variables");
+      const auto & node_to_elem_map =
+          _to_problems[problem_id]->mesh(_displaced_target_mesh).nodeToElemMap();
+
+      for (const auto & val_pair : dofobject_to_val)
+      {
+        const auto dof_object_id = val_pair.first;
+
+        // Check that the value was out of bounds
+        const DofObject * dof_object = nullptr;
+        if (is_nodal)
+          dof_object = to_mesh.node_ptr(dof_object_id);
+        else
+          dof_object = to_mesh.elem_ptr(dof_object_id);
+        const auto dof = dof_object->dof_number(sys_num, var_num, 0);
+        const auto val = val_pair.second.interp;
+        if (GeneralFieldTransfer::isOutOfMeshValue(val))
+        {
+          Real nearest_value = 0.;
+          dof_id_type min_dist_id = std::numeric_limits<dof_id_type>::max();
+
+          // Find the nearest valid value
+          if (is_nodal)
+          {
+            const auto node = to_mesh.node_ptr(dof_object_id);
+            // Find nearest node
+            // NOTE: we have access to a bunch of values now here, we could interpolate!
+            Real min_distance_sq = std::numeric_limits<Real>::max();
+            for (const auto & elem_id : libmesh_map_find(node_to_elem_map, node->id()))
+            {
+              const auto elem = to_mesh.elem_ptr(elem_id);
+              for (const auto & elem_node : elem->node_ref_range())
+              {
+                Real distance_sq = (Point(elem_node) - Point(*node)).norm_sq();
+                // Avoid using another bad value from a node which did not receive data
+                // Note: if the node is on another process ID, we can't obtain the value from a
+                // buffer here Note: we could seek from the solution vector instead BUT if we do
+                // that we may be ignoring source restrictions set to the transfer.
+                // Note: Target mesh restrictions are fine since we are picking from
+                // dofobject_to_val
+                if (distance_sq < min_distance_sq && elem_node.id() != node->id())
+                {
+                  if (auto it = dofobject_to_val.find(elem_node.id());
+                      it != dofobject_to_val.end() &&
+                      !GeneralFieldTransfer::isOutOfMeshValue(it->second.interp))
+                  {
+                    min_distance_sq = distance_sq;
+                    min_dist_id = elem_node.id();
+                    nearest_value = it->second.interp;
+                  }
+                  else if (elem_node.n_dofs(sys_num, var_num) > 0)
+                  {
+                    const auto other_dof = elem_node.dof_number(sys_num, var_num, 0);
+                    try
+                    {
+                      // setSolutionVectorValues leaves DOFs that did not receive a transfer
+                      // value marked with OutOfMeshValue, so isOutOfMeshValue is sufficient
+                      // to reject them here. DOFs that did receive data (even if the value
+                      // equals _default_extrapolation_value) are accepted correctly.
+                      if (const auto sol_val = (*to_sys->current_local_solution)(other_dof);
+                          !GeneralFieldTransfer::isOutOfMeshValue(sol_val))
+                      {
+                        min_distance_sq = distance_sq;
+                        min_dist_id = elem_node.id();
+                        nearest_value = sol_val;
+                      }
+                    }
+                    catch (...)
+                    {
+                      // Access in ghosted vector failed, just keep going
+                    }
+                  }
+                }
+              }
+            }
+          }
+          else
+          {
+            const auto elem = to_mesh.elem_ptr(dof_object_id);
+            Real min_distance_sq = std::numeric_limits<Real>::max();
+            for (const auto neigh : elem->neighbor_ptr_range())
+            {
+              if (!neigh || neigh == libMesh::remote_elem)
+                continue;
+              Real distance_sq = (neigh->vertex_average() - elem->vertex_average()).norm_sq();
+              if (distance_sq < min_distance_sq)
+              {
+                if (auto it = dofobject_to_val.find(neigh->id());
+                    it != dofobject_to_val.end() &&
+                    !GeneralFieldTransfer::isOutOfMeshValue(it->second.interp))
+                {
+                  min_distance_sq = distance_sq;
+                  min_dist_id = neigh->id();
+                  nearest_value = it->second.interp;
+                }
+                // Access into ghosted solution vector. See comments for node
+                else if (neigh->n_dofs(sys_num, var_num) > 0)
+                {
+                  const auto other_dof = neigh->dof_number(sys_num, var_num, 0);
+                  try
+                  {
+                    // Same reasoning as the nodal branch: DOFs without transfer data carry
+                    // OutOfMeshValue, so isOutOfMeshValue is the correct rejection criterion.
+                    if (const auto sol_val = (*to_sys->current_local_solution)(other_dof);
+                        !GeneralFieldTransfer::isOutOfMeshValue(sol_val))
+                    {
+                      nearest_value = sol_val;
+                      min_distance_sq = distance_sq;
+                      min_dist_id = neigh->id();
+                    }
+                  }
+                  catch (...)
+                  {
+                    // Access in ghosted vector failed, just keep going
+                  }
+                }
+              }
+            }
+          }
+          nearest_value = (min_dist_id != std::numeric_limits<dof_id_type>::max())
+                              ? nearest_value
+                              : _default_extrapolation_value;
+
+          if (min_dist_id != std::numeric_limits<dof_id_type>::max())
+            to_sys->solution->set(dof, nearest_value);
+          else
+          {
+            // No valid neighbor was found; replace the out-of-mesh sentinel with the
+            // fallback value so the solution vector does not retain an invalid sentinel.
+            to_sys->solution->set(dof, _default_extrapolation_value);
+            flagSolutionWarning(
+                "Search for the valid target nearest from a target point for which no "
+                "values were found (and thus extrapolation is required) failed. This warning will "
+                "not be repeated on the console for further failures.");
+          }
+        }
+      }
+      to_sys->solution->close();
+      // Sync local solutions
+      to_sys->update();
+    }
+  }
 }
 
 bool
@@ -1566,7 +1858,7 @@ MultiAppGeneralFieldTransfer::inBlocks(const std::set<SubdomainID> & blocks,
                                        const MooseMesh & mesh,
                                        const Node * node) const
 {
-  const std::set<SubdomainID> & node_blocks = mesh.getNodeBlockIds(*node);
+  const auto & node_blocks = mesh.getNodeBlockIds(*node);
   std::set<SubdomainID> u;
   std::set_intersection(blocks.begin(),
                         blocks.end(),
@@ -1692,8 +1984,35 @@ MultiAppGeneralFieldTransfer::closestToPosition(unsigned int pos_index, const Po
   if (!_skip_coordinate_collapsing)
     paramError("skip_coordinate_collapsing", "Coordinate collapsing not implemented");
   bool initial = _fe_problem.getCurrentExecuteOnFlag() == EXEC_INITIAL;
-  return _nearest_positions_obj->getPosition(pos_index, initial) ==
-         _nearest_positions_obj->getNearestPosition(pt, initial);
+  if (!_search_value_conflicts)
+    // Faster to just compare the index
+    return pos_index == _nearest_positions_obj->getNearestPositionIndex(pt, initial);
+  else
+  {
+    // Get the distance to the position and see if we are missing a value just because the position
+    // is not officially the closest, but it is actually at the same distance
+    const auto nearest_position = _nearest_positions_obj->getNearestPosition(pt, initial);
+    const auto nearest_position_at_index = _nearest_positions_obj->getPosition(pos_index, initial);
+    Real distance_to_position_at_index = (pt - nearest_position_at_index).norm();
+    const Real distance_to_nearest_position = (pt - nearest_position).norm();
+
+    if (!MooseUtils::absoluteFuzzyEqual(distance_to_position_at_index,
+                                        distance_to_nearest_position))
+      return false;
+    // Actually the same position (point)
+    else if (nearest_position == nearest_position_at_index)
+      return true;
+    else
+    {
+      mooseWarning("Two equidistant positions ",
+                   nearest_position,
+                   " and ",
+                   nearest_position_at_index,
+                   " detected near point ",
+                   pt);
+      return true;
+    }
+  }
 }
 
 Real
@@ -1838,8 +2157,15 @@ MultiAppGeneralFieldTransfer::getGlobalStartAppPerProc() const
   return global_app_start_per_proc;
 }
 
+std::string
+MultiAppGeneralFieldTransfer::getDataSourceName(unsigned int var_index) const
+{
+  mooseAssert(var_index < _from_var_names.size(), "No source variable at this index");
+  return "variable '" + getFromVarName(var_index) + "'";
+}
+
 VariableName
-MultiAppGeneralFieldTransfer::getFromVarName(unsigned int var_index)
+MultiAppGeneralFieldTransfer::getFromVarName(unsigned int var_index) const
 {
   mooseAssert(var_index < _from_var_names.size(), "No source variable at this index");
   VariableName var_name = _from_var_names[var_index];
@@ -1885,8 +2211,8 @@ MultiAppGeneralFieldTransfer::detectConflict(Real current_value,
   // No conflict if we're not looking for them
   if (_search_value_conflicts)
     // Only consider conflicts if the values are valid and different
-    if (current_value != GeneralFieldTransfer::BetterOutOfMeshValue &&
-        new_value != GeneralFieldTransfer::BetterOutOfMeshValue &&
+    if (current_value != GeneralFieldTransfer::OutOfMeshValue &&
+        new_value != GeneralFieldTransfer::OutOfMeshValue &&
         !MooseUtils::absoluteFuzzyEqual(current_value, new_value))
       // Conflict only occurs if the origin points are equidistant
       if (MooseUtils::absoluteFuzzyEqual(current_distance, new_distance))

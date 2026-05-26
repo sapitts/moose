@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -36,7 +36,7 @@ ThresholdElementSubdomainModifier::ThresholdElementSubdomainModifier(
     _subdomain_id(getParam<SubdomainID>("subdomain_id")),
     _complement_subdomain_id(isParamValid("complement_subdomain_id")
                                  ? getParam<SubdomainID>("complement_subdomain_id")
-                                 : std::numeric_limits<SubdomainID>::max())
+                                 : Moose::INVALID_BLOCK_ID)
 {
 }
 

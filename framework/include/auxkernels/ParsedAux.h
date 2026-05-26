@@ -1,5 +1,5 @@
 //* This file is part of the MOOSE framework
-//* https://www.mooseframework.org
+//* https://mooseframework.inl.gov
 //*
 //* All rights reserved, see COPYRIGHT for full restrictions
 //* https://github.com/idaholab/moose/blob/master/COPYRIGHT
@@ -47,13 +47,21 @@ protected:
   const unsigned int _nargs;
   const std::vector<const VariableValue *> _args;
 
+  /// material properties
+  const std::vector<MaterialPropertyName> & _matprop_names;
+  const std::vector<MaterialPropertyName> & _ad_matprop_names;
+  const unsigned int _n_matprops;
+  const unsigned int _n_ad_matprops;
+  std::vector<const MaterialProperty<Real> *> _matprops;
+  std::vector<const ADMaterialProperty<Real> *> _ad_matprops;
+
   /// import coordinates and time
   const bool _use_xyzt;
 
   /// coordinate and time variable names
   const std::vector<std::string> _xyzt;
 
-  /// function parser object for the resudual and on-diagonal Jacobian
+  /// function parser object to compute the local value of the aux-variable
   SymFunctionPtr _func_F;
 
   usingFunctionParserUtilsMembers(false);
@@ -69,6 +77,9 @@ protected:
 
   /// Vector of pointers to functors
   std::vector<const Moose::Functor<Real> *> _functors;
+
+  /// Whether to use qp-functor arguments
+  const bool _use_qp_functor_arguments;
 
   /// Vector of coupled variable names
   std::vector<std::string> _coupled_variable_names;
